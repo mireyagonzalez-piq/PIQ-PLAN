@@ -92,15 +92,44 @@
   .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden}
   .tbl{width:100%;border-collapse:collapse;font-size:13px}
   .tbl th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .tbl th.drag-th{width:20px;padding:10px 6px 10px 14px}
   .tbl td{padding:8px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .tbl td.drag-td{padding:8px 6px 8px 14px;width:20px}
   .tbl tbody tr:last-child td{border-bottom:none}
   .tbl tbody tr:hover td{background:var(--panel-2)}
+  .tbl tbody tr.dragging-row td{opacity:.3;background:var(--panel-3)}
+  .tbl tbody tr.drag-over-top td{box-shadow:inset 0 2px 0 var(--teal)}
+  .row-handle{cursor:grab;color:var(--faint);font-size:13px;user-select:none;display:block;line-height:1}
+  .row-handle:hover{color:var(--muted)}
   .cell{outline:none;min-height:20px;line-height:1.4}
   .cell:focus{box-shadow:inset 0 -1px 0 var(--faint)}
-  .mrr-cell{outline:none;min-height:20px;line-height:1.4;font-weight:600;color:var(--teal);min-width:70px}
-  .mrr-cell:focus{box-shadow:inset 0 -1px 0 var(--teal)}
+  .mrr-input{font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--teal);
+    background:transparent;border:none;border-bottom:1.5px solid transparent;outline:none;
+    width:80px;padding:2px 0;cursor:text;min-width:60px;}
+  .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px;}
+  .mrr-input::placeholder{color:var(--faint);font-weight:400}
   .tbl .del{font-size:14px}
   .empty{color:var(--faint);font-size:13px;padding:20px}
+  /* retention summary */
+  .ret-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .ret-summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+  .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
+  .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
+  .ret-stat.safe{border-color:rgba(24,122,110,.3);background:rgba(24,122,110,.04)}
+  .ret-stat.warn{border-color:rgba(184,122,16,.3);background:rgba(184,122,16,.04)}
+  .ret-stat-label{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .ret-stat-num{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .ret-stat-mrr{font-size:14px;font-weight:600;margin-top:4px;opacity:.75}
+  .ret-stat-sub{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.4}
+  .ret-stat.danger .ret-stat-num,.ret-stat.danger .ret-stat-mrr{color:var(--fire)}
+  .ret-stat.danger-soft .ret-stat-num,.ret-stat.danger-soft .ret-stat-mrr{color:var(--fire)}
+  .ret-stat.safe .ret-stat-num{color:var(--teal)}
+  .ret-stat.warn .ret-stat-num,.ret-stat.warn .ret-stat-mrr{color:var(--amber)}
+  .ret-total-row{grid-column:1/-1;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .ret-total-item{font-size:12.5px;color:var(--muted)}
+  .ret-total-item b{color:var(--text);font-weight:700}
+  @media(max-width:700px){.ret-summary{grid-template-columns:1fr 1fr}.ret-summary-row{grid-template-columns:1fr 1fr}}
 
   /* plan */
   .plan-grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
@@ -211,6 +240,7 @@
       <h1>Current at-risk clients.</h1>
       <p class="head-sub">The holding pen, worked one by one - while the real fix scales. From <b style="color:var(--text)">June onward, the QC intake</b> (Airtable, with Andres) catches quality issues upstream for new clients, so retention stops being a firefight and this list shrinks instead of growing. Target: churn under 14%.</p>
     </div>
+    <div class="ret-summary" id="retSummary"></div>
     <div id="retentionTable"></div>
     <button class="addbtn" id="addRetention" style="margin-top:14px;max-width:200px">+ add client</button>
   </section>
@@ -326,11 +356,11 @@
   const PEOPLE=['Me','Estefania','Roberto','Eduardo','Lorena','Tania','María','Andres','Usman','Mike','Paulo'];
   const PSTATUS=['Not started','In progress','Needs approval','Needs update','Ongoing','Monitoring','Maintenance','Blocked','Done'];
   const RISK=['High','Medium','Low'];
-  const RSTATUS=['Watching','Working','Saved','Churned'];
+  const RSTATUS=['At risk','Working on it','Will churn','Churned','Saved'];
   const COLOR={
-    'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)',
-    'In progress':'var(--amber)','Medium':'var(--amber)','Working':'var(--amber)','Needs update':'var(--amber)',
-    'Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Watching':'var(--teal)',
+    'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)',
+    'In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)',
+    'Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)',
     'Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)',
     'Not started':'var(--slate)'
   };
@@ -365,29 +395,29 @@
         pdone:[]
       },
       retention:[
-        {id:'x2mr3r86gi',client:'Tampa Roots',owners:['Eduardo'],mrr:'',risk:'High',issue:"They haven't paid since April, client is egosentrical",next:'They want a report, we told him we would give them a free month. 12 months - 4 months + 60 days clause (4 payments)- MIREYA WILL SEND AN EMAIL',status:'Watching'},
-        {id:'x3mr3re6iz',client:'Bospar',owners:['Eduardo'],mrr:'',risk:'High',issue:'6/6 PAID - NON RENEWAL',next:'Cancel before July 30',status:'Watching'},
+        {id:'x2mr3r86gi',client:'Tampa Roots',owners:['Eduardo'],mrr:'',risk:'High',issue:"They haven't paid since April, client is egosentrical",next:'They want a report, we told him we would give them a free month. 12 months - 4 months + 60 days clause (4 payments)- MIREYA WILL SEND AN EMAIL',status:'At risk'},
+        {id:'x3mr3re6iz',client:'Bospar',owners:['Eduardo'],mrr:'',risk:'High',issue:'6/6 PAID - NON RENEWAL',next:'Cancel before July 30',status:'At risk'},
         {id:'x4mr3rez3p',client:'Topor Security',owners:['Eduardo'],mrr:'',risk:'High',issue:'4/3 - NON RENEWAL',next:'Cancel July 2',status:'Churned'},
-        {id:'x5mr3rgw7s',client:'Giovanni',owners:['Eduardo'],mrr:'',risk:'Low',issue:'1 month left',next:'Cancel before August 30',status:'Watching'},
+        {id:'x5mr3rgw7s',client:'Giovanni',owners:['Eduardo'],mrr:'',risk:'Low',issue:'1 month left',next:'Cancel before August 30',status:'At risk'},
         {id:'x6mr3ri9yr',client:'Scanixx',owners:['Eduardo'],mrr:'',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 2',status:'Churned'},
         {id:'x7mr3risy6',client:'JLH',owners:['Eduardo'],mrr:'',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 10',status:'Churned'},
-        {id:'x8mr3rivwy',client:'Constructive Developments',owners:['Eduardo'],mrr:'',risk:'Low',issue:'3/3 - if they pay July 24th will continue',next:'See if they pay and continue for another 3 months',status:'Watching'},
+        {id:'x8mr3rivwy',client:'Constructive Developments',owners:['Eduardo'],mrr:'',risk:'Low',issue:'3/3 - if they pay July 24th will continue',next:'See if they pay and continue for another 3 months',status:'At risk'},
         {id:'x10mr3ulg7g',client:'Voicenx',owners:['Estefania'],mrr:'',risk:'High',issue:'3/3 no auto renewal',next:'Cancel by July 2',status:'Churned'},
         {id:'x11mr3un092',client:'Focus Advertising',owners:['Estefania'],mrr:'',risk:'High',issue:'6/12 - early term',next:'Cancel by July 9',status:'Churned'},
         {id:'x12mr3uqchh',client:'ETL',owners:['Estefania'],mrr:'',risk:'High',issue:'10/12 - requested termination in Feb',next:'Cancel by July 15',status:'Churned'},
-        {id:'x13mr3usmo2',client:'Pharoplast',owners:['Estefania'],mrr:'',risk:'Low',issue:'Simon is leaving Pharoplast, he is now working for another company. 6/12',next:'He still has 6 months of SOW - Next payment July 13, we will have a call on July 9th',status:'Watching'},
-        {id:'x14mr3xvbbf',client:'Amazon cost savers',owners:['María'],mrr:'',risk:'High',issue:'5/4 paid one more, we will see if we refund',next:'15 if he says something about the 5th payment, Cancel by July 28',status:'Watching'},
+        {id:'x13mr3usmo2',client:'Pharoplast',owners:['Estefania'],mrr:'',risk:'Low',issue:'Simon is leaving Pharoplast, he is now working for another company. 6/12',next:'He still has 6 months of SOW - Next payment July 13, we will have a call on July 9th',status:'At risk'},
+        {id:'x14mr3xvbbf',client:'Amazon cost savers',owners:['María'],mrr:'',risk:'High',issue:'5/4 paid one more, we will see if we refund',next:'15 if he says something about the 5th payment, Cancel by July 28',status:'At risk'},
         {id:'x15mr3y0feb',client:'Vetri Solutions',owners:['María'],mrr:'',risk:'High',issue:'Non renewal paid 4/3',next:'Cancel by July 2',status:'Churned'},
-        {id:'x16mr3y349i',client:'Lerner consulting',owners:['María'],mrr:'',risk:'High',issue:'4/4 payments - Non renewal',next:'Cancel by July 24',status:'Watching'},
-        {id:'x17mr3y5h15',client:'Atica Global',owners:['María'],mrr:'',risk:'Medium',issue:'They requested non renewal after their 3month term 2/3',next:'Last payment July 15- will cancel in August',status:'Watching'},
-        {id:'x18mr3zcrug',client:'Confidential Banking',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 26',status:'Watching'},
-        {id:'x19mr3zdmsx',client:'Mission Display',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 24',status:'Watching'},
-        {id:'x20mr3zewii',client:'Cheque Guard',owners:['Lorena'],mrr:'',risk:'Low',issue:"7/12 - is MIA, hasn't approved and didn't approved anything",next:'Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE',status:'Watching'},
-        {id:'x21mr3zihcc',client:'Paxa',owners:['Lorena'],mrr:'',risk:'Medium',issue:'Pausing fee until Sept',next:'Will resume in Sept',status:'Watching'},
+        {id:'x16mr3y349i',client:'Lerner consulting',owners:['María'],mrr:'',risk:'High',issue:'4/4 payments - Non renewal',next:'Cancel by July 24',status:'At risk'},
+        {id:'x17mr3y5h15',client:'Atica Global',owners:['María'],mrr:'',risk:'Medium',issue:'They requested non renewal after their 3month term 2/3',next:'Last payment July 15- will cancel in August',status:'At risk'},
+        {id:'x18mr3zcrug',client:'Confidential Banking',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 26',status:'At risk'},
+        {id:'x19mr3zdmsx',client:'Mission Display',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 24',status:'At risk'},
+        {id:'x20mr3zewii',client:'Cheque Guard',owners:['Lorena'],mrr:'',risk:'Low',issue:"7/12 - is MIA, hasn't approved and didn't approved anything",next:'Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE',status:'At risk'},
+        {id:'x21mr3zihcc',client:'Paxa',owners:['Lorena'],mrr:'',risk:'Medium',issue:'Pausing fee until Sept',next:'Will resume in Sept',status:'At risk'},
         {id:'x22mr3zixit',client:'Lonestar PVF',owners:['Lorena'],mrr:'',risk:'High',issue:'4/3 - non renewal',next:'Cancel by July 2',status:'Churned'},
-        {id:'x23mr3zkb6l',client:'Billingual',owners:['Lorena'],mrr:'',risk:'Medium',issue:"2/12 - hasn't paid",next:'Might be cancelled by Finance after 3rd attempt',status:'Watching'},
-        {id:'x24mr3zljyl',client:'A&M',owners:['Lorena'],mrr:'',risk:'Low',issue:'5/6 - needs to make 1 more payment - to cancel in August',next:'Send email to do SEO + website for the remining months $1000',status:'Watching'},
-        {id:'x26mr3zo4sb',client:'Service Cleaners',owners:['Lorena'],mrr:'',risk:'Low',issue:"4/6 - we didn't fulfill with the full lead volume",next:'Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards',status:'Watching'},
+        {id:'x23mr3zkb6l',client:'Billingual',owners:['Lorena'],mrr:'',risk:'Medium',issue:"2/12 - hasn't paid",next:'Might be cancelled by Finance after 3rd attempt',status:'At risk'},
+        {id:'x24mr3zljyl',client:'A&M',owners:['Lorena'],mrr:'',risk:'Low',issue:'5/6 - needs to make 1 more payment - to cancel in August',next:'Send email to do SEO + website for the remining months $1000',status:'At risk'},
+        {id:'x26mr3zo4sb',client:'Service Cleaners',owners:['Lorena'],mrr:'',risk:'Low',issue:"4/6 - we didn't fulfill with the full lead volume",next:'Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards',status:'At risk'},
         {id:'x28mr416b4c',client:'April - Reddout Wine',owners:['Tania'],mrr:'',risk:'High',issue:'Dissolved company - 8/12',next:'Cancel by June 2',status:'Churned'}
       ]
     };
@@ -410,7 +440,13 @@
     if(!s||!s.projects)return null;
     for(const t of TIERS){if(!Array.isArray(s.projects[t]))s.projects[t]=[];
       s.projects[t].forEach(c=>{if(!Array.isArray(c.owners))c.owners=c.owner?[c.owner]:['Me'];if(!Array.isArray(c.subs))c.subs=[];});}
-    if(Array.isArray(s.retention))s.retention.forEach(r=>{if(!Array.isArray(r.owners))r.owners=r.am?[r.am]:[];if(!r.mrr)r.mrr='';});
+    if(Array.isArray(s.retention))s.retention.forEach(r=>{
+      if(!Array.isArray(r.owners))r.owners=r.am?[r.am]:[];
+      if(!r.mrr)r.mrr='';
+      // migrate old status names
+      if(r.status==='Watching')r.status='At risk';
+      if(r.status==='Working')r.status='Working on it';
+    });
     return s;
   }
   function changed(){renderAll();persist();}
@@ -516,7 +552,60 @@
     state.projects[target].splice(idx,0,moved);changed();
   }
 
+  function mrr(rows){
+    return rows.reduce((acc,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return acc+(isNaN(n)?0:n);},0);
+  }
+  function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
+  function renderRetentionSummary(){
+    const el=document.getElementById('retSummary'); if(!el)return;
+    const r=state.retention;
+    const total=r.length;
+    const churnedRows=r.filter(x=>x.status==='Churned');
+    const willChurnRows=r.filter(x=>x.status==='Will churn');
+    const atRiskRows=r.filter(x=>x.status==='At risk');
+    const workingRows=r.filter(x=>x.status==='Working on it');
+    const savedRows=r.filter(x=>x.status==='Saved');
+    const mrrChurned=mrr(churnedRows);
+    const mrrWillChurn=mrr(willChurnRows);
+    const mrrAtRisk=mrr([...atRiskRows,...workingRows]);
+    const mrrSaved=mrr(savedRows);
+    el.innerHTML=`
+      <div class="ret-stat danger">
+        <div class="ret-stat-label">Already churned</div>
+        <div class="ret-stat-num">${churnedRows.length}</div>
+        <div class="ret-stat-mrr">${fmt(mrrChurned)} MRR lost</div>
+        <div class="ret-stat-sub">cancelled, done</div>
+      </div>
+      <div class="ret-stat danger-soft">
+        <div class="ret-stat-label">Will churn</div>
+        <div class="ret-stat-num">${willChurnRows.length}</div>
+        <div class="ret-stat-mrr">${fmt(mrrWillChurn)} MRR leaving</div>
+        <div class="ret-stat-sub">confirmed, cancellation pending</div>
+      </div>
+      <div class="ret-stat warn">
+        <div class="ret-stat-label">At risk</div>
+        <div class="ret-stat-num">${atRiskRows.length+workingRows.length}</div>
+        <div class="ret-stat-mrr">${fmt(mrrAtRisk)} MRR at risk</div>
+        <div class="ret-stat-sub">${atRiskRows.length} watching · ${workingRows.length} being worked</div>
+      </div>
+      <div class="ret-stat safe">
+        <div class="ret-stat-label">Saved</div>
+        <div class="ret-stat-num">${savedRows.length}</div>
+        <div class="ret-stat-mrr">${fmt(mrrSaved)} MRR retained</div>
+        <div class="ret-stat-sub">retention worked</div>
+      </div>
+      <div class="ret-total-row">
+        <div class="ret-total-item"><b>${total}</b> total clients tracked</div>
+        <div class="ret-total-item" style="color:var(--fire)"><b>${churnedRows.length+willChurnRows.length}</b> churned or confirmed leaving</div>
+        <div class="ret-total-item" style="color:var(--amber)"><b>${atRiskRows.length+workingRows.length}</b> still in play</div>
+        <div class="ret-total-item" style="color:var(--teal)"><b>${savedRows.length}</b> recovered</div>
+        ${(mrrChurned+mrrWillChurn+mrrAtRisk)>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrrChurned+mrrWillChurn+mrrAtRisk)}</b> total MRR exposure</div>`:''}
+      </div>`;
+  }
+
+  let dragSrcId=null;
   function renderRetention(){
+    renderRetentionSummary();
     const c=document.getElementById('retentionTable');c.innerHTML='';
     const cols=[
       {key:'client',label:'Client'},
@@ -531,25 +620,56 @@
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
     const thead=document.createElement('thead');const htr=document.createElement('tr');
-    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});htr.appendChild(document.createElement('th'));
+    const dragTh=document.createElement('th');dragTh.className='drag-th';htr.appendChild(dragTh);
+    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});
+    htr.appendChild(document.createElement('th'));
     thead.appendChild(htr);table.appendChild(thead);
     const tb=document.createElement('tbody');
     state.retention.forEach(row=>{
-      const tr=document.createElement('tr');
+      const tr=document.createElement('tr');tr.dataset.id=row.id;tr.draggable=false;
+      // drag handle cell
+      const handleTd=document.createElement('td');handleTd.className='drag-td';
+      const handle=document.createElement('span');handle.className='row-handle';handle.innerHTML='&#10303;';
+      handle.addEventListener('mousedown',()=>{tr.draggable=true;});
+      handle.addEventListener('mouseup',()=>{tr.draggable=false;});
+      handleTd.appendChild(handle);tr.appendChild(handleTd);
+      // data cells
       cols.forEach(col=>{
         const td=document.createElement('td');td.setAttribute('data-label',col.label);
         if(col.type==='owners')td.appendChild(ownerControl(row[col.key]||[],persist));
         else if(col.type==='select')td.appendChild(select(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
-        else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
+        else if(col.cls==='mrr-cell'){
+          const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';
+          inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';
+          inp.addEventListener('mousedown',e=>e.stopPropagation());
+          inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});
+          inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});
+          td.appendChild(inp);
+        } else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
         tr.appendChild(td);
       });
       const td=document.createElement('td');const del=document.createElement('button');del.className='del';del.innerHTML='&times;';
       del.addEventListener('click',()=>{state.retention=state.retention.filter(r=>r.id!==row.id);changed();});td.appendChild(del);tr.appendChild(td);
+      // drag events
+      tr.addEventListener('dragstart',e=>{dragSrcId=row.id;tr.classList.add('dragging-row');e.dataTransfer.effectAllowed='move';});
+      tr.addEventListener('dragend',()=>{tr.draggable=false;tr.classList.remove('dragging-row');document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));});
+      tr.addEventListener('dragover',e=>{e.preventDefault();if(row.id===dragSrcId)return;document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));tr.classList.add('drag-over-top');});
+      tr.addEventListener('dragleave',()=>tr.classList.remove('drag-over-top'));
+      tr.addEventListener('drop',e=>{
+        e.preventDefault();tr.classList.remove('drag-over-top');
+        if(!dragSrcId||dragSrcId===row.id)return;
+        const from=state.retention.findIndex(x=>x.id===dragSrcId);
+        const to=state.retention.findIndex(x=>x.id===row.id);
+        if(from<0||to<0)return;
+        const [moved]=state.retention.splice(from,1);
+        state.retention.splice(to,0,moved);
+        dragSrcId=null;changed();
+      });
       tb.appendChild(tr);
     });
     table.appendChild(tb);wrap.appendChild(table);c.appendChild(wrap);
   }
-  document.getElementById('addRetention').addEventListener('click',()=>{state.retention.push({id:uid(),client:'',owners:['Estefania'],mrr:'',risk:'Medium',issue:'',next:'',status:'Watching'});changed();});
+  document.getElementById('addRetention').addEventListener('click',()=>{state.retention.push({id:uid(),client:'',owners:['Estefania'],mrr:'',risk:'Medium',issue:'',next:'',status:'At risk'});changed();});
 
   function renderAll(){renderBoard();renderRetention();}
 
