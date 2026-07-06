@@ -304,29 +304,34 @@
   }
 
   // ── SYNC TO SHEET (Mireya only) ──────────────────────────────
-  async function syncToSheet(){
+  function syncToSheet(){
     const url=getScriptUrl();
     if(!url){alert('Paste your Apps Script URL in the setup banner first.');return;}
     const btn=document.getElementById('syncBtn');
     btn.disabled=true; btn.textContent='Syncing…';
-    try{
-      // Apps Script requires no-cors for cross-origin POST
-      // We encode the data as a URL param on a GET request instead
-      const payload=encodeURIComponent(JSON.stringify({secret:SECRET,state:state}));
-      const resp=await fetch(url+'?action=save&payload='+payload);
-      const text=await resp.text();
-      let data;
-      try{ data=JSON.parse(text); }catch(e){ data={ok:true}; }
-      if(data.ok!==false){
+    const cbName='piq_cb_'+Date.now();
+    const payload=JSON.stringify({secret:SECRET,state:state});
+    window[cbName]=function(data){
+      delete window[cbName];
+      const s=document.getElementById(cbName);
+      if(s)s.remove();
+      clearTimeout(window[cbName+'_t']);
+      btn.disabled=false; btn.textContent='↑ Sync for team';
+      if(data&&data.ok!==false){
         document.getElementById('savetag').textContent='synced ✓';
-        setTimeout(()=>document.getElementById('savetag').textContent='',2000);
+        setTimeout(()=>document.getElementById('savetag').textContent='',2500);
       } else {
-        alert('Sync failed: '+(data.error||'unknown'));
+        alert('Sync failed: '+(data&&data.error?data.error:'unknown error'));
       }
-    }catch(e){
-      alert('Could not reach Apps Script. Make sure it\'s deployed with "Who has access: Anyone".');
-    }
-    btn.disabled=false; btn.textContent='↑ Sync for team';
+    };
+    window[cbName+'_t']=setTimeout(function(){
+      if(window[cbName]){ delete window[cbName]; btn.disabled=false; btn.textContent='↑ Sync for team'; alert('Sync timed out. Check the Apps Script URL.'); }
+    },12000);
+    const script=document.createElement('script');
+    script.id=cbName;
+    script.src=url+'?action=save&callback='+cbName+'&payload='+encodeURIComponent(payload);
+    script.onerror=function(){ clearTimeout(window[cbName+'_t']); delete window[cbName]; script.remove(); btn.disabled=false; btn.textContent='↑ Sync for team'; alert('Script load error. Check deployment settings.'); };
+    document.head.appendChild(script);
   }
 
   // ── LOCAL SAVE ───────────────────────────────────────────────
