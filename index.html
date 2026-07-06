@@ -11,7 +11,7 @@
   :root{
     --ink:#F4F6F9;--panel:#FFFFFF;--panel-2:#EEF1F5;--panel-3:#E6EAF0;
     --line:#D8DCE6;--line-2:#C4CAD8;--text:#141820;--muted:#526070;--faint:#8A97A8;
-    --fire:#D95030;--fire-dim:rgba(217,80,48,.09);--fire-glow:rgba(217,80,48,.2);
+    --fire:#D95030;--fire-dim:rgba(217,80,48,.09);
     --amber:#B87A10;--amber-dim:rgba(184,122,16,.09);
     --teal:#187A6E;--teal-dim:rgba(24,122,110,.09);
     --slate:#607080;--violet:#5B4FCC;--violet-dim:rgba(91,79,204,.09);
@@ -28,10 +28,13 @@
   .tabs button:hover{color:var(--text)}
   .tabs button.active{color:var(--text);background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.1)}
   .tools{margin-left:auto;display:flex;align-items:center;gap:6px}
-  .tools button,.tools .imp,.tools a.dash{font-size:11.5px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block;transition:color .15s,border-color .15s,background .15s}
+  .tools button,.tools .imp,.tools a.dash{font-size:11.5px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;font-family:inherit}
   .tools a.dash{color:var(--teal);border-color:rgba(77,189,172,.25);background:rgba(77,189,172,.06)}
-  .tools a.dash:hover{background:rgba(77,189,172,.12);border-color:rgba(77,189,172,.4)}
+  .tools a.dash:hover{background:rgba(77,189,172,.12)}
   .tools button:hover,.tools .imp:hover{color:var(--text);border-color:var(--faint);background:var(--panel-2)}
+  .sync-btn{background:var(--teal)!important;color:#fff!important;border-color:var(--teal)!important;font-weight:600!important;display:flex;align-items:center;gap:5px}
+  .sync-btn:hover{opacity:.88;background:var(--teal)!important}
+  .sync-btn:disabled{opacity:.5;cursor:not-allowed!important}
   #savetag{font-size:11px;font-weight:500;color:var(--teal);min-width:36px}
   main{padding:clamp(20px,3.5vw,42px) clamp(16px,3.5vw,44px);max-width:1280px;margin:0 auto}
   .head{margin-bottom:24px}
@@ -43,7 +46,12 @@
   .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:11px;font-weight:500;color:var(--faint)}
   .legend span{display:flex;align-items:center;gap:6px}
   .dot{width:7px;height:7px;border-radius:50%}
-
+  /* SETUP BANNER */
+  .setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#92400e;display:flex;align-items:flex-start;gap:10px}
+  .setup-banner strong{color:#78350f}
+  .setup-banner input{font-size:12px;font-family:monospace;border:1px solid #fcd34d;border-radius:5px;padding:4px 8px;background:#fffef5;outline:none;width:100%;margin-top:6px}
+  .setup-banner input:focus{border-color:#f59e0b}
+  .setup-close{background:none;border:none;cursor:pointer;font-size:16px;color:#92400e;margin-left:auto;flex-shrink:0;padding:0 4px}
   /* board */
   .board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
   .tier{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;min-height:200px}
@@ -61,33 +69,30 @@
   .pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 8px 10px 6px;display:flex;gap:5px;align-items:flex-start;font-size:13px;transition:border-color .15s,box-shadow .15s}
   .pcard:hover{border-color:var(--line-2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .pcard.dragging{opacity:.3;scale:.98}
-  .handle{cursor:grab;color:var(--faint);font-size:12px;padding:3px 2px;user-select:none;transition:color .15s}
-  .handle:hover{color:var(--muted)}
+  .handle{cursor:grab;color:var(--faint);font-size:12px;padding:3px 2px;user-select:none}
   .pbody{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
   .ctext{outline:none;line-height:1.4;cursor:text;font-size:13px;word-break:break-word;color:var(--text)}
   .ctext:focus{box-shadow:inset 0 -1px 0 var(--faint)}
   .meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-  select{font-size:11px;font-weight:500;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 6px;cursor:pointer;max-width:100%;transition:border-color .15s}
+  select{font-size:11px;font-weight:500;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 6px;cursor:pointer;max-width:100%;transition:border-color .15s;font-family:inherit}
   select:hover{border-color:var(--faint)}
   .del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:5px;line-height:1;transition:color .15s,background .15s}
   .del:hover{color:var(--fire);background:var(--fire-dim)}
-  .addbtn{margin-top:10px;background:none;border:1px dashed var(--line);color:var(--faint);border-radius:9px;padding:9px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+  .addbtn{margin-top:10px;background:none;border:1px dashed var(--line);color:var(--faint);border-radius:9px;padding:9px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;font-family:inherit;width:100%}
   .addbtn:hover{border-color:var(--line-2);color:var(--text);background:var(--panel-2)}
   .owners{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
   .ochip{font-size:11px;font-weight:500;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:2px 6px 2px 8px;display:flex;align-items:center;gap:3px;color:var(--muted)}
-  .ochip .ox{background:none;border:none;color:var(--faint);cursor:pointer;font-size:11px;line-height:1;padding:0;transition:color .15s}
+  .ochip .ox{background:none;border:none;color:var(--faint);cursor:pointer;font-size:11px;line-height:1;padding:0}
   .ochip .ox:hover{color:var(--fire)}
   .oadd{font-size:10px;padding:2px 4px;color:var(--faint)}
-  .subtoggle{background:none;border:none;color:var(--faint);font-size:11px;font-weight:500;cursor:pointer;padding:2px 0;text-align:left;transition:color .15s}
-  .subtoggle:hover{color:var(--muted)}
+  .subtoggle{background:none;border:none;color:var(--faint);font-size:11px;font-weight:500;cursor:pointer;padding:2px 0;text-align:left;font-family:inherit}
   .subs{display:flex;flex-direction:column;gap:5px;margin-top:4px;padding-left:9px;border-left:2px solid var(--line)}
   .sub{display:flex;align-items:center;gap:6px;font-size:12px}
   .sub input[type=checkbox]{accent-color:var(--teal);cursor:pointer;flex-shrink:0}
   .sub .stext{flex:1;outline:none;line-height:1.3;word-break:break-word}
   .sub.done .stext{color:var(--faint);text-decoration:line-through}
-  .subadd{background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;text-align:left;padding:3px 0 0 9px;transition:color .15s}
+  .subadd{background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;text-align:left;padding:3px 0 0 9px;font-family:inherit}
   .subadd:hover{color:var(--text)}
-
   /* retention */
   .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden}
   .tbl{width:100%;border-collapse:collapse;font-size:13px}
@@ -100,19 +105,13 @@
   .tbl tbody tr.dragging-row td{opacity:.3;background:var(--panel-3)}
   .tbl tbody tr.drag-over-top td{box-shadow:inset 0 2px 0 var(--teal)}
   .row-handle{cursor:grab;color:var(--faint);font-size:13px;user-select:none;display:block;line-height:1}
-  .row-handle:hover{color:var(--muted)}
   .cell{outline:none;min-height:20px;line-height:1.4}
   .cell:focus{box-shadow:inset 0 -1px 0 var(--faint)}
-  .mrr-input{font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--teal);
-    background:transparent;border:none;border-bottom:1.5px solid transparent;outline:none;
-    width:80px;padding:2px 0;cursor:text;min-width:60px;}
-  .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px;}
+  .mrr-input{font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--teal);background:transparent;border:none;border-bottom:1.5px solid transparent;outline:none;width:80px;padding:2px 0;cursor:text;min-width:60px}
+  .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px}
   .mrr-input::placeholder{color:var(--faint);font-weight:400}
-  .tbl .del{font-size:14px}
   .empty{color:var(--faint);font-size:13px;padding:20px}
-  /* retention summary */
   .ret-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-  .ret-summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
   .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
   .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
   .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
@@ -129,8 +128,7 @@
   .ret-total-row{grid-column:1/-1;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
   .ret-total-item{font-size:12.5px;color:var(--muted)}
   .ret-total-item b{color:var(--text);font-weight:700}
-  @media(max-width:700px){.ret-summary{grid-template-columns:1fr 1fr}.ret-summary-row{grid-template-columns:1fr 1fr}}
-
+  @media(max-width:700px){.ret-summary{grid-template-columns:1fr 1fr}}
   /* plan */
   .plan-grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
   .pblock{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px 28px;transition:border-color .2s,box-shadow .2s}
@@ -144,7 +142,6 @@
   .rulebox{background:linear-gradient(135deg,rgba(217,80,48,.06) 0%,transparent 60%);border:1px solid rgba(217,80,48,.18)}
   .rulebox .big{font-weight:700;font-size:clamp(17px,2.2vw,24px);line-height:1.15;letter-spacing:-.02em;color:var(--text)}
   .rulebox .big b{color:var(--fire)}
-
   /* bundles */
   .bundles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:6px}
   .bundle-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:border-color .18s,box-shadow .18s;display:flex;flex-direction:column}
@@ -186,8 +183,7 @@
   .matrix tr:last-child td{border-bottom:none}
   .matrix td:first-child{font-weight:600;color:var(--text)}
   .chk{color:var(--teal);font-weight:700}.dash-cell{color:var(--line-2)}
-
-  @media (max-width:900px){
+  @media(max-width:900px){
     .board{grid-template-columns:1fr}.tier.tdone{grid-column:1}.tier.tdone .cards{grid-template-columns:1fr}
     .plan-grid{grid-template-columns:1fr}.pblock.full{grid-column:1}
     .tools{order:3;margin-left:0}header{gap:12px}
@@ -210,6 +206,7 @@
   </nav>
   <div class="tools">
     <span id="savetag"></span>
+    <button class="sync-btn" id="syncBtn" onclick="syncToSheet()">↑ Sync for team</button>
     <a class="dash" href="https://piq-pulse-flow.base44.app/" target="_blank" rel="noopener">Dashboard ↗</a>
     <button id="exportBtn">Export</button>
     <label class="imp">Import<input type="file" id="importFile" accept="application/json" hidden></label>
@@ -218,11 +215,24 @@
 </header>
 
 <main>
+  <!-- SETUP BANNER — hidden once configured -->
+  <div class="setup-banner" id="setupBanner">
+    <div style="flex:1">
+      <strong>One-time setup: paste your Apps Script URL to enable team sync.</strong>
+      <div style="font-size:12px;margin-top:4px;color:#a16207">Deploy Backend.gs as a Web App → copy the /exec URL → paste below. Then click Save.</div>
+      <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec" />
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="saveScriptUrl()" style="font-size:12px;background:#f59e0b;border:none;color:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;font-weight:600">Save URL</button>
+        <button onclick="document.getElementById('setupBanner').hidden=true" style="font-size:12px;background:none;border:1px solid #fcd34d;color:#92400e;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
   <section id="tab-projects">
     <div class="head">
       <div class="eyebrow">Projects · live board</div>
       <h1>What happens now, what waits.</h1>
-      <p class="head-sub">Drag a card by the ⠿ handle to re-tier it. Each card can have more than one owner and its own checklist of steps. Move completed projects to the <b style="color:var(--teal)">Done</b> column at the bottom.</p>
+      <p class="head-sub">Drag a card by the ⠿ handle to re-tier it. Each card can have more than one owner and its own checklist of steps.</p>
       <div class="legend">
         <span><i class="dot" style="background:var(--slate)"></i>Not started</span>
         <span><i class="dot" style="background:var(--amber)"></i>In progress / Needs update</span>
@@ -238,7 +248,7 @@
     <div class="head">
       <div class="eyebrow">Retention · interim list</div>
       <h1>Current at-risk clients.</h1>
-      <p class="head-sub">The holding pen, worked one by one - while the real fix scales. From <b style="color:var(--text)">June onward, the QC intake</b> (Airtable, with Andres) catches quality issues upstream for new clients, so retention stops being a firefight and this list shrinks instead of growing. Target: churn under 14%.</p>
+      <p class="head-sub">The holding pen, worked one by one. Target: churn under 14%.</p>
     </div>
     <div class="ret-summary" id="retSummary"></div>
     <div id="retentionTable"></div>
@@ -249,11 +259,11 @@
     <div class="head"><div class="eyebrow">Plan for PIQ</div><h1>Where PIQ is going.</h1></div>
     <div class="plan-grid">
       <div class="pblock"><h3><span class="k">01</span>Where we are</h3><p>PersistIQ has grown to where running the operation and driving the strategy are two different jobs. I'm splitting them so my time goes to what grows the accounts: pilots, reply-rate, retention strategy, instead of day-to-day firefighting.</p></div>
-      <div class="pblock"><h3><span class="k">02</span>The restructure, in motion this week</h3><p>Already happening, no approval needed. This is just visibility: <b>Estefania</b> takes on some of the KOCs (not all), becomes first filter for the AMs (Roberto, Eduardo, Lorena, Tania, María), and is first responder on retention, bringing me a recommendation, not just a problem.</p><p>Her blue-flagged accounts move to <b>María</b>: Sustainable Materials, Voicenx, Clear Plan, Atica Global, Mimosa Life Sciences. That's what frees her time.</p></div>
-      <div class="pblock"><h3><span class="k">03</span>Channel strategy: when cold email hits its ceiling</h3><p><b>Month 1:</b> <b>Outbound Essentials</b> is the base, fully managed cold email, every client starts here.</p><p><b>Month 2:</b> SEO runs in parallel as a retention tool, giving clients a reason to stay even before the inbox converts. It's not just acquisition, it's proof of value while cold email warms up.</p><p>When cold email hits its ceiling for a segment, we don't wait for the client to churn, we add or swap a channel: <b>LinkedIn Outreach</b> (1-to-1 DMs via HeyReach) at $200-250/sender/mo (cost ~$105), integrates with PersistIQ via webhook. <b>SEO</b> at $850/mo basics. <b>LinkedIn Ads</b> (paid media) at $350/mo evergreen + client ad budget (min $50/day), but needs a dedicated Wishpond resource. Industry fit decides the mix per client.</p></div>
-      <div class="pblock"><h3><span class="k">04</span>The add-on package, needs your approval</h3><p>Package the add-ons on top of <b>Outbound Essentials</b> (LinkedIn Outreach, SEO, LinkedIn Ads) and write them into SOWs as a <b>replacement for termination</b> when cold email underperforms. Instead of losing the client, you swap or add the channel.</p><p>Delivery model: outsource to start, build in-house once volume justifies it. The specific thing to lock down with Mike: dedicated Wishpond resource for PIQ, or ad-hoc? That answer determines whether Ads can actually launch.</p></div>
-      <div class="pblock"><h3><span class="k">05</span>The bigger play: PIQ as a B2B outreach chain</h3><p>Today we're cold email. The direction is a full <b>B2B outreach chain</b> on the same ICP: cold email + LinkedIn Outreach (1-to-1 DMs) + SEO + LinkedIn Ads (paid media). Same PersistIQ logic, more channels, more reasons for a client to stay and fewer reasons to leave.</p><p>Each new channel gets outsourced first to prove it, then brought in-house once the margin and the delivery are ours.</p></div>
-      <div class="pblock rulebox full"><h3><span class="k">★</span>How we'll run priorities</h3><p class="big">New work comes in by <b>replacing</b>, not adding.</p><p style="margin-top:14px">When something new comes up, we open the board together and decide what moves down, so every new yes is deliberate.</p></div>
+      <div class="pblock"><h3><span class="k">02</span>The restructure, in motion this week</h3><p>Already happening, no approval needed. <b>Estefania</b> takes on some of the KOCs, becomes first filter for the AMs, and is first responder on retention. Her blue-flagged accounts move to <b>María</b>: Sustainable Materials, Voicenx, Clear Plan, Atica Global, Mimosa Life Sciences.</p></div>
+      <div class="pblock"><h3><span class="k">03</span>Channel strategy</h3><p><b>Month 1:</b> Outbound Essentials — fully managed cold email. <b>Month 2:</b> SEO runs in parallel as a retention tool. When cold email hits its ceiling: <b>LinkedIn Outreach</b> via HeyReach at $200–250/sender/mo, <b>SEO</b> at $850/mo, <b>LinkedIn Ads</b> at $350/mo + client budget.</p></div>
+      <div class="pblock"><h3><span class="k">04</span>The add-on package</h3><p>Package add-ons on top of Outbound Essentials and write them into SOWs as a <b>replacement for termination</b>. Outsource to start, build in-house once volume justifies it. Lock down dedicated Wishpond resource with Mike before Ads launch.</p></div>
+      <div class="pblock"><h3><span class="k">05</span>The bigger play</h3><p>Full <b>B2B outreach chain</b> on the same ICP: cold email + LinkedIn Outreach + SEO + LinkedIn Ads. Each channel outsourced first, then brought in-house once margin and delivery are ours.</p></div>
+      <div class="pblock rulebox full"><h3><span class="k">★</span>How we'll run priorities</h3><p class="big">New work comes in by <b>replacing</b>, not adding.</p><p style="margin-top:14px">When something new comes up, we open the board together and decide what moves down.</p></div>
     </div>
   </section>
 
@@ -261,93 +271,13 @@
     <div class="head">
       <div class="eyebrow">Bundles · service packages</div>
       <h1>What PIQ sells.</h1>
-      <p class="head-sub">Everything starts with <b style="color:var(--text)">Outbound Essentials</b>, the core cold email service exactly as it runs today. From there, clients add channels as cold email hits its ceiling. Each add-on is a <b style="color:var(--text)">channel swap, not a termination</b>.</p>
+      <p class="head-sub">Everything starts with <b style="color:var(--text)">Outbound Essentials</b>. From there, clients add channels as cold email hits its ceiling.</p>
     </div>
     <div class="bundles-grid">
-      <div class="bundle-card featured">
-        <div class="bundle-hero">
-          <div class="bundle-badge badge-base">Base package</div>
-          <div class="bundle-name">Outbound Essentials</div>
-          <div class="bundle-tagline">Fully managed cold email. The core PIQ offer: prospect list, campaigns, dedicated SDR &amp; Account Manager.</div>
-          <div class="bundle-price"><span class="price-num">Core</span><span class="price-unit">monthly retainer</span></div>
-          <div class="price-note">Qualified leads researched to your ICP · everything below included</div>
-        </div>
-        <div class="bundle-body">
-          <div><div class="bundle-section-label">Outbound campaigns</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Managed email campaigns</div><div class="channel-desc">Built, managed &amp; improved · A/B tested ongoing</div></div></div><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">PersistIQ Premium account</div><div class="channel-desc">Monthly subscription included</div></div></div><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Sales funnel reporting</div><div class="channel-desc">Monthly review with your Account Manager</div></div></div></div></div>
-          <div><div class="bundle-section-label">People assigned to you</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Dedicated Account Manager</div><div class="channel-desc">+ a named key contact for daily comms</div></div></div><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Dedicated SDR</div><div class="channel-desc">Trained &amp; coached by PIQ · books meetings on your calendar</div></div></div></div></div>
-        </div>
-        <div class="bundle-footer"><span class="bundle-status status-live">● Live</span></div>
-      </div>
-
-      <div class="bundle-card">
-        <div class="bundle-hero">
-          <div class="bundle-badge badge-growth">Add-on · ready to start</div>
-          <div class="bundle-name">Essentials + LinkedIn Outreach</div>
-          <div class="bundle-tagline">Adds 1-to-1 LinkedIn messaging (HeyReach) alongside cold email. Same ICP, two surfaces. The one we can launch right now.</div>
-          <div class="bundle-price"><span class="price-num">+ $200–250</span><span class="price-unit">/ sender / mo</span></div>
-          <div class="price-note">PIQ cost ~$105/sender (HeyReach $79 + proxy + management) · sell at $200–250</div>
-        </div>
-        <div class="bundle-body">
-          <div><div class="bundle-section-label">What's added</div><div class="channel-row"><div class="channel-dot dot-li"></div><div class="channel-info"><div class="channel-name">HeyReach LinkedIn outreach</div><div class="channel-desc">View → Follow → Connect → Message, then DM follow-ups</div></div><span class="channel-tag tag-new">New</span></div></div>
-          <div><div class="bundle-section-label">Coordinated sequence</div><div class="bundle-flow"><span class="flow-chip fc-li">LinkedIn warm-up Days 1–3</span><span class="fc-arr">›</span><span class="flow-chip fc-em">Email Day 5</span><span class="fc-arr">›</span><span class="flow-chip fc-li">LinkedIn message</span><span class="fc-arr">›</span><span class="flow-chip fc-em">Email follow-ups</span></div></div>
-          <div><div class="bundle-section-label">Account warm-up</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-li"></div><div class="channel-info"><div class="channel-name">Week 1 · ~5/day</div><div class="channel-desc">5 connection requests/day + profile views &amp; likes</div></div></div><div class="channel-row"><div class="channel-dot dot-li"></div><div class="channel-info"><div class="channel-name">Week 2 · ~10–15/day</div><div class="channel-desc">Raise gradually · mix in follows &amp; engagement</div></div></div><div class="channel-row"><div class="channel-dot dot-li"></div><div class="channel-info"><div class="channel-name">Week 3+ · 20–25/day</div><div class="channel-desc">Steady-state cap · stay here even when warm</div></div></div></div></div>
-          <div class="bundle-note"><b>Hard ceiling:</b> LinkedIn allows ~100 connection requests/week. HeyReach auto-freezes any sender that gets close. <b>Daily actions cap at ~30–40</b> total. No new budget approval needed, slots into the current PIQ structure.</div>
-        </div>
-        <div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div>
-      </div>
-
-      <div class="bundle-card">
-        <div class="bundle-hero">
-          <div class="bundle-badge badge-scale">Add-on or retention tool</div>
-          <div class="bundle-name">Essentials + SEO</div>
-          <div class="bundle-tagline">SEO plays two roles: a <b>paid add-on</b> that brings new revenue, or a <b>retention tool</b> bundled in to give clients proof of value while cold email warms up.</div>
-          <div class="bundle-price"><span class="price-num">+ $850</span><span class="price-unit">/ mo · basics</span></div>
-          <div class="price-note">Charged to client · no additional internal PIQ tooling cost</div>
-        </div>
-        <div class="bundle-body">
-          <div><div class="bundle-section-label">Two ways to use it</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-seo"></div><div class="channel-info"><div class="channel-name">As a paid add-on</div><div class="channel-desc">Sell at $850/mo basics · new revenue on top of Essentials</div></div><span class="channel-tag tag-boost">Revenue</span></div><div class="channel-row"><div class="channel-dot dot-seo"></div><div class="channel-info"><div class="channel-name">As a retention tool</div><div class="channel-desc">Bundle in to save an at-risk account instead of losing it</div></div><span class="channel-tag tag-new">Retention</span></div></div></div>
-          <div><div class="bundle-section-label">Why it works for retention</div><div class="bundle-flow"><span class="flow-chip fc-em">Email live</span><span class="fc-arr">›</span><span class="flow-chip fc-seo">SEO Month 2</span><span class="fc-arr">›</span><span class="flow-chip fc-seo">Rankings visible</span><span class="fc-arr">›</span><span class="flow-chip fc-em">Client sees value</span></div></div>
-          <div class="bundle-note"><b>SOW language:</b> when used for retention, write SEO in as a parallel channel, not an upsell. Clients seeing traction on two fronts churn less than email-only clients waiting on a cold inbox.</div>
-        </div>
-        <div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div>
-      </div>
-
-      <div class="bundle-card">
-        <div class="bundle-hero">
-          <div class="bundle-badge badge-brand">Add-on · needs approval</div>
-          <div class="bundle-name">Essentials + LinkedIn Ads</div>
-          <div class="bundle-tagline">Adds paid LinkedIn Ads for brand awareness &amp; inbound. Separate from LinkedIn Outreach. This is paid media, not 1-to-1 messaging.</div>
-          <div class="bundle-price"><span class="price-num">+ $350</span><span class="price-unit">/ mo · basics evergreen</span></div>
-          <div class="price-note">Management fee + client's ad budget (min $50/day recommended) on top</div>
-        </div>
-        <div class="bundle-body">
-          <div><div class="bundle-section-label">What's added</div><div class="channel-row"><div class="channel-dot dot-ads"></div><div class="channel-info"><div class="channel-name">LinkedIn Ads (paid media)</div><div class="channel-desc">Awareness → retargeting → lead form · inbound into the chain</div></div><span class="channel-tag tag-brand">Pending</span></div></div>
-          <div><div class="bundle-section-label">How it differs from LinkedIn Outreach</div><div class="bundle-flow"><span class="flow-chip fc-li">Outreach = 1-to-1 DMs</span><span class="fc-arr">vs</span><span class="flow-chip fc-ads">Ads = paid broadcast</span></div></div>
-          <div class="bundle-note"><b>Pricing:</b> $350/mo management + client funds their own ad budget (<b>min $50/day recommended</b>). <b>Blocker:</b> PIQ can't run Ads in-house yet. Needs a <b>dedicated Wishpond resource</b> assigned to PIQ. Ad-hoc bandwidth has failed before. Lock down with Mike before offering.</div>
-        </div>
-        <div class="bundle-footer"><span class="bundle-status status-pending">⚑ Needs Mike approval</span></div>
-      </div>
-    </div>
-
-    <div class="bundles-rule" style="margin-top:20px">
-      <h3>What's included, and what each add-on costs</h3>
-      <table class="matrix">
-        <thead><tr><th>Channel / feature</th><th>Essentials</th><th>+ LinkedIn Outreach</th><th>+ SEO</th><th>+ LinkedIn Ads</th></tr></thead>
-        <tbody>
-          <tr><td>Managed cold email (PersistIQ)</td><td class="chk">✓</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td></tr>
-          <tr><td>Targeted to your ICP</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-          <tr><td>Outbound motion (we reach out)</td><td class="chk">✓</td><td class="chk">✓</td><td class="dash-cell">—</td><td class="dash-cell">—</td></tr>
-          <tr><td>Inbound motion (they come to us)</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-          <tr><td>Dedicated SDR</td><td class="chk">✓</td><td class="chk">✓</td><td class="dash-cell">—</td><td class="dash-cell">—</td></tr>
-          <tr><td>Dedicated Account Manager</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-          <tr><td>Monthly reporting</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-          <tr><td>LinkedIn outreach (1-to-1 DMs)</td><td class="dash-cell">—</td><td class="chk">✓</td><td class="dash-cell">—</td><td class="dash-cell">—</td></tr>
-          <tr><td>SEO (add-on or retention)</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="chk">✓</td><td class="dash-cell">—</td></tr>
-          <tr><td>LinkedIn Ads (paid media)</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="dash-cell">—</td><td class="chk">✓</td></tr>
-          <tr><td><b>Add-on price</b></td><td>Core retainer</td><td>+ $200–250/sender</td><td>+ $850/mo</td><td>+ $350 + ad budget</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.55">All channels target your ICP. What changes is the <b style="color:var(--text)">motion</b>. Cold email &amp; LinkedIn Outreach are <b style="color:var(--text)">outbound</b>. SEO is <b style="color:var(--text)">inbound</b>. LinkedIn Ads can be either. The add-on columns show only what each brings on top of Essentials.</p>
+      <div class="bundle-card featured"><div class="bundle-hero"><div class="bundle-badge badge-base">Base package</div><div class="bundle-name">Outbound Essentials</div><div class="bundle-tagline">Fully managed cold email. Prospect list, campaigns, dedicated SDR &amp; Account Manager.</div><div class="bundle-price"><span class="price-num">Core</span><span class="price-unit">monthly retainer</span></div></div><div class="bundle-body"><div><div class="bundle-section-label">What's included</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Managed email campaigns</div><div class="channel-desc">Built, managed &amp; A/B tested ongoing</div></div></div><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Dedicated AM + SDR</div><div class="channel-desc">Named contacts · SDR books meetings on your calendar</div></div></div></div></div></div><div class="bundle-footer"><span class="bundle-status status-live">● Live</span></div></div>
+      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-growth">Add-on · ready to start</div><div class="bundle-name">+ LinkedIn Outreach</div><div class="bundle-tagline">1-to-1 LinkedIn messaging (HeyReach) alongside cold email.</div><div class="bundle-price"><span class="price-num">+$200–250</span><span class="price-unit">/ sender / mo</span></div><div class="price-note">PIQ cost ~$105/sender · sell at $200–250</div></div><div class="bundle-body"><div class="bundle-note"><b>Hard ceiling:</b> ~100 connection requests/week. Daily actions cap at ~30–40 total. No new budget approval needed.</div></div><div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div></div>
+      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-scale">Add-on or retention tool</div><div class="bundle-name">+ SEO</div><div class="bundle-tagline">Paid add-on or retention tool bundled in to give clients proof of value.</div><div class="bundle-price"><span class="price-num">+$850</span><span class="price-unit">/ mo · basics</span></div></div><div class="bundle-body"><div class="bundle-note"><b>SOW language:</b> when used for retention, write SEO in as a parallel channel, not an upsell.</div></div><div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div></div>
+      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-brand">Add-on · needs approval</div><div class="bundle-name">+ LinkedIn Ads</div><div class="bundle-tagline">Paid LinkedIn Ads for brand awareness. Separate from Outreach — this is paid media.</div><div class="bundle-price"><span class="price-num">+$350</span><span class="price-unit">/ mo + ad budget</span></div></div><div class="bundle-body"><div class="bundle-note"><b>Blocker:</b> needs a dedicated Wishpond resource assigned to PIQ. Lock down with Mike before offering.</div></div><div class="bundle-footer"><span class="bundle-status status-pending">⚑ Needs Mike approval</span></div></div>
     </div>
   </section>
 </main>
@@ -357,101 +287,72 @@
   const PSTATUS=['Not started','In progress','Needs approval','Needs update','Ongoing','Monitoring','Maintenance','Blocked','Done'];
   const RISK=['High','Medium','Low'];
   const RSTATUS=['At risk','Working on it','Will churn','Churned','Saved'];
-  const COLOR={
-    'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)',
-    'In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)',
-    'Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)',
-    'Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)',
-    'Not started':'var(--slate)'
-  };
+  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
+  const SECRET='piq2026'; // must match Backend.gs getSecret()
   let idc=0; const uid=()=>'x'+(++idc)+Date.now().toString(36);
   const expanded=new Set();
 
-  function defaults(){
-    return {
-      projects:{
-        p0:[
-          {id:'x1mq7izm5o',text:'Churn: target under 14%',owners:["Me"],status:'Ongoing',subs:[{id:'x2mq7n1jj7',text:'SEO addon or replacement as retention',done:true},{id:'x3mq7n1w8n',text:'Resetting expectations',done:true},{id:'x6mq7n2qr6',text:'Campaign audits',done:false}]},
-          {id:'x2mq7izm5o',text:'Reply rate: 1% minimum',owners:["Me"],status:'Ongoing',subs:[{id:'x1mq7mu8oe',text:'audit top % vs lower %',done:false},{id:'x2mq7mudib',text:'focus on clients per AMs with highest % - on relevant industries',done:true},{id:'x1mq8ensb9',text:'AI personalization addon',done:true},{id:'x2mq8eo54y',text:'lead source sample',done:true}]},
-          {id:'x4mq7izm5o',text:'AM email response time - fix urgency',owners:["Me"],status:'In progress',subs:[{id:'x5mq7izm5o',text:'Set the standard: first reply within 1 business day; flagged-urgent within 2-4h',done:true},{id:'x7mq7izm5o',text:'Anything past SLA auto-surfaces (label / flag)',done:true},{id:'x9mq7izm5o',text:'Add response-time + overdue-per-AM to the Pulse dashboard',done:true},{id:'x10mq7izm5o',text:'Review per-AM in the weekly AM sync; tie to standards',done:false}]},
-          {id:'x11mq7izm5o',text:'QC intake - quality check for June+ clients (Andres)',owners:["Me", "Andres"],status:'Done',subs:[{id:'x7mq7n3kui',text:'Shared Q\'s with Andres',done:true},{id:'x8mq7n3vby',text:'Work around form/airtable logic',done:true},{id:'x9mq7n45kd',text:'Add Q\'s to current form',done:true},{id:'x3mq8qcszm',text:'Add June clients',done:false}]},
-          {id:'x36mq7izm5o',text:'PersistIQ - AI personalization (needs addon)',owners:["Estefania"],status:'Ongoing',subs:[{id:'x56mq7j1evf',text:'Current bug in the campaign creation - Paulo is reviewing',done:true},{id:'x1mq9to0m5',text:'https://wishpond.slack.com/archives/CA50ERTKM/p1781200954711949',done:true},{id:'x1mqr1hvay',text:'Estef will create the snapshot of ALL new clients',done:true}]}
-        ],
-        p1:[
-          {id:'x43mq7izm5o',text:'ClickUp to PlanHat migration -',owners:["Me", "Andres"],status:'In progress',subs:[{id:'x44mq7izm5o',text:'Retention tracking to PlanHat',done:true},{id:'x45mq7izm5o',text:'AM / client tracking to PlanHat',done:true},{id:'x46mq7izm5o',text:'Campaign management to PlanHat',done:false},{id:'x48mq7izm5o',text:'SEO workflows - stays in ClickUp (exception)',done:false},{id:'x49mq7izm5o',text:'Ads workflows - add only if Ads service launches',done:false}]},
-          {id:'x3mq7izm5o',text:'New lead - source review',owners:["Mar\u00eda", "Usman", "Me"],status:'Needs update',subs:[{id:'x10mq7n4o5n',text:'Share pricing',done:true},{id:'x11mq7n4ruu',text:'Clarification on processes with vendor',done:true},{id:'x12mq7n4yc4',text:'Confirmation on requirements',done:false},{id:'x13mq7n5lih',text:'Sample list',done:false}]},
-          {id:'x37mq7izm5o',text:'Improve PIQ Pulse dashboard - tangibilize PIQ',owners:["Me"],status:'Ongoing',subs:[{id:'x38mq7izm5o',text:'What more makes PIQ value tangible?',done:false},{id:'x39mq7izm5o',text:'Add: response time per AM',done:false},{id:'x40mq7izm5o',text:'Add: reply rate by vertical + lead source',done:false},{id:'x41mq7izm5o',text:'Add: MRR retained vs churned',done:false},{id:'x42mq7izm5o',text:'Add: SEO contribution per client',done:false}]},
-          {id:'x51mq7izm5o',text:'Paused-client reactivation (90+ days)',owners:["Me"],status:'Ongoing',subs:[]},
-          {id:'x50mq7izm5o',text:'C.L.A.R.A - list-cleaning tool',owners:["Me"],status:'Ongoing',subs:[]},
-          {id:'x1mqzjygsw',text:'NPS - strategy',owners:["Me", "Estefania"],status:'Not started',subs:[]}
-        ],
-        p2:[
-          {id:'x1mq7m4r03',text:'New weekly reporting - ALL AMs',owners:["Me", "Estefania"],status:'Not started',subs:[{id:'x14mq7n6hwq',text:'Apply this weekly report to all AMs',done:false}]},
-          {id:'x31mq7izm5o',text:'Bundles: Outbound Essentials + add-ons in SOWs',owners:["Me", "Mike"],status:'Not started',subs:[{id:'x1mq8hkb41',text:'Review new SEO process https://docs.google.com/document/d/1o-oW58DdOA46iBx_FxLo8RyXgahGJHrl5INmysSM5tY/edit?tab=t.0',done:false},{id:'x2mq8hs5ta',text:'HeyReach add-on: LinkedIn outreach at $105/sender/mo',done:false}]},
-          {id:'x15mq7n8c3h',text:'Lead Generation for Self service clients',owners:["Me", "Paulo"],status:'Not started',subs:[{id:'x16mq7n8ums',text:'Requested active self service client list to Paulo - no response yet',done:false}]},
-          {id:'x24mq7izm5o',text:'LinkedIn Ads add-on - needs dedicated Wishpond resource',owners:["Me", "Mike"],status:'Not started',subs:[{id:'x26mq7izm5o',text:'Lock down dedicated WP resource assigned to PIQ vs ad-hoc bandwidth',done:false},{id:'x27mq7izm5o',text:'Ad-hoc has failed before - dedicated is the only model that works',done:false},{id:'x28mq7izm5o',text:'Offer for verticals where LinkedIn Ads is the right fit',done:false},{id:'x30mq7izm5o',text:'Write into SOWs as replacement for termination when cold email underperforms',done:false}]},
-          {id:'x52mq7izm5o',text:'Build LinkedIn outreach + ads in-house (after outsourced pilot proves it)',owners:["Paulo"],status:'Not started',subs:[{id:'x3mq7mwjnb',text:'Research Hey Reach tutorials for LinkedIn automation',done:false},{id:'x4mq7mwoxg',text:'https://wishpond.slack.com/archives/C0B40700X35/p1779314129799329',done:false}]}
-        ],
-        pdone:[]
-      },
-      retention:[
-        {id:'x2mr3r86gi',client:'Tampa Roots',owners:['Eduardo'],mrr:'',risk:'High',issue:"They haven't paid since April, client is egosentrical",next:'They want a report, we told him we would give them a free month. 12 months - 4 months + 60 days clause (4 payments)- MIREYA WILL SEND AN EMAIL',status:'At risk'},
-        {id:'x3mr3re6iz',client:'Bospar',owners:['Eduardo'],mrr:'',risk:'High',issue:'6/6 PAID - NON RENEWAL',next:'Cancel before July 30',status:'At risk'},
-        {id:'x4mr3rez3p',client:'Topor Security',owners:['Eduardo'],mrr:'',risk:'High',issue:'4/3 - NON RENEWAL',next:'Cancel July 2',status:'Churned'},
-        {id:'x5mr3rgw7s',client:'Giovanni',owners:['Eduardo'],mrr:'',risk:'Low',issue:'1 month left',next:'Cancel before August 30',status:'At risk'},
-        {id:'x6mr3ri9yr',client:'Scanixx',owners:['Eduardo'],mrr:'',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 2',status:'Churned'},
-        {id:'x7mr3risy6',client:'JLH',owners:['Eduardo'],mrr:'',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 10',status:'Churned'},
-        {id:'x8mr3rivwy',client:'Constructive Developments',owners:['Eduardo'],mrr:'',risk:'Low',issue:'3/3 - if they pay July 24th will continue',next:'See if they pay and continue for another 3 months',status:'At risk'},
-        {id:'x10mr3ulg7g',client:'Voicenx',owners:['Estefania'],mrr:'',risk:'High',issue:'3/3 no auto renewal',next:'Cancel by July 2',status:'Churned'},
-        {id:'x11mr3un092',client:'Focus Advertising',owners:['Estefania'],mrr:'',risk:'High',issue:'6/12 - early term',next:'Cancel by July 9',status:'Churned'},
-        {id:'x12mr3uqchh',client:'ETL',owners:['Estefania'],mrr:'',risk:'High',issue:'10/12 - requested termination in Feb',next:'Cancel by July 15',status:'Churned'},
-        {id:'x13mr3usmo2',client:'Pharoplast',owners:['Estefania'],mrr:'',risk:'Low',issue:'Simon is leaving Pharoplast, he is now working for another company. 6/12',next:'He still has 6 months of SOW - Next payment July 13, we will have a call on July 9th',status:'At risk'},
-        {id:'x14mr3xvbbf',client:'Amazon cost savers',owners:['María'],mrr:'',risk:'High',issue:'5/4 paid one more, we will see if we refund',next:'15 if he says something about the 5th payment, Cancel by July 28',status:'At risk'},
-        {id:'x15mr3y0feb',client:'Vetri Solutions',owners:['María'],mrr:'',risk:'High',issue:'Non renewal paid 4/3',next:'Cancel by July 2',status:'Churned'},
-        {id:'x16mr3y349i',client:'Lerner consulting',owners:['María'],mrr:'',risk:'High',issue:'4/4 payments - Non renewal',next:'Cancel by July 24',status:'At risk'},
-        {id:'x17mr3y5h15',client:'Atica Global',owners:['María'],mrr:'',risk:'Medium',issue:'They requested non renewal after their 3month term 2/3',next:'Last payment July 15- will cancel in August',status:'At risk'},
-        {id:'x18mr3zcrug',client:'Confidential Banking',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 26',status:'At risk'},
-        {id:'x19mr3zdmsx',client:'Mission Display',owners:['Lorena'],mrr:'',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 24',status:'At risk'},
-        {id:'x20mr3zewii',client:'Cheque Guard',owners:['Lorena'],mrr:'',risk:'Low',issue:"7/12 - is MIA, hasn't approved and didn't approved anything",next:'Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE',status:'At risk'},
-        {id:'x21mr3zihcc',client:'Paxa',owners:['Lorena'],mrr:'',risk:'Medium',issue:'Pausing fee until Sept',next:'Will resume in Sept',status:'At risk'},
-        {id:'x22mr3zixit',client:'Lonestar PVF',owners:['Lorena'],mrr:'',risk:'High',issue:'4/3 - non renewal',next:'Cancel by July 2',status:'Churned'},
-        {id:'x23mr3zkb6l',client:'Billingual',owners:['Lorena'],mrr:'',risk:'Medium',issue:"2/12 - hasn't paid",next:'Might be cancelled by Finance after 3rd attempt',status:'At risk'},
-        {id:'x24mr3zljyl',client:'A&M',owners:['Lorena'],mrr:'',risk:'Low',issue:'5/6 - needs to make 1 more payment - to cancel in August',next:'Send email to do SEO + website for the remining months $1000',status:'At risk'},
-        {id:'x26mr3zo4sb',client:'Service Cleaners',owners:['Lorena'],mrr:'',risk:'Low',issue:"4/6 - we didn't fulfill with the full lead volume",next:'Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards',status:'At risk'},
-        {id:'x28mr416b4c',client:'April - Reddout Wine',owners:['Tania'],mrr:'',risk:'High',issue:'Dissolved company - 8/12',next:'Cancel by June 2',status:'Churned'}
-      ]
-    };
+  // ── SCRIPT URL ──────────────────────────────────────────────
+  function getScriptUrl(){ return localStorage.getItem('piq_script_url')||''; }
+  function saveScriptUrl(){
+    const v=document.getElementById('scriptUrlInput').value.trim();
+    if(!v.includes('script.google.com')){alert('That doesn\'t look like an Apps Script URL.');return;}
+    localStorage.setItem('piq_script_url',v);
+    document.getElementById('setupBanner').hidden=true;
+    document.getElementById('savetag').textContent='URL saved ✓';
+    setTimeout(()=>document.getElementById('savetag').textContent='',2000);
   }
 
-  let state=defaults();
+  // ── SYNC TO SHEET (Mireya only) ──────────────────────────────
+  async function syncToSheet(){
+    const url=getScriptUrl();
+    if(!url){alert('Paste your Apps Script URL in the setup banner first.');return;}
+    const btn=document.getElementById('syncBtn');
+    btn.disabled=true; btn.textContent='Syncing…';
+    try{
+      const resp=await fetch(url,{method:'POST',body:JSON.stringify({secret:SECRET,state:state}),headers:{'Content-Type':'application/json'}});
+      const data=await resp.json();
+      if(data.ok){
+        btn.textContent='↑ Sync for team';
+        document.getElementById('savetag').textContent='synced ✓';
+        setTimeout(()=>document.getElementById('savetag').textContent='',2000);
+      } else {
+        alert('Sync failed: '+(data.error||'unknown error'));
+      }
+    }catch(e){
+      alert('Could not reach Apps Script. Check the URL and make sure it\'s deployed as "Anyone".');
+    }
+    btn.disabled=false; btn.textContent='↑ Sync for team';
+  }
+
+  // ── LOCAL SAVE ───────────────────────────────────────────────
   const saveTag=document.getElementById('savetag');
   function flagSaved(){saveTag.textContent='saved ✓';setTimeout(()=>saveTag.textContent='',1400);}
-  async function persist(){const data=JSON.stringify(state);
-    try{if(window.storage&&window.storage.set){await window.storage.set('piq_hub_v21',data,false);flagSaved();return;}}catch(e){}
-    try{localStorage.setItem('piq_hub_v21',data);flagSaved();}catch(e){}
+  function persist(){
+    try{localStorage.setItem('piq_hub_v21',JSON.stringify(state));flagSaved();}catch(e){}
   }
-  async function loadSaved(){
-    try{if(window.storage&&window.storage.get){const r=await window.storage.get('piq_hub_v21',false);if(r&&r.value)return JSON.parse(r.value);}}catch(e){}
+  function loadSaved(){
     try{const v=localStorage.getItem('piq_hub_v21');if(v)return JSON.parse(v);}catch(e){}
     return null;
   }
+
+  // ── DATA ─────────────────────────────────────────────────────
   const TIERS=['p0','p1','p2','pdone'];
+  function defaults(){return{projects:{p0:[{id:'x1mq7izm5o',text:'Churn: target under 14%',owners:['Me'],status:'Ongoing',subs:[{id:'x2mq7n1jj7',text:'SEO addon or replacement as retention',done:true},{id:'x3mq7n1w8n',text:'Resetting expectations',done:true},{id:'x6mq7n2qr6',text:'Campaign audits',done:false}]},{id:'x2mq7izm5o',text:'Reply rate: 1% minimum',owners:['Me'],status:'Ongoing',subs:[{id:'x1mq7mu8oe',text:'audit top % vs lower %',done:false},{id:'x2mq7mudib',text:'focus on clients per AMs with highest %',done:true},{id:'x1mq8ensb9',text:'AI personalization addon',done:true},{id:'x2mq8eo54y',text:'lead source sample',done:true}]},{id:'x4mq7izm5o',text:'AM email response time - fix urgency',owners:['Me'],status:'In progress',subs:[{id:'x5mq7izm5o',text:'Set the standard: first reply within 1 business day',done:true},{id:'x7mq7izm5o',text:'Anything past SLA auto-surfaces',done:true},{id:'x9mq7izm5o',text:'Add response-time to Pulse dashboard',done:true},{id:'x10mq7izm5o',text:'Review per-AM in weekly sync',done:false}]},{id:'x11mq7izm5o',text:'QC intake - quality check for June+ clients (Andres)',owners:['Me','Andres'],status:'Done',subs:[{id:'x7mq7n3kui',text:"Shared Q's with Andres",done:true},{id:'x8mq7n3vby',text:'Work around form/airtable logic',done:true},{id:'x9mq7n45kd',text:"Add Q's to current form",done:true},{id:'x3mq8qcszm',text:'Add June clients',done:false}]},{id:'x36mq7izm5o',text:'PersistIQ - AI personalization (needs addon)',owners:['Estefania'],status:'Ongoing',subs:[{id:'x56mq7j1evf',text:'Current bug in campaign creation - Paulo reviewing',done:true},{id:'x1mqr1hvay',text:'Estef will create snapshot of ALL new clients',done:true}]}],p1:[{id:'x43mq7izm5o',text:'ClickUp to PlanHat migration',owners:['Me','Andres'],status:'In progress',subs:[{id:'x44mq7izm5o',text:'Retention tracking to PlanHat',done:true},{id:'x45mq7izm5o',text:'AM / client tracking to PlanHat',done:true},{id:'x46mq7izm5o',text:'Campaign management to PlanHat',done:false},{id:'x48mq7izm5o',text:'SEO workflows - stays in ClickUp',done:false}]},{id:'x3mq7izm5o',text:'New lead - source review',owners:['María','Usman','Me'],status:'Needs update',subs:[{id:'x10mq7n4o5n',text:'Share pricing',done:true},{id:'x11mq7n4ruu',text:'Clarification on processes with vendor',done:true},{id:'x12mq7n4yc4',text:'Confirmation on requirements',done:false},{id:'x13mq7n5lih',text:'Sample list',done:false}]},{id:'x37mq7izm5o',text:'Improve PIQ Pulse dashboard',owners:['Me'],status:'Ongoing',subs:[{id:'x39mq7izm5o',text:'Add: response time per AM',done:false},{id:'x40mq7izm5o',text:'Add: reply rate by vertical + lead source',done:false},{id:'x41mq7izm5o',text:'Add: MRR retained vs churned',done:false}]},{id:'x51mq7izm5o',text:'Paused-client reactivation (90+ days)',owners:['Me'],status:'Ongoing',subs:[]},{id:'x50mq7izm5o',text:'C.L.A.R.A - list-cleaning tool',owners:['Me'],status:'Ongoing',subs:[]},{id:'x1mqzjygsw',text:'NPS - strategy',owners:['Me','Estefania'],status:'Not started',subs:[]}],p2:[{id:'x1mq7m4r03',text:'New weekly reporting - ALL AMs',owners:['Me','Estefania'],status:'Not started',subs:[]},{id:'x31mq7izm5o',text:'Bundles: Outbound Essentials + add-ons in SOWs',owners:['Me','Mike'],status:'Not started',subs:[{id:'x2mq8hs5ta',text:'HeyReach add-on: LinkedIn outreach at $105/sender/mo',done:false}]},{id:'x15mq7n8c3h',text:'Lead Generation for Self service clients',owners:['Me','Paulo'],status:'Not started',subs:[]},{id:'x24mq7izm5o',text:'LinkedIn Ads add-on - needs dedicated Wishpond resource',owners:['Me','Mike'],status:'Not started',subs:[{id:'x26mq7izm5o',text:'Lock down dedicated WP resource assigned to PIQ',done:false}]},{id:'x52mq7izm5o',text:'Build LinkedIn outreach + ads in-house',owners:['Paulo'],status:'Not started',subs:[{id:'x3mq7mwjnb',text:'Research Hey Reach tutorials for LinkedIn automation',done:false}]}],pdone:[]},retention:[{id:'x2mr3r86gi',client:'Tampa Roots',owners:['Eduardo'],mrr:'1450',risk:'High',issue:"Haven't paid since April",next:'Free month offer + 60 day clause email - MIREYA TO SEND',status:'At risk'},{id:'x3mr3re6iz',client:'Bospar',owners:['Eduardo'],mrr:'1500',risk:'High',issue:'6/6 PAID - NON RENEWAL',next:'Cancel before July 30',status:'At risk'},{id:'x4mr3rez3p',client:'Topor Security',owners:['Eduardo'],mrr:'1250',risk:'High',issue:'4/3 - NON RENEWAL',next:'Cancel before July 28',status:'Will churn'},{id:'x5mr3rgw7s',client:'Giovanni',owners:['Eduardo'],mrr:'1750',risk:'Low',issue:'1 month left',next:'Cancel before August 30',status:'At risk'},{id:'x6mr3ri9yr',client:'Scanixx',owners:['Eduardo'],mrr:'1500',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 2',status:'Churned'},{id:'x7mr3risy6',client:'JLH',owners:['Eduardo'],mrr:'1400',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 10',status:'Churned'},{id:'x8mr3rivwy',client:'Constructive Developments',owners:['Eduardo'],mrr:'1000',risk:'Low',issue:'3/3 - if they pay July 24th will continue',next:'See if they pay and continue for 3 more months',status:'At risk'},{id:'x10mr3ulg7g',client:'Voicenx',owners:['Estefania'],mrr:'1000',risk:'High',issue:'3/3 no auto renewal',next:'Cancel by July 2',status:'Churned'},{id:'x11mr3un092',client:'Focus Advertising',owners:['Estefania'],mrr:'1950',risk:'High',issue:'6/12 - early term',next:'Cancel by July 9',status:'Churned'},{id:'x12mr3uqchh',client:'ETL',owners:['Estefania'],mrr:'1000',risk:'High',issue:'10/12 - requested termination in Feb',next:'Cancel by July 15',status:'Churned'},{id:'x13mr3usmo2',client:'Pharoplast',owners:['Estefania'],mrr:'1450',risk:'Low',issue:'Simon leaving, now at another company. 6/12',next:'6 months SOW left - payment July 13, call July 9th',status:'At risk'},{id:'x14mr3xvbbf',client:'Amazon cost savers',owners:['María'],mrr:'1000',risk:'High',issue:'5/4 paid one more, need to refund',next:'Cancel before July 28',status:'Will churn'},{id:'x15mr3y0feb',client:'Vetri Solutions',owners:['María'],mrr:'1000',risk:'High',issue:'Non renewal paid 4/3',next:'Cancel by July 2',status:'Churned'},{id:'x16mr3y349i',client:'Lerner consulting',owners:['María'],mrr:'1000',risk:'High',issue:'4/4 payments - Non renewal',next:'Cancel by July 24',status:'Will churn'},{id:'x17mr3y5h15',client:'Atica Global',owners:['María'],mrr:'750',risk:'Medium',issue:'Non renewal after 3month term 2/3',next:'Last payment July 15 - cancel in August',status:'At risk'},{id:'x18mr3zcrug',client:'Confidential Banking',owners:['Lorena'],mrr:'1000',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 26',status:'Will churn'},{id:'x19mr3zdmsx',client:'Mission Display',owners:['Lorena'],mrr:'1450',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 24',status:'Will churn'},{id:'x20mr3zewii',client:'Cheque Guard',owners:['Lorena'],mrr:'2000',risk:'Low',issue:"7/12 - MIA, hasn't approved anything",next:'Email informing about lead list upload, SEO+WEBSITE',status:'At risk'},{id:'x21mr3zihcc',client:'Paxa',owners:['Lorena'],mrr:'100',risk:'Medium',issue:'Pausing fee until Sept',next:'Will resume in Sept',status:'At risk'},{id:'x22mr3zixit',client:'Lonestar PVF',owners:['Lorena'],mrr:'1000',risk:'High',issue:'4/3 - non renewal',next:'Cancel by July 2',status:'Churned'},{id:'x23mr3zkb6l',client:'Billingual',owners:['Lorena'],mrr:'1000',risk:'Medium',issue:"2/12 - hasn't paid",next:'Might be cancelled by Finance after 3rd attempt',status:'At risk'},{id:'x24mr3zljyl',client:'A&M',owners:['Lorena'],mrr:'1000',risk:'Low',issue:'5/6 - needs 1 more payment then cancel in August',next:'Send email for SEO + website $1000',status:'At risk'},{id:'x26mr3zo4sb',client:'Service Cleaners',owners:['Lorena'],mrr:'1130',risk:'Low',issue:"4/6 - didn't fulfill full lead volume",next:'Move payment to August 6 for retention',status:'At risk'},{id:'x28mr416b4c',client:'April - Reddout Wine',owners:['Tania'],mrr:'100',risk:'High',issue:'Dissolved company - 8/12',next:'Cancel by July 2',status:'Churned'}]};}
+
+  let state=defaults();
   function normalize(s){
     if(!s||!s.projects)return null;
     for(const t of TIERS){if(!Array.isArray(s.projects[t]))s.projects[t]=[];
-      s.projects[t].forEach(c=>{if(!Array.isArray(c.owners))c.owners=c.owner?[c.owner]:['Me'];if(!Array.isArray(c.subs))c.subs=[];});}
+      s.projects[t].forEach(c=>{if(!Array.isArray(c.owners))c.owners=['Me'];if(!Array.isArray(c.subs))c.subs=[];});}
     if(Array.isArray(s.retention))s.retention.forEach(r=>{
-      if(!Array.isArray(r.owners))r.owners=r.am?[r.am]:[];
-      if(!r.mrr)r.mrr='';
-      // migrate old status names
-      if(r.status==='Watching')r.status='At risk';
-      if(r.status==='Working')r.status='Working on it';
-    });
+      if(!Array.isArray(r.owners))r.owners=[];if(!r.mrr)r.mrr='';
+      if(r.status==='Watching')r.status='At risk';if(r.status==='Working')r.status='Working on it';});
     return s;
   }
   function changed(){renderAll();persist();}
 
-  function select(value,opts,onchange){
+  function mkSelect(value,opts,onchange){
     const s=document.createElement('select');
     opts.forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;if(o===value)op.selected=true;s.appendChild(op);});
     if(COLOR[value])s.style.color=COLOR[value];
@@ -470,7 +371,7 @@
       wrap.innerHTML='';
       arr.forEach(o=>{const c=document.createElement('span');c.className='ochip';c.appendChild(document.createTextNode(o));
         const x=document.createElement('button');x.className='ox';x.innerHTML='&times;';
-        x.addEventListener('click',()=>{const i=arr.indexOf(o);if(i>-1)arr.splice(i,1);draw();onchange();});c.appendChild(x);wrap.appendChild(c);});
+        x.addEventListener('click',()=>{arr.splice(arr.indexOf(o),1);draw();onchange();});c.appendChild(x);wrap.appendChild(c);});
       const avail=PEOPLE.filter(p=>!arr.includes(p));
       if(avail.length){const sel=document.createElement('select');sel.className='oadd';
         const def=document.createElement('option');def.value='';def.textContent='+ owner';sel.appendChild(def);
@@ -509,15 +410,15 @@
     const card=document.createElement('div');card.className='pcard';card.draggable=true;card.dataset.id=c.id;
     const handle=document.createElement('span');handle.className='handle';handle.innerHTML='&#10303;';
     const body=document.createElement('div');body.className='pbody';
-    const tx=editable(c.text,v=>{if(!v){removeProject(c.id);}else if(v!==c.text){c.text=v;persist();}},'ctext');
+    const tx=editable(c.text,v=>{if(!v)removeProject(c.id);else if(v!==c.text){c.text=v;persist();}},'ctext');
     tx.addEventListener('focus',()=>card.draggable=false);tx.addEventListener('blur',()=>card.draggable=true);
     const meta=document.createElement('div');meta.className='meta';
     meta.appendChild(ownerControl(c.owners,persist));
-    meta.appendChild(select(c.status,PSTATUS,v=>{c.status=v;persist();}));
+    meta.appendChild(mkSelect(c.status,PSTATUS,v=>{c.status=v;persist();}));
     body.appendChild(tx);body.appendChild(meta);
     const tog=document.createElement('button');tog.className='subtoggle';
     const done=c.subs.filter(s=>s.done).length;
-    tog.textContent=(expanded.has(c.id)?'▾':' ▸')+' '+(c.subs.length?c.subs.length+' steps ('+done+' done)':'add steps');
+    tog.textContent=(expanded.has(c.id)?'▾':'▸')+' '+(c.subs.length?c.subs.length+' steps ('+done+' done)':'add steps');
     tog.addEventListener('click',()=>{if(expanded.has(c.id))expanded.delete(c.id);else expanded.add(c.id);renderBoard();});
     body.appendChild(tog);
     if(expanded.has(c.id)){
@@ -525,8 +426,7 @@
       c.subs.forEach(s=>{
         const row=document.createElement('div');row.className='sub'+(s.done?' done':'');
         const cb=document.createElement('input');cb.type='checkbox';cb.checked=s.done;
-        cb.addEventListener('change',()=>{s.done=cb.checked;row.classList.toggle('done',s.done);persist();
-          const d=c.subs.filter(x=>x.done).length;tog.textContent='▾ '+c.subs.length+' steps ('+d+' done)';});
+        cb.addEventListener('change',()=>{s.done=cb.checked;row.classList.toggle('done',s.done);persist();const d=c.subs.filter(x=>x.done).length;tog.textContent='▾ '+c.subs.length+' steps ('+d+' done)';});
         const st=editable(s.text,v=>{if(!v){c.subs=c.subs.filter(x=>x.id!==s.id);renderBoard();persist();}else{s.text=v;persist();}},'stext');
         const dl=document.createElement('button');dl.className='del';dl.innerHTML='&times;';dl.addEventListener('click',()=>{c.subs=c.subs.filter(x=>x.id!==s.id);renderBoard();persist();});
         row.appendChild(cb);row.appendChild(st);row.appendChild(dl);wrap.appendChild(row);
@@ -552,54 +452,24 @@
     state.projects[target].splice(idx,0,moved);changed();
   }
 
-  function mrr(rows){
-    return rows.reduce((acc,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return acc+(isNaN(n)?0:n);},0);
-  }
+  function mrr(rows){return rows.reduce((a,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return a+(isNaN(n)?0:n);},0);}
   function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
+
   function renderRetentionSummary(){
-    const el=document.getElementById('retSummary'); if(!el)return;
+    const el=document.getElementById('retSummary');if(!el)return;
     const r=state.retention;
-    const total=r.length;
-    const churnedRows=r.filter(x=>x.status==='Churned');
-    const willChurnRows=r.filter(x=>x.status==='Will churn');
-    const atRiskRows=r.filter(x=>x.status==='At risk');
-    const workingRows=r.filter(x=>x.status==='Working on it');
-    const savedRows=r.filter(x=>x.status==='Saved');
-    const mrrChurned=mrr(churnedRows);
-    const mrrWillChurn=mrr(willChurnRows);
-    const mrrAtRisk=mrr([...atRiskRows,...workingRows]);
-    const mrrSaved=mrr(savedRows);
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),sv=r.filter(x=>x.status==='Saved');
     el.innerHTML=`
-      <div class="ret-stat danger">
-        <div class="ret-stat-label">Already churned</div>
-        <div class="ret-stat-num">${churnedRows.length}</div>
-        <div class="ret-stat-mrr">${fmt(mrrChurned)} MRR lost</div>
-        <div class="ret-stat-sub">cancelled, done</div>
-      </div>
-      <div class="ret-stat danger-soft">
-        <div class="ret-stat-label">Will churn</div>
-        <div class="ret-stat-num">${willChurnRows.length}</div>
-        <div class="ret-stat-mrr">${fmt(mrrWillChurn)} MRR leaving</div>
-        <div class="ret-stat-sub">confirmed, cancellation pending</div>
-      </div>
-      <div class="ret-stat warn">
-        <div class="ret-stat-label">At risk</div>
-        <div class="ret-stat-num">${atRiskRows.length+workingRows.length}</div>
-        <div class="ret-stat-mrr">${fmt(mrrAtRisk)} MRR at risk</div>
-        <div class="ret-stat-sub">${atRiskRows.length} watching · ${workingRows.length} being worked</div>
-      </div>
-      <div class="ret-stat safe">
-        <div class="ret-stat-label">Saved</div>
-        <div class="ret-stat-num">${savedRows.length}</div>
-        <div class="ret-stat-mrr">${fmt(mrrSaved)} MRR retained</div>
-        <div class="ret-stat-sub">retention worked</div>
-      </div>
+      <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
+      <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
+      <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
+      <div class="ret-stat safe"><div class="ret-stat-label">Saved</div><div class="ret-stat-num">${sv.length}</div><div class="ret-stat-mrr">${fmt(mrr(sv))} MRR retained</div><div class="ret-stat-sub">retention worked</div></div>
       <div class="ret-total-row">
-        <div class="ret-total-item"><b>${total}</b> total clients tracked</div>
-        <div class="ret-total-item" style="color:var(--fire)"><b>${churnedRows.length+willChurnRows.length}</b> churned or confirmed leaving</div>
-        <div class="ret-total-item" style="color:var(--amber)"><b>${atRiskRows.length+workingRows.length}</b> still in play</div>
-        <div class="ret-total-item" style="color:var(--teal)"><b>${savedRows.length}</b> recovered</div>
-        ${(mrrChurned+mrrWillChurn+mrrAtRisk)>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrrChurned+mrrWillChurn+mrrAtRisk)}</b> total MRR exposure</div>`:''}
+        <div class="ret-total-item"><b>${r.length}</b> total clients tracked</div>
+        <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or confirmed leaving</div>
+        <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
+        <div class="ret-total-item" style="color:var(--teal)"><b>${sv.length}</b> recovered</div>
+        ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))}</b> total MRR exposure</div>`:''}
       </div>`;
   }
 
@@ -607,91 +477,60 @@
   function renderRetention(){
     renderRetentionSummary();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[
-      {key:'client',label:'Client'},
-      {key:'owners',label:'Owners',type:'owners'},
-      {key:'mrr',label:'MRR $',cls:'mrr-cell'},
-      {key:'risk',label:'Risk',type:'select',opts:RISK},
-      {key:'issue',label:'Issue'},
-      {key:'next',label:'Next step'},
-      {key:'status',label:'Status',type:'select',opts:RSTATUS}
-    ];
-    if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked - add one below.</div>';return;}
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'Issue'},{key:'next',label:'Next step'},{key:'status',label:'Status',type:'select',opts:RSTATUS}];
+    if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
     const thead=document.createElement('thead');const htr=document.createElement('tr');
-    const dragTh=document.createElement('th');dragTh.className='drag-th';htr.appendChild(dragTh);
+    const dth=document.createElement('th');dth.className='drag-th';htr.appendChild(dth);
     cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});
-    htr.appendChild(document.createElement('th'));
-    thead.appendChild(htr);table.appendChild(thead);
+    htr.appendChild(document.createElement('th'));thead.appendChild(htr);table.appendChild(thead);
     const tb=document.createElement('tbody');
     state.retention.forEach(row=>{
       const tr=document.createElement('tr');tr.dataset.id=row.id;tr.draggable=false;
-      // drag handle cell
-      const handleTd=document.createElement('td');handleTd.className='drag-td';
-      const handle=document.createElement('span');handle.className='row-handle';handle.innerHTML='&#10303;';
-      handle.addEventListener('mousedown',()=>{tr.draggable=true;});
-      handle.addEventListener('mouseup',()=>{tr.draggable=false;});
-      handleTd.appendChild(handle);tr.appendChild(handleTd);
-      // data cells
+      const htd=document.createElement('td');htd.className='drag-td';
+      const h=document.createElement('span');h.className='row-handle';h.innerHTML='&#10303;';
+      h.addEventListener('mousedown',()=>tr.draggable=true);h.addEventListener('mouseup',()=>tr.draggable=false);
+      htd.appendChild(h);tr.appendChild(htd);
       cols.forEach(col=>{
         const td=document.createElement('td');td.setAttribute('data-label',col.label);
         if(col.type==='owners')td.appendChild(ownerControl(row[col.key]||[],persist));
-        else if(col.type==='select')td.appendChild(select(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
-        else if(col.cls==='mrr-cell'){
-          const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';
-          inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';
-          inp.addEventListener('mousedown',e=>e.stopPropagation());
-          inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});
-          inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});
-          td.appendChild(inp);
-        } else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
+        else if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
+        else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});td.appendChild(inp);}
+        else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
         tr.appendChild(td);
       });
       const td=document.createElement('td');const del=document.createElement('button');del.className='del';del.innerHTML='&times;';
       del.addEventListener('click',()=>{state.retention=state.retention.filter(r=>r.id!==row.id);changed();});td.appendChild(del);tr.appendChild(td);
-      // drag events
       tr.addEventListener('dragstart',e=>{dragSrcId=row.id;tr.classList.add('dragging-row');e.dataTransfer.effectAllowed='move';});
       tr.addEventListener('dragend',()=>{tr.draggable=false;tr.classList.remove('dragging-row');document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));});
       tr.addEventListener('dragover',e=>{e.preventDefault();if(row.id===dragSrcId)return;document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));tr.classList.add('drag-over-top');});
       tr.addEventListener('dragleave',()=>tr.classList.remove('drag-over-top'));
-      tr.addEventListener('drop',e=>{
-        e.preventDefault();tr.classList.remove('drag-over-top');
-        if(!dragSrcId||dragSrcId===row.id)return;
-        const from=state.retention.findIndex(x=>x.id===dragSrcId);
-        const to=state.retention.findIndex(x=>x.id===row.id);
-        if(from<0||to<0)return;
-        const [moved]=state.retention.splice(from,1);
-        state.retention.splice(to,0,moved);
-        dragSrcId=null;changed();
-      });
+      tr.addEventListener('drop',e=>{e.preventDefault();tr.classList.remove('drag-over-top');if(!dragSrcId||dragSrcId===row.id)return;const from=state.retention.findIndex(x=>x.id===dragSrcId),to=state.retention.findIndex(x=>x.id===row.id);if(from<0||to<0)return;const[moved]=state.retention.splice(from,1);state.retention.splice(to,0,moved);dragSrcId=null;changed();});
       tb.appendChild(tr);
     });
     table.appendChild(tb);wrap.appendChild(table);c.appendChild(wrap);
   }
   document.getElementById('addRetention').addEventListener('click',()=>{state.retention.push({id:uid(),client:'',owners:['Estefania'],mrr:'',risk:'Medium',issue:'',next:'',status:'At risk'});changed();});
-
   function renderAll(){renderBoard();renderRetention();}
 
-  const sections={projects:'tab-projects',retention:'tab-retention',plan:'tab-plan',bundles:'tab-bundles'};
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
     document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
-    Object.entries(sections).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
+    Object.entries({projects:'tab-projects',retention:'tab-retention',plan:'tab-plan',bundles:'tab-bundles'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
     window.scrollTo({top:0});
   });
-  document.getElementById('exportBtn').addEventListener('click',()=>{
-    const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='piq-hub-backup.json';a.click();URL.revokeObjectURL(a.href);
-  });
-  document.getElementById('importFile').addEventListener('change',e=>{
-    const f=e.target.files[0];if(!f)return;const r=new FileReader();
-    r.onload=()=>{try{const d=normalize(JSON.parse(r.result));if(d){state=d;changed();}else alert('That file doesn\u2019t look like a hub backup.');}catch(err){alert('Could not read that file.');}};
-    r.readAsText(f);e.target.value='';
-  });
-  document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset everything to the starting content? This clears your edits.')){state=defaults();changed();}});
+  document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='piq-hub-backup.json';a.click();URL.revokeObjectURL(a.href);});
+  document.getElementById('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=normalize(JSON.parse(r.result));if(d){state=d;changed();}else alert('Not a valid backup.');}catch(err){alert('Could not read file.');}};r.readAsText(f);e.target.value='';});
+  document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset to starting content?')){state=defaults();changed();}});
 
-  (async()=>{const saved=normalize(await loadSaved());if(saved)state=saved;renderAll();})();
+  // Hide setup banner if URL already saved
+  if(getScriptUrl()) document.getElementById('setupBanner').hidden=true;
+  else document.getElementById('scriptUrlInput').value=getScriptUrl();
+
+  const saved=normalize(loadSaved());
+  if(saved)state=saved;
+  renderAll();
 </script>
 </body>
 </html>
