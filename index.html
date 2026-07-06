@@ -549,9 +549,46 @@
   if(getScriptUrl()) document.getElementById('setupBanner').hidden=true;
   else document.getElementById('scriptUrlInput').value=getScriptUrl();
 
-  const saved=normalize(loadSaved());
-  if(saved)state=saved;
-  renderAll();
+  // ── LOAD ORDER: Sheet (shared truth) → local → defaults ──
+  // Load from the shared Sheet first so the dashboard always matches what
+  // the team sees. Falls back to local edits, then to seed defaults.
+  function bootFromSheet(){
+    const url=getScriptUrl();
+    if(!url){
+      // No sheet configured yet — use local or defaults
+      const saved=normalize(loadSaved());
+      if(saved)state=saved;
+      renderAll();
+      return;
+    }
+    const cbName='piq_boot_'+Date.now();
+    let done=false;
+    window[cbName]=function(res){
+      done=true; delete window[cbName];
+      const s=document.getElementById(cbName); if(s)s.remove();
+      if(res&&res.ok&&res.data){
+        state=normalize(res.data)||state;
+        persist(); // cache the shared version locally too
+      } else {
+        const saved=normalize(loadSaved());
+        if(saved)state=saved;
+      }
+      renderAll();
+    };
+    setTimeout(function(){
+      if(!done&&window[cbName]){
+        delete window[cbName];
+        const saved=normalize(loadSaved());
+        if(saved)state=saved;
+        renderAll();
+      }
+    },8000);
+    const sc=document.createElement('script');
+    sc.id=cbName;
+    sc.src=url+'?callback='+cbName+'&t='+Date.now();
+    document.head.appendChild(sc);
+  }
+  bootFromSheet();
 </script>
 </body>
 </html>
