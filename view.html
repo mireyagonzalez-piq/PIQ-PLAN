@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIQ Operating Hub — Team View</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#F4F6F9;--panel:#fff;--panel-2:#EEF1F5;--line:#D8DCE6;--line-2:#C4CAD8;--text:#141820;--muted:#526070;--faint:#8A97A8;--fire:#D95030;--fire-dim:rgba(217,80,48,.09);--amber:#B87A10;--amber-dim:rgba(184,122,16,.09);--teal:#187A6E;--teal-dim:rgba(24,122,110,.09);--slate:#607080;--violet:#5B4FCC;--violet-dim:rgba(91,79,204,.09);}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--ink);color:var(--text);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:12px clamp(16px,3.5vw,44px);background:rgba(244,246,249,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--fire),#C94B2A);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+  .brand-text{font-weight:700;font-size:14px;letter-spacing:-.02em}
+  .brand-text span{color:var(--faint);font-weight:600}
+  .ro-badge{font-size:11px;font-weight:600;background:var(--amber-dim);color:var(--amber);border-radius:5px;padding:3px 9px;border:1px solid rgba(184,122,16,.2)}
+  .tabs{display:flex;gap:2px;flex-wrap:wrap;padding:3px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .tabs button{font-size:12px;font-weight:500;background:none;border:none;color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;transition:color .15s,background .15s;font-family:inherit}
+  .tabs button.active{color:var(--text);background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  .tools{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .refresh-btn{font-size:11.5px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;transition:all .15s}
+  .refresh-btn:hover{background:var(--panel-2);color:var(--text)}
+  .last-sync{font-size:11px;color:var(--faint)}
+  .setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#92400e}
+  .setup-banner strong{color:#78350f}
+  .setup-banner input{font-size:12px;font-family:monospace;border:1px solid #fcd34d;border-radius:5px;padding:4px 8px;background:#fffef5;outline:none;width:100%;margin-top:6px;max-width:500px}
+  main{padding:clamp(20px,3.5vw,42px) clamp(16px,3.5vw,44px);max-width:1280px;margin:0 auto}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fire);margin-bottom:12px}
+  .eyebrow::before{content:'';width:18px;height:1px;background:var(--fire);opacity:.5}
+  h1{font-weight:700;font-size:clamp(22px,2.6vw,34px);line-height:1.1;letter-spacing:-.03em}
+  .head-sub{color:var(--muted);margin-top:9px;max-width:72ch;font-size:14.5px;line-height:1.6}
+  .head{margin-bottom:24px}
+  [hidden]{display:none!important}
+  /* board read-only */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .tier{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column}
+  .tier.t0{border-top:2px solid var(--fire)}.tier.t1{border-top:2px solid var(--amber)}.tier.t2{border-top:2px solid var(--slate)}
+  .tier.tdone{border-top:2px solid var(--teal);background:rgba(24,122,110,.03);grid-column:1/-1}
+  .tier.tdone .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .tier-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:14px}
+  .tier-tag{font-weight:700;font-size:11px;letter-spacing:.04em;padding:3px 9px;border-radius:5px;text-transform:uppercase}
+  .t0 .tier-tag{color:var(--fire);background:var(--fire-dim)}.t1 .tier-tag{color:var(--amber);background:var(--amber-dim)}.t2 .tier-tag{color:var(--slate);background:rgba(94,112,128,.1)}.tdone .tier-tag{color:var(--teal);background:var(--teal-dim)}
+  .tier-sub{font-size:11px;color:var(--faint);margin-top:3px}
+  .tier-count{font-size:11px;font-weight:600;color:var(--faint);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 7px}
+  .cards{display:flex;flex-direction:column;gap:7px;flex:1;min-height:30px}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+  .ctext{font-size:13px;line-height:1.4;color:var(--text);font-weight:500;margin-bottom:6px}
+  .meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+  .owner-chip{font-size:10.5px;font-weight:500;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--muted)}
+  .status-chip{font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:5px}
+  .subtoggle{background:none;border:none;color:var(--faint);font-size:11px;font-weight:500;cursor:pointer;padding:3px 0;font-family:inherit}
+  .subtoggle:hover{color:var(--muted)}
+  .subs{display:flex;flex-direction:column;gap:4px;margin-top:5px;padding-left:9px;border-left:2px solid var(--line)}
+  .sub-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+  .sub-row.done-sub{color:var(--faint);text-decoration:line-through}
+  .sub-dot{width:5px;height:5px;border-radius:50%;background:var(--line-2);flex-shrink:0}
+  .sub-dot.done-dot{background:var(--teal)}
+  /* retention read-only */
+  .ret-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
+  .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
+  .ret-stat.safe{border-color:rgba(24,122,110,.3);background:rgba(24,122,110,.04)}
+  .ret-stat.warn{border-color:rgba(184,122,16,.3);background:rgba(184,122,16,.04)}
+  .ret-stat-label{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .ret-stat-num{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1}
+  .ret-stat-mrr{font-size:14px;font-weight:600;margin-top:4px;opacity:.75}
+  .ret-stat-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .ret-stat.danger .ret-stat-num,.ret-stat.danger .ret-stat-mrr{color:var(--fire)}
+  .ret-stat.danger-soft .ret-stat-num,.ret-stat.danger-soft .ret-stat-mrr{color:var(--fire)}
+  .ret-stat.safe .ret-stat-num{color:var(--teal)}
+  .ret-stat.warn .ret-stat-num,.ret-stat.warn .ret-stat-mrr{color:var(--amber)}
+  .ret-total-row{grid-column:1/-1;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .ret-total-item{font-size:12.5px;color:var(--muted)}
+  .ret-total-item b{color:var(--text);font-weight:700}
+  .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .tbl td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle;line-height:1.4}
+  .tbl tbody tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover td{background:var(--panel-2)}
+  .risk-badge,.status-badge{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px}
+  .r-High{background:var(--fire-dim);color:var(--fire)}.r-Medium{background:var(--amber-dim);color:var(--amber)}.r-Low{background:var(--teal-dim);color:var(--teal)}
+  .s-Churned{background:var(--fire-dim);color:var(--fire)}.s-Will-churn{background:rgba(217,80,48,.15);color:var(--fire)}.s-At-risk{background:var(--amber-dim);color:var(--amber)}.s-Working-on-it{background:var(--violet-dim);color:var(--violet)}.s-Saved{background:var(--teal-dim);color:var(--teal)}
+  .mrr-val{font-weight:600;color:var(--teal)}
+  .loading{text-align:center;padding:60px 20px;color:var(--faint);font-size:14px}
+  .error-box{background:#fef2f2;border:1px solid rgba(217,80,48,.3);border-radius:10px;padding:16px 20px;color:var(--fire);font-size:13px;margin-bottom:20px}
+  @media(max-width:900px){.board{grid-template-columns:1fr}.tier.tdone{grid-column:1}.tier.tdone .cards{grid-template-columns:1fr}}
+  @media(max-width:700px){.ret-summary{grid-template-columns:1fr 1fr}.tbl thead{display:none}.tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}.tbl tr{border-bottom:1px solid var(--line)}.tbl td{border:none;padding:4px 14px}.tbl td::before{content:attr(data-label);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:2px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="brand-mark">P</div><div class="brand-text">PIQ Operating Hub <span>· Team View</span></div></div>
+  <div class="ro-badge">View only</div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="projects" class="active">Projects</button>
+    <button data-tab="retention">Retention</button>
+  </nav>
+  <div class="tools">
+    <span class="last-sync" id="lastSync"></span>
+    <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <div class="setup-banner" id="setupBanner">
+    <strong>Paste the Apps Script URL to load live data.</strong>
+    <div style="font-size:12px;margin-top:3px;color:#a16207">Ask Mireya for the URL from Backend.gs.</div>
+    <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec" />
+    <div style="margin-top:8px">
+      <button onclick="saveAndLoad()" style="font-size:12px;background:#f59e0b;border:none;color:#fff;border-radius:6px;padding:5px 14px;cursor:pointer;font-family:inherit;font-weight:600">Load data</button>
+    </div>
+  </div>
+  <div class="error-box" id="errorBox" hidden></div>
+
+  <section id="tab-projects">
+    <div class="head">
+      <div class="eyebrow">Projects · live board</div>
+      <h1>What happens now, what waits.</h1>
+    </div>
+    <div id="boardView"><div class="loading">Loading…</div></div>
+  </section>
+
+  <section id="tab-retention" hidden>
+    <div class="head">
+      <div class="eyebrow">Retention · interim list</div>
+      <h1>Current at-risk clients.</h1>
+    </div>
+    <div class="ret-summary" id="retSummary"></div>
+    <div id="retView"><div class="loading">Loading…</div></div>
+  </section>
+</main>
+
+<script>
+  const TIERS=['p0','p1','p2','pdone'];
+  const META={p0:{tag:'P0',sub:'Non-negotiable'},p1:{tag:'P1',sub:'Growth · active pilots'},p2:{tag:'P2',sub:'Explore later'},pdone:{tag:'Done',sub:'Completed'}};
+  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
+  const expanded=new Set();
+  let state=null;
+
+  function getScriptUrl(){return localStorage.getItem('piq_view_url')||'';}
+  function saveAndLoad(){
+    const v=document.getElementById('scriptUrlInput').value.trim();
+    if(!v.includes('script.google.com')){alert('That doesn\'t look right.');return;}
+    localStorage.setItem('piq_view_url',v);
+    document.getElementById('setupBanner').hidden=true;
+    loadData();
+  }
+
+  async function loadData(){
+    const url=getScriptUrl();
+    if(!url){document.getElementById('setupBanner').hidden=false;return;}
+    document.getElementById('lastSync').textContent='Loading…';
+    document.getElementById('errorBox').hidden=true;
+    try{
+      const resp=await fetch(url+'?t='+Date.now());
+      const json=await resp.json();
+      if(!json.ok){showError(json.error||'Script returned an error.');return;}
+      state=json.data;
+      render();
+      document.getElementById('lastSync').textContent='Last updated: '+new Date().toLocaleTimeString();
+    }catch(e){
+      showError('Could not reach the Apps Script. Make sure it\'s deployed as "Anyone can access". Error: '+e.message);
+    }
+  }
+
+  function showError(msg){const b=document.getElementById('errorBox');b.textContent=msg;b.hidden=false;}
+
+  function render(){
+    if(!state)return;
+    renderBoard();
+    renderRetention();
+  }
+
+  function renderBoard(){
+    const el=document.getElementById('boardView');el.innerHTML='';
+    if(!state.projects){el.innerHTML='<div class="loading">No project data.</div>';return;}
+    const board=document.createElement('div');board.className='board';
+    TIERS.forEach((t,ti)=>{
+      const col=document.createElement('div');col.className='tier '+(t==='pdone'?'tdone':'t'+ti);
+      const head=document.createElement('div');head.className='tier-head';
+      const lbl=document.createElement('div');
+      const tag=document.createElement('span');tag.className='tier-tag';tag.textContent=META[t].tag;
+      const sub=document.createElement('div');sub.className='tier-sub';sub.textContent=META[t].sub;
+      lbl.appendChild(tag);lbl.appendChild(sub);
+      const cnt=document.createElement('span');cnt.className='tier-count';cnt.textContent=(state.projects[t]||[]).length;
+      head.appendChild(lbl);head.appendChild(cnt);col.appendChild(head);
+      const cards=document.createElement('div');cards.className='cards';
+      (state.projects[t]||[]).forEach(c=>{
+        const card=document.createElement('div');card.className='pcard';
+        const tx=document.createElement('div');tx.className='ctext';tx.textContent=c.text;
+        const meta=document.createElement('div');meta.className='meta';
+        (c.owners||[]).forEach(o=>{const chip=document.createElement('span');chip.className='owner-chip';chip.textContent=o;meta.appendChild(chip);});
+        const sc=document.createElement('span');sc.className='status-chip';sc.textContent=c.status;sc.style.color=COLOR[c.status]||'var(--faint)';sc.style.background='rgba(0,0,0,0.04)';meta.appendChild(sc);
+        card.appendChild(tx);card.appendChild(meta);
+        if(c.subs&&c.subs.length){
+          const done=c.subs.filter(s=>s.done).length;
+          const tog=document.createElement('button');tog.className='subtoggle';
+          tog.textContent=(expanded.has(c.id)?'▾':'▸')+' '+c.subs.length+' steps ('+done+' done)';
+          tog.addEventListener('click',()=>{if(expanded.has(c.id))expanded.delete(c.id);else expanded.add(c.id);renderBoard();});
+          card.appendChild(tog);
+          if(expanded.has(c.id)){
+            const wrap=document.createElement('div');wrap.className='subs';
+            c.subs.forEach(s=>{const row=document.createElement('div');row.className='sub-row'+(s.done?' done-sub':'');const dot=document.createElement('span');dot.className='sub-dot'+(s.done?' done-dot':'');row.appendChild(dot);row.appendChild(document.createTextNode(s.text));wrap.appendChild(row);});
+            card.appendChild(wrap);
+          }
+        }
+        cards.appendChild(card);
+      });
+      col.appendChild(cards);board.appendChild(col);
+    });
+    el.appendChild(board);
+  }
+
+  function mrr(rows){return rows.reduce((a,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return a+(isNaN(n)?0:n);},0);}
+  function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
+
+  function renderRetention(){
+    if(!state.retention){return;}
+    const r=state.retention;
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),sv=r.filter(x=>x.status==='Saved');
+    document.getElementById('retSummary').innerHTML=`
+      <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
+      <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
+      <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
+      <div class="ret-stat safe"><div class="ret-stat-label">Saved</div><div class="ret-stat-num">${sv.length}</div><div class="ret-stat-mrr">${fmt(mrr(sv))} MRR retained</div><div class="ret-stat-sub">retention worked</div></div>
+      <div class="ret-total-row">
+        <div class="ret-total-item"><b>${r.length}</b> total clients</div>
+        <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or leaving</div>
+        <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
+        <div class="ret-total-item" style="color:var(--teal)"><b>${sv.length}</b> recovered</div>
+        ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))}</b> total MRR exposure</div>`:''}
+      </div>`;
+    const rv=document.getElementById('retView');rv.innerHTML='';
+    const wrap=document.createElement('div');wrap.className='tbl-wrap';
+    const tbl=document.createElement('table');tbl.className='tbl';
+    tbl.innerHTML='<thead><tr><th>Client</th><th>Owner</th><th>MRR</th><th>Risk</th><th>Issue</th><th>Next step</th><th>Status</th></tr></thead>';
+    const tb=document.createElement('tbody');
+    r.forEach(row=>{
+      const tr=document.createElement('tr');
+      const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
+      tr.innerHTML=`
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="Owner">${(row.owners||[]).map(o=>`<span style="font-size:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-right:3px;color:var(--muted)">${o}</span>`).join('')}</td>
+        <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
+        <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
+        <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
+        <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+  }
+
+  document.getElementById('tabs').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
+    ['tab-projects','tab-retention'].forEach(id=>document.getElementById(id).hidden=(id!=='tab-'+b.dataset.tab));
+    window.scrollTo({top:0});
+  });
+
+  const url=getScriptUrl();
+  if(url){document.getElementById('setupBanner').hidden=true;loadData();}
+</script>
+</body>
+</html>
