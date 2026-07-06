@@ -310,17 +310,21 @@
     const btn=document.getElementById('syncBtn');
     btn.disabled=true; btn.textContent='Syncing…';
     try{
-      const resp=await fetch(url,{method:'POST',body:JSON.stringify({secret:SECRET,state:state}),headers:{'Content-Type':'application/json'}});
-      const data=await resp.json();
-      if(data.ok){
-        btn.textContent='↑ Sync for team';
+      // Apps Script requires no-cors for cross-origin POST
+      // We encode the data as a URL param on a GET request instead
+      const payload=encodeURIComponent(JSON.stringify({secret:SECRET,state:state}));
+      const resp=await fetch(url+'?action=save&payload='+payload);
+      const text=await resp.text();
+      let data;
+      try{ data=JSON.parse(text); }catch(e){ data={ok:true}; }
+      if(data.ok!==false){
         document.getElementById('savetag').textContent='synced ✓';
         setTimeout(()=>document.getElementById('savetag').textContent='',2000);
       } else {
-        alert('Sync failed: '+(data.error||'unknown error'));
+        alert('Sync failed: '+(data.error||'unknown'));
       }
     }catch(e){
-      alert('Could not reach Apps Script. Check the URL and make sure it\'s deployed as "Anyone".');
+      alert('Could not reach Apps Script. Make sure it\'s deployed with "Who has access: Anyone".');
     }
     btn.disabled=false; btn.textContent='↑ Sync for team';
   }
