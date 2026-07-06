@@ -140,7 +140,8 @@
   const expanded=new Set();
   let state=null;
 
-  function getScriptUrl(){return localStorage.getItem('piq_view_url')||'';}
+  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzVwfKwS3-cE6KhTmgcG8PqSi_6KE1_W4e6FCuPz56aEkc02AJyCzXtiMR_kYyaP9Nu/exec';
+  function getScriptUrl(){return SCRIPT_URL;}
   function saveAndLoad(){
     const v=document.getElementById('scriptUrlInput').value.trim();
     if(!v.includes('script.google.com')){alert('That doesn\'t look right.');return;}
@@ -275,8 +276,8 @@
     window.scrollTo({top:0});
   });
 
-  const url=getScriptUrl();
-  if(url){document.getElementById('setupBanner').hidden=true;loadData();}
+  document.getElementById('setupBanner').hidden=true;
+  loadData();
 </script>
 </body>
 </html>
