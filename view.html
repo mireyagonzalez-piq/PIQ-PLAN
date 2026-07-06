@@ -149,21 +149,30 @@
     loadData();
   }
 
-  async function loadData(){
+  function loadData(){
     const url=getScriptUrl();
     if(!url){document.getElementById('setupBanner').hidden=false;return;}
     document.getElementById('lastSync').textContent='Loading…';
     document.getElementById('errorBox').hidden=true;
-    try{
-      const resp=await fetch(url+'?t='+Date.now());
-      const json=await resp.json();
+    const cbName='piq_view_cb_'+Date.now();
+    window[cbName]=function(json){
+      delete window[cbName];
+      const s=document.getElementById(cbName);
+      if(s)s.remove();
+      clearTimeout(window[cbName+'_t']);
       if(!json.ok){showError(json.error||'Script returned an error.');return;}
       state=json.data;
       render();
       document.getElementById('lastSync').textContent='Last updated: '+new Date().toLocaleTimeString();
-    }catch(e){
-      showError('Could not reach the Apps Script. Make sure it\'s deployed as "Anyone can access". Error: '+e.message);
-    }
+    };
+    window[cbName+'_t']=setTimeout(function(){
+      if(window[cbName]){ delete window[cbName]; showError('Request timed out. Check the Apps Script URL.'); }
+    },12000);
+    const script=document.createElement('script');
+    script.id=cbName;
+    script.src=url+'?callback='+cbName+'&t='+Date.now();
+    script.onerror=function(){ clearTimeout(window[cbName+'_t']); delete window[cbName]; script.remove(); showError('Could not reach Apps Script. Make sure it is deployed with "Who has access: Anyone".'); };
+    document.head.appendChild(script);
   }
 
   function showError(msg){const b=document.getElementById('errorBox');b.textContent=msg;b.hidden=false;}
