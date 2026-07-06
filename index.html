@@ -293,7 +293,9 @@
   const expanded=new Set();
 
   // ── SCRIPT URL ──────────────────────────────────────────────
-  function getScriptUrl(){ return localStorage.getItem('piq_script_url')||''; }
+  // Hardcoded so it can never be mistyped. Change here if you ever redeploy.
+  const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzVwfKwS3-cE6KhTmgcG8PqSi_6KE1_W4e6FCuPz56aEkc02AJyCzXtiMR_kYyaP9Nu/exec';
+  function getScriptUrl(){ return SCRIPT_URL; }
   function saveScriptUrl(){
     const v=document.getElementById('scriptUrlInput').value.trim();
     if(!v.includes('script.google.com')){alert('That doesn\'t look like an Apps Script URL.');return;}
@@ -545,9 +547,8 @@
   document.getElementById('importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=normalize(JSON.parse(r.result));if(d){state=d;changed();}else alert('Not a valid backup.');}catch(err){alert('Could not read file.');}};r.readAsText(f);e.target.value='';});
   document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset to starting content?')){state=defaults();changed();}});
 
-  // Hide setup banner if URL already saved
-  if(getScriptUrl()) document.getElementById('setupBanner').hidden=true;
-  else document.getElementById('scriptUrlInput').value=getScriptUrl();
+  // URL is hardcoded now — always hide the setup banner
+  document.getElementById('setupBanner').hidden=true;
 
   // ── LOAD ORDER: Sheet (shared truth) → local → defaults ──
   // Load from the shared Sheet first so the dashboard always matches what
