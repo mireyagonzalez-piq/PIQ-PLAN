@@ -111,7 +111,15 @@
   .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px}
   .mrr-input::placeholder{color:var(--faint);font-weight:400}
   .empty{color:var(--faint);font-size:13px;padding:20px}
-  .ret-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .ret-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .ret-stat.clickable{cursor:pointer;transition:all .15s}
+  .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(91,79,204,.12);transform:translateY(-1px)}
+  .card-panel{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2)}
+  .card-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .panel-close{font-size:12px;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:inherit}
+  .panel-close:hover{color:var(--fire);border-color:var(--fire)}
+  .subsection-title{font-weight:700;font-size:clamp(16px,1.8vw,20px);line-height:1.1;letter-spacing:-.02em;margin:0}
+  @media(max-width:1000px){.ret-summary{grid-template-columns:1fr 1fr 1fr}}
   .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
   .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
   .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
@@ -206,6 +214,7 @@
   </nav>
   <div class="tools">
     <span id="savetag"></span>
+    <button id="pullBtn" onclick="pullFromSheet()" title="Load the latest data from the Google Sheet">↓ Pull from sheet</button>
     <button class="sync-btn" id="syncBtn" onclick="syncToSheet()">↑ Sync for team</button>
     <a class="dash" href="https://piq-pulse-flow.base44.app/" target="_blank" rel="noopener">Dashboard ↗</a>
     <button id="exportBtn">Export</button>
@@ -251,8 +260,22 @@
       <p class="head-sub">The holding pen, worked one by one. Target: churn under 14%.</p>
     </div>
     <div class="ret-summary" id="retSummary"></div>
+    <div style="display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap">
+      <button class="addbtn" id="addRetention" style="max-width:200px">+ add client</button>
+      <button id="pullChartmogul" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull this month churn</button>
+    </div>
     <div id="retentionTable"></div>
-    <button class="addbtn" id="addRetention" style="margin-top:14px;max-width:200px">+ add client</button>
+
+    <!-- Click-through lists for the Self-service and Unpaid/Finance cards -->
+    <div id="ssPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Self-service cancellations · this month</h2><button class="panel-close" onclick="document.getElementById('ssPanel').hidden=true">✕ close</button></div>
+      <div id="selfserviceTable"></div>
+    </div>
+    <div id="finPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Unpaid clients · finance cancellations</h2><button class="panel-close" onclick="document.getElementById('finPanel').hidden=true">✕ close</button></div>
+      <button class="addbtn" id="addFinance" style="margin-bottom:12px;max-width:220px">+ add unpaid client</button>
+      <div id="financeTable"></div>
+    </div>
   </section>
 
   <section id="tab-plan" hidden>
@@ -287,7 +310,9 @@
   const PSTATUS=['Not started','In progress','Needs approval','Needs update','Ongoing','Monitoring','Maintenance','Blocked','Done'];
   const RISK=['High','Medium','Low'];
   const RSTATUS=['At risk','Working on it','Will churn','Churned','Saved'];
-  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
+  const SSSTATUS=['Active','At risk','Churned'];
+  const FINSTATUS=['Finance will churn','Churned by finance'];
+  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Churned by finance':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','Finance will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Active':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
   const SECRET='piq2026'; // must match Backend.gs getSecret()
   let idc=0; const uid=()=>'x'+(++idc)+Date.now().toString(36);
   const expanded=new Set();
@@ -306,6 +331,34 @@
   }
 
   // ── SYNC TO SHEET (Mireya only) ──────────────────────────────
+  function pullFromSheet(){
+    const url=getScriptUrl();
+    if(!url) return;
+    const btn=document.getElementById('pullBtn');
+    btn.disabled=true; btn.textContent='Pulling…';
+    const cbName='piq_pull_'+Date.now();
+    let done=false;
+    window[cbName]=function(res){
+      done=true; delete window[cbName];
+      const s=document.getElementById(cbName); if(s)s.remove();
+      btn.disabled=false; btn.textContent='↓ Pull from sheet';
+      if(res&&res.ok&&res.data){
+        state=normalize(res.data)||state;
+        persist();
+        renderAll();
+        document.getElementById('savetag').textContent='pulled ✓';
+        setTimeout(()=>document.getElementById('savetag').textContent='',3000);
+      } else {
+        alert('Could not pull: '+(res&&res.error?res.error:'no data'));
+      }
+    };
+    setTimeout(function(){ if(!done&&window[cbName]){delete window[cbName];btn.disabled=false;btn.textContent='↓ Pull from sheet';alert('Pull timed out.');} },8000);
+    const sc=document.createElement('script');
+    sc.id=cbName;
+    sc.src=url+'?callback='+cbName+'&t='+Date.now();
+    document.head.appendChild(sc);
+  }
+
   function syncToSheet(){
     const url=getScriptUrl();
     if(!url){alert('Paste your Apps Script URL in the setup banner first.');return;}
@@ -361,7 +414,7 @@
 
   // ── DATA ─────────────────────────────────────────────────────
   const TIERS=['p0','p1','p2','pdone'];
-  function defaults(){return{projects:{p0:[{id:'x1mq7izm5o',text:'Churn: target under 14%',owners:['Me'],status:'Ongoing',subs:[{id:'x2mq7n1jj7',text:'SEO addon or replacement as retention',done:true},{id:'x3mq7n1w8n',text:'Resetting expectations',done:true},{id:'x6mq7n2qr6',text:'Campaign audits',done:false}]},{id:'x2mq7izm5o',text:'Reply rate: 1% minimum',owners:['Me'],status:'Ongoing',subs:[{id:'x1mq7mu8oe',text:'audit top % vs lower %',done:false},{id:'x2mq7mudib',text:'focus on clients per AMs with highest %',done:true},{id:'x1mq8ensb9',text:'AI personalization addon',done:true},{id:'x2mq8eo54y',text:'lead source sample',done:true}]},{id:'x4mq7izm5o',text:'AM email response time - fix urgency',owners:['Me'],status:'In progress',subs:[{id:'x5mq7izm5o',text:'Set the standard: first reply within 1 business day',done:true},{id:'x7mq7izm5o',text:'Anything past SLA auto-surfaces',done:true},{id:'x9mq7izm5o',text:'Add response-time to Pulse dashboard',done:true},{id:'x10mq7izm5o',text:'Review per-AM in weekly sync',done:false}]},{id:'x11mq7izm5o',text:'QC intake - quality check for June+ clients (Andres)',owners:['Me','Andres'],status:'Done',subs:[{id:'x7mq7n3kui',text:"Shared Q's with Andres",done:true},{id:'x8mq7n3vby',text:'Work around form/airtable logic',done:true},{id:'x9mq7n45kd',text:"Add Q's to current form",done:true},{id:'x3mq8qcszm',text:'Add June clients',done:false}]},{id:'x36mq7izm5o',text:'PersistIQ - AI personalization (needs addon)',owners:['Estefania'],status:'Ongoing',subs:[{id:'x56mq7j1evf',text:'Current bug in campaign creation - Paulo reviewing',done:true},{id:'x1mqr1hvay',text:'Estef will create snapshot of ALL new clients',done:true}]}],p1:[{id:'x43mq7izm5o',text:'ClickUp to PlanHat migration',owners:['Me','Andres'],status:'In progress',subs:[{id:'x44mq7izm5o',text:'Retention tracking to PlanHat',done:true},{id:'x45mq7izm5o',text:'AM / client tracking to PlanHat',done:true},{id:'x46mq7izm5o',text:'Campaign management to PlanHat',done:false},{id:'x48mq7izm5o',text:'SEO workflows - stays in ClickUp',done:false}]},{id:'x3mq7izm5o',text:'New lead - source review',owners:['María','Usman','Me'],status:'Needs update',subs:[{id:'x10mq7n4o5n',text:'Share pricing',done:true},{id:'x11mq7n4ruu',text:'Clarification on processes with vendor',done:true},{id:'x12mq7n4yc4',text:'Confirmation on requirements',done:false},{id:'x13mq7n5lih',text:'Sample list',done:false}]},{id:'x37mq7izm5o',text:'Improve PIQ Pulse dashboard',owners:['Me'],status:'Ongoing',subs:[{id:'x39mq7izm5o',text:'Add: response time per AM',done:false},{id:'x40mq7izm5o',text:'Add: reply rate by vertical + lead source',done:false},{id:'x41mq7izm5o',text:'Add: MRR retained vs churned',done:false}]},{id:'x51mq7izm5o',text:'Paused-client reactivation (90+ days)',owners:['Me'],status:'Ongoing',subs:[]},{id:'x50mq7izm5o',text:'C.L.A.R.A - list-cleaning tool',owners:['Me'],status:'Ongoing',subs:[]},{id:'x1mqzjygsw',text:'NPS - strategy',owners:['Me','Estefania'],status:'Not started',subs:[]}],p2:[{id:'x1mq7m4r03',text:'New weekly reporting - ALL AMs',owners:['Me','Estefania'],status:'Not started',subs:[]},{id:'x31mq7izm5o',text:'Bundles: Outbound Essentials + add-ons in SOWs',owners:['Me','Mike'],status:'Not started',subs:[{id:'x2mq8hs5ta',text:'HeyReach add-on: LinkedIn outreach at $105/sender/mo',done:false}]},{id:'x15mq7n8c3h',text:'Lead Generation for Self service clients',owners:['Me','Paulo'],status:'Not started',subs:[]},{id:'x24mq7izm5o',text:'LinkedIn Ads add-on - needs dedicated Wishpond resource',owners:['Me','Mike'],status:'Not started',subs:[{id:'x26mq7izm5o',text:'Lock down dedicated WP resource assigned to PIQ',done:false}]},{id:'x52mq7izm5o',text:'Build LinkedIn outreach + ads in-house',owners:['Paulo'],status:'Not started',subs:[{id:'x3mq7mwjnb',text:'Research Hey Reach tutorials for LinkedIn automation',done:false}]}],pdone:[]},retention:[{id:'x2mr3r86gi',client:'Tampa Roots',owners:['Eduardo'],mrr:'1450',risk:'High',issue:"Haven't paid since April",next:'Free month offer + 60 day clause email - MIREYA TO SEND',status:'At risk'},{id:'x3mr3re6iz',client:'Bospar',owners:['Eduardo'],mrr:'1500',risk:'High',issue:'6/6 PAID - NON RENEWAL',next:'Cancel before July 30',status:'At risk'},{id:'x4mr3rez3p',client:'Topor Security',owners:['Eduardo'],mrr:'1250',risk:'High',issue:'4/3 - NON RENEWAL',next:'Cancel before July 28',status:'Will churn'},{id:'x5mr3rgw7s',client:'Giovanni',owners:['Eduardo'],mrr:'1750',risk:'Low',issue:'1 month left',next:'Cancel before August 30',status:'At risk'},{id:'x6mr3ri9yr',client:'Scanixx',owners:['Eduardo'],mrr:'1500',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 2',status:'Churned'},{id:'x7mr3risy6',client:'JLH',owners:['Eduardo'],mrr:'1400',risk:'High',issue:'3/3 - NON RENEWAL',next:'Cancel by July 10',status:'Churned'},{id:'x8mr3rivwy',client:'Constructive Developments',owners:['Eduardo'],mrr:'1000',risk:'Low',issue:'3/3 - if they pay July 24th will continue',next:'See if they pay and continue for 3 more months',status:'At risk'},{id:'x10mr3ulg7g',client:'Voicenx',owners:['Estefania'],mrr:'1000',risk:'High',issue:'3/3 no auto renewal',next:'Cancel by July 2',status:'Churned'},{id:'x11mr3un092',client:'Focus Advertising',owners:['Estefania'],mrr:'1950',risk:'High',issue:'6/12 - early term',next:'Cancel by July 9',status:'Churned'},{id:'x12mr3uqchh',client:'ETL',owners:['Estefania'],mrr:'1000',risk:'High',issue:'10/12 - requested termination in Feb',next:'Cancel by July 15',status:'Churned'},{id:'x13mr3usmo2',client:'Pharoplast',owners:['Estefania'],mrr:'1450',risk:'Low',issue:'Simon leaving, now at another company. 6/12',next:'6 months SOW left - payment July 13, call July 9th',status:'At risk'},{id:'x14mr3xvbbf',client:'Amazon cost savers',owners:['María'],mrr:'1000',risk:'High',issue:'5/4 paid one more, need to refund',next:'Cancel before July 28',status:'Will churn'},{id:'x15mr3y0feb',client:'Vetri Solutions',owners:['María'],mrr:'1000',risk:'High',issue:'Non renewal paid 4/3',next:'Cancel by July 2',status:'Churned'},{id:'x16mr3y349i',client:'Lerner consulting',owners:['María'],mrr:'1000',risk:'High',issue:'4/4 payments - Non renewal',next:'Cancel by July 24',status:'Will churn'},{id:'x17mr3y5h15',client:'Atica Global',owners:['María'],mrr:'750',risk:'Medium',issue:'Non renewal after 3month term 2/3',next:'Last payment July 15 - cancel in August',status:'At risk'},{id:'x18mr3zcrug',client:'Confidential Banking',owners:['Lorena'],mrr:'1000',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 26',status:'Will churn'},{id:'x19mr3zdmsx',client:'Mission Display',owners:['Lorena'],mrr:'1450',risk:'High',issue:'3/3 - non renewal',next:'Cancel by July 24',status:'Will churn'},{id:'x20mr3zewii',client:'Cheque Guard',owners:['Lorena'],mrr:'2000',risk:'Low',issue:"7/12 - MIA, hasn't approved anything",next:'Email informing about lead list upload, SEO+WEBSITE',status:'At risk'},{id:'x21mr3zihcc',client:'Paxa',owners:['Lorena'],mrr:'100',risk:'Medium',issue:'Pausing fee until Sept',next:'Will resume in Sept',status:'At risk'},{id:'x22mr3zixit',client:'Lonestar PVF',owners:['Lorena'],mrr:'1000',risk:'High',issue:'4/3 - non renewal',next:'Cancel by July 2',status:'Churned'},{id:'x23mr3zkb6l',client:'Billingual',owners:['Lorena'],mrr:'1000',risk:'Medium',issue:"2/12 - hasn't paid",next:'Might be cancelled by Finance after 3rd attempt',status:'At risk'},{id:'x24mr3zljyl',client:'A&M',owners:['Lorena'],mrr:'1000',risk:'Low',issue:'5/6 - needs 1 more payment then cancel in August',next:'Send email for SEO + website $1000',status:'At risk'},{id:'x26mr3zo4sb',client:'Service Cleaners',owners:['Lorena'],mrr:'1130',risk:'Low',issue:"4/6 - didn't fulfill full lead volume",next:'Move payment to August 6 for retention',status:'At risk'},{id:'x28mr416b4c',client:'April - Reddout Wine',owners:['Tania'],mrr:'100',risk:'High',issue:'Dissolved company - 8/12',next:'Cancel by July 2',status:'Churned'}]};}
+  function defaults(){return{projects:{p0:[{id:'x1mq7izm5o',text:'Churn: target under 14%',owners:['Me'],status:'Ongoing',subs:[{id:'x2mq7n1jj7',text:'SEO addon or replacement as retention',done:true},{id:'x3mq7n1w8n',text:'Resetting expectations',done:true},{id:'x6mq7n2qr6',text:'Campaign audits',done:false}]},{id:'x2mq7izm5o',text:'Reply rate: 1% minimum',owners:['Me'],status:'Ongoing',subs:[{id:'x1mq7mu8oe',text:'audit top % vs lower %',done:false},{id:'x2mq7mudib',text:'focus on clients per AMs with highest %',done:true},{id:'x1mq8ensb9',text:'AI personalization addon',done:true},{id:'x2mq8eo54y',text:'lead source sample',done:true}]},{id:'x4mq7izm5o',text:'AM email response time - fix urgency',owners:['Me'],status:'In progress',subs:[{id:'x5mq7izm5o',text:'Set the standard: first reply within 1 business day',done:true},{id:'x7mq7izm5o',text:'Anything past SLA auto-surfaces',done:true},{id:'x9mq7izm5o',text:'Add response-time to Pulse dashboard',done:true},{id:'x10mq7izm5o',text:'Review per-AM in weekly sync',done:false}]},{id:'x11mq7izm5o',text:'QC intake - quality check for June+ clients (Andres)',owners:['Me','Andres'],status:'Done',subs:[{id:'x7mq7n3kui',text:"Shared Q's with Andres",done:true},{id:'x8mq7n3vby',text:'Work around form/airtable logic',done:true},{id:'x9mq7n45kd',text:"Add Q's to current form",done:true},{id:'x3mq8qcszm',text:'Add June clients',done:false}]},{id:'x36mq7izm5o',text:'PersistIQ - AI personalization (needs addon)',owners:['Estefania'],status:'Ongoing',subs:[{id:'x56mq7j1evf',text:'Current bug in campaign creation - Paulo reviewing',done:true},{id:'x1mqr1hvay',text:'Estef will create snapshot of ALL new clients',done:true}]}],p1:[{id:'x43mq7izm5o',text:'ClickUp to PlanHat migration',owners:['Me','Andres'],status:'In progress',subs:[{id:'x44mq7izm5o',text:'Retention tracking to PlanHat',done:true},{id:'x45mq7izm5o',text:'AM / client tracking to PlanHat',done:true},{id:'x46mq7izm5o',text:'Campaign management to PlanHat',done:false},{id:'x48mq7izm5o',text:'SEO workflows - stays in ClickUp',done:false}]},{id:'x3mq7izm5o',text:'New lead - source review',owners:['María','Usman','Me'],status:'Needs update',subs:[{id:'x10mq7n4o5n',text:'Share pricing',done:true},{id:'x11mq7n4ruu',text:'Clarification on processes with vendor',done:true},{id:'x12mq7n4yc4',text:'Confirmation on requirements',done:false},{id:'x13mq7n5lih',text:'Sample list',done:false}]},{id:'x37mq7izm5o',text:'Improve PIQ Pulse dashboard',owners:['Me'],status:'Ongoing',subs:[{id:'x39mq7izm5o',text:'Add: response time per AM',done:false},{id:'x40mq7izm5o',text:'Add: reply rate by vertical + lead source',done:false},{id:'x41mq7izm5o',text:'Add: MRR retained vs churned',done:false}]},{id:'x51mq7izm5o',text:'Paused-client reactivation (90+ days)',owners:['Me'],status:'Ongoing',subs:[]},{id:'x50mq7izm5o',text:'C.L.A.R.A - list-cleaning tool',owners:['Me'],status:'Ongoing',subs:[]},{id:'x1mqzjygsw',text:'NPS - strategy',owners:['Me','Estefania'],status:'Not started',subs:[]}],p2:[{id:'x1mq7m4r03',text:'New weekly reporting - ALL AMs',owners:['Me','Estefania'],status:'Not started',subs:[]},{id:'x31mq7izm5o',text:'Bundles: Outbound Essentials + add-ons in SOWs',owners:['Me','Mike'],status:'Not started',subs:[{id:'x2mq8hs5ta',text:'HeyReach add-on: LinkedIn outreach at $105/sender/mo',done:false}]},{id:'x15mq7n8c3h',text:'Lead Generation for Self service clients',owners:['Me','Paulo'],status:'Not started',subs:[]},{id:'x24mq7izm5o',text:'LinkedIn Ads add-on - needs dedicated Wishpond resource',owners:['Me','Mike'],status:'Not started',subs:[{id:'x26mq7izm5o',text:'Lock down dedicated WP resource assigned to PIQ',done:false}]},{id:'x52mq7izm5o',text:'Build LinkedIn outreach + ads in-house',owners:['Paulo'],status:'Not started',subs:[{id:'x3mq7mwjnb',text:'Research Hey Reach tutorials for LinkedIn automation',done:false}]}],pdone:[]},retention:[{"id":"r1","client":"Tampa Roots","owners":["Eduardo"],"mrr":"1450","risk":"High","issue":"They haven't paid since April","next":"They want a report, we told him we would give them a free month. 12 months - 4 months + 60 days clause (4 payments) - MIREYA SENT EMAIL","status":"Working on it"},{"id":"r2","client":"Roribow - Service Masters","owners":["Lorena"],"mrr":"1130","risk":"Low","issue":"4/6 - we didn't fulfill with the full lead volume","next":"Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards","status":"Working on it"},{"id":"r3","client":"Pharoplast","owners":["Estefania"],"mrr":"1450","risk":"Low","issue":"Simon is leaving Pharoplast, he is now working for another company. 6/12","next":"He still has 6 months of SOW - will pay until sept","status":"Working on it"},{"id":"r4","client":"Constructive Developments","owners":["Eduardo"],"mrr":"1000","risk":"Low","issue":"3/3 - if they pay July 24th will continue","next":"See if they pay and continue for another 3 months","status":"Working on it"},{"id":"r5","client":"Paagsa","owners":["Lorena"],"mrr":"100","risk":"Medium","issue":"Pausing fee until Sept","next":"Will resume in Sept","status":"Working on it"},{"id":"r6","client":"Cheque Guard","owners":["Lorena"],"mrr":"2000","risk":"Low","issue":"7/12 - is MIA, hasn't approved and didn't approved anything","next":"Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE","status":"Working on it"},{"id":"r7","client":"Curation","owners":["Estefania"],"mrr":"1200","risk":"Medium","issue":"2/6 - early term","next":"We have retention call Aug 5 - poor results","status":"At risk"},{"id":"r8","client":"A&M","owners":["Lorena"],"mrr":"1000","risk":"High","issue":"5/6 - needs to make 1 more payment - to cancel in August","next":"Send email to do SEO + website for the remining months $1000","status":"Will churn"},{"id":"r9","client":"Billingual","owners":["Lorena"],"mrr":"1000","risk":"High","issue":"2/12 - hasn't paid","next":"Might be cancelled by Finance after 3rd attempt","status":"Will churn"},{"id":"r10","client":"Atica Global","owners":["María"],"mrr":"750","risk":"High","issue":"They requested non renewal after their 3month term 2/3","next":"Last payment July 15 - will cancel in August","status":"Will churn"},{"id":"r11","client":"JLH","owners":["Eduardo"],"mrr":"1400","risk":"High","issue":"3/3 - NON RENEWAL","next":"Move July's payment - bill June and cancel by August 2","status":"Will churn"},{"id":"r12","client":"Zenova","owners":["Estefania"],"mrr":"1250","risk":"High","issue":"4/6 - non renewal","next":"threaten to dispute, agreed not to bill 2 remaining months from auto renewal, we will keep the 4th payme t","status":"Will churn"},{"id":"r13","client":"Netwave","owners":["Roberto"],"mrr":"1000","risk":"High","issue":"4/3 - non auto renewal","next":"we need to refund 4th payment, there is no auto renewal we billed 4th time","status":"Will churn"},{"id":"r14","client":"4B plastics","owners":["Roberto"],"mrr":"1450","risk":"Medium","issue":"3/6 - early term","next":"cancel before aug 24","status":"Will churn"},{"id":"r15","client":"Tibbo","owners":["Estefania"],"mrr":"1400","risk":"High","issue":"3/3 early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r16","client":"Mindflow","owners":["María"],"mrr":"900","risk":"High","issue":"3/3 - early term, but we are delayed by 1 month","next":"We will move July's payment to fulfill 3 months and book the remaining 3 meetings we need for the early term","status":"Churned"},{"id":"r17","client":"Evolution Benefits","owners":["Roberto"],"mrr":"1400","risk":"High","issue":"6/6 - non renewal","next":"cancel before Aug 11","status":"Churned"},{"id":"r18","client":"POS solutions","owners":["Eduardo"],"mrr":"1000","risk":"High","issue":"4/3 - auto renewal","next":"They auto-renewed / requested cancellation","status":"Churned"},{"id":"r19","client":"Instant card","owners":["Roberto"],"mrr":"1250","risk":"High","issue":"3/3 - non renewal","next":"cancel before Aug 6","status":"Churned"},{"id":"r20","client":"Chemship","owners":["Tania"],"mrr":"1200","risk":"Medium","issue":"8/3 - early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r21","client":"Mimo","owners":["María"],"mrr":"950","risk":"High","issue":"3/3 - non renewal","next":"cancel before aug 10","status":"Churned"}],selfservice:[],finance:[]};}
 
   let state=defaults();
   function normalize(s){
@@ -371,6 +424,11 @@
     if(Array.isArray(s.retention))s.retention.forEach(r=>{
       if(!Array.isArray(r.owners))r.owners=[];if(!r.mrr)r.mrr='';
       if(r.status==='Watching')r.status='At risk';if(r.status==='Working')r.status='Working on it';});
+    // New forecast sections
+    if(!Array.isArray(s.selfservice))s.selfservice=[];
+    s.selfservice.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.status)r.status='Active';});
+    if(!Array.isArray(s.finance))s.finance=[];
+    s.finance.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.months)r.months='';if(!r.status)r.status='Finance will churn';});
     return s;
   }
   function changed(){renderAll();persist();}
@@ -481,19 +539,27 @@
   function renderRetentionSummary(){
     const el=document.getElementById('retSummary');if(!el)return;
     const r=state.retention;
-    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),sv=r.filter(x=>x.status==='Saved');
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
+    const ss=state.selfservice||[], fin=state.finance||[];
     el.innerHTML=`
       <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
-      <div class="ret-stat safe"><div class="ret-stat-label">Saved</div><div class="ret-stat-num">${sv.length}</div><div class="ret-stat-mrr">${fmt(mrr(sv))} MRR retained</div><div class="ret-stat-sub">retention worked</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
       <div class="ret-total-row">
-        <div class="ret-total-item"><b>${r.length}</b> total clients tracked</div>
+        <div class="ret-total-item"><b>${r.length}</b> managed clients tracked</div>
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or confirmed leaving</div>
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
-        <div class="ret-total-item" style="color:var(--teal)"><b>${sv.length}</b> recovered</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))}</b> total MRR exposure</div>`:''}
       </div>`;
+  }
+  function togglePanel(id){
+    const p=document.getElementById(id);if(!p)return;
+    const other=id==='ssPanel'?'finPanel':'ssPanel';
+    const op=document.getElementById(other);if(op)op.hidden=true;
+    p.hidden=!p.hidden;
+    if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
   let dragSrcId=null;
@@ -535,7 +601,115 @@
     table.appendChild(tb);wrap.appendChild(table);c.appendChild(wrap);
   }
   document.getElementById('addRetention').addEventListener('click',()=>{state.retention.push({id:uid(),client:'',owners:['Estefania'],mrr:'',risk:'Medium',issue:'',next:'',status:'At risk'});changed();});
-  function renderAll(){renderBoard();renderRetention();}
+
+  // ── SELF-SERVICE list (shown in the click-through panel) ──
+  function renderSelfservice(){
+    const cols=[{key:'client',label:'Client'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'plan',label:'Plan'},{key:'signup',label:'Churn date'},{key:'status',label:'Status',type:'select',opts:SSSTATUS}];
+    renderGenericTable('selfserviceTable','selfservice',cols,renderRetentionSummary,'No self-service cancellations pulled yet. Use "Pull this month churn".');
+  }
+
+  // ── UNPAID / FINANCE list (shown in the click-through panel) ──
+  function renderFinance(){
+    const cols=[{key:'client',label:'Client'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'months',label:'Months unpaid',cls:'mrr-cell'},{key:'note',label:'Note'},{key:'status',label:'Status',type:'select',opts:FINSTATUS}];
+    renderGenericTable('financeTable','finance',cols,renderRetentionSummary,'No unpaid/finance-cancelled clients tracked.');
+  }
+  document.getElementById('addFinance').addEventListener('click',()=>{state.finance.push({id:uid(),client:'',mrr:'',months:'',note:'',status:'Finance will churn'});changed();});
+
+  // ── GENERIC TABLE RENDERER (drag-sortable, editable) ──
+  let genDragId=null;
+  function renderGenericTable(containerId,key,cols,summaryFn,emptyMsg){
+    const c=document.getElementById(containerId);if(!c)return;c.innerHTML='';
+    const arr=state[key];
+    if(!arr.length){c.innerHTML=`<div class="empty">${emptyMsg}</div>`;return;}
+    const wrap=document.createElement('div');wrap.className='tbl-wrap';
+    const table=document.createElement('table');table.className='tbl';
+    const thead=document.createElement('thead');const htr=document.createElement('tr');
+    const dth=document.createElement('th');dth.className='drag-th';htr.appendChild(dth);
+    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});
+    htr.appendChild(document.createElement('th'));thead.appendChild(htr);table.appendChild(thead);
+    const tb=document.createElement('tbody');
+    arr.forEach(row=>{
+      const tr=document.createElement('tr');tr.dataset.id=row.id;tr.draggable=false;
+      const htd=document.createElement('td');htd.className='drag-td';
+      const h=document.createElement('span');h.className='row-handle';h.innerHTML='&#10303;';
+      h.addEventListener('mousedown',()=>tr.draggable=true);h.addEventListener('mouseup',()=>tr.draggable=false);
+      htd.appendChild(h);tr.appendChild(htd);
+      cols.forEach(col=>{
+        const td=document.createElement('td');td.setAttribute('data-label',col.label);
+        if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();summaryFn();}));
+        else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();summaryFn();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();summaryFn();});td.appendChild(inp);}
+        else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},'cell'));
+        tr.appendChild(td);
+      });
+      const td=document.createElement('td');const del=document.createElement('button');del.className='del';del.innerHTML='&times;';
+      del.addEventListener('click',()=>{state[key]=state[key].filter(x=>x.id!==row.id);changed();});td.appendChild(del);tr.appendChild(td);
+      tr.addEventListener('dragstart',e=>{genDragId=row.id;tr.classList.add('dragging-row');e.dataTransfer.effectAllowed='move';});
+      tr.addEventListener('dragend',()=>{tr.draggable=false;tr.classList.remove('dragging-row');document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));});
+      tr.addEventListener('dragover',e=>{e.preventDefault();if(row.id===genDragId)return;document.querySelectorAll('.drag-over-top').forEach(el=>el.classList.remove('drag-over-top'));tr.classList.add('drag-over-top');});
+      tr.addEventListener('dragleave',()=>tr.classList.remove('drag-over-top'));
+      tr.addEventListener('drop',e=>{e.preventDefault();tr.classList.remove('drag-over-top');if(!genDragId||genDragId===row.id)return;const from=state[key].findIndex(x=>x.id===genDragId),to=state[key].findIndex(x=>x.id===row.id);if(from<0||to<0)return;const[moved]=state[key].splice(from,1);state[key].splice(to,0,moved);genDragId=null;changed();});
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);wrap.appendChild(table);c.appendChild(wrap);
+  }
+
+  // ── PULL THIS MONTH'S CHURN FROM CHARTMOGUL (via Apps Script proxy) ──
+  // Rules:
+  //  • Already in the at-risk table → just flag it Churned (no duplicate).
+  //  • NOT fully-managed (self-service) → goes to the Self-service card list.
+  //  • Fully-managed + 3+ months unpaid + not in table → Unpaid/Finance card list.
+  //  • Fully-managed but NOT 3-months-unpaid and not in table → IGNORE (do not add).
+  function pullChartmogul(){
+    const url=getScriptUrl();
+    if(!url)return;
+    const btn=document.getElementById('pullChartmogul');
+    btn.disabled=true;btn.textContent='⟳ Pulling…';
+    const cb='cm_'+Date.now();let done=false;
+    window[cb]=function(res){
+      done=true;delete window[cb];const s=document.getElementById(cb);if(s)s.remove();
+      btn.disabled=false;btn.textContent='⟳ Pull this month churn';
+      if(!res||!res.ok){alert('ChartMogul pull failed: '+(res&&res.error?res.error:'unknown'));return;}
+      const incoming=res.customers||[];
+      let flagged=0,ss=0,fin=0,ignored=0;
+      incoming.forEach(cust=>{
+        const nm=(cust.client||'').trim().toLowerCase();
+        if(!nm)return;
+        const inRet=state.retention.find(x=>(x.client||'').trim().toLowerCase()===nm);
+        const inSS =state.selfservice.find(x=>(x.client||'').trim().toLowerCase()===nm);
+        const inFin=state.finance.find(x=>(x.client||'').trim().toLowerCase()===nm);
+
+        // 1) Already tracked anywhere → flag as churned, never duplicate
+        if(inRet){ inRet.status='Churned'; flagged++; return; }
+        if(inSS){ inSS.status='Churned'; if(cust.mrr)inSS.mrr=cust.mrr; if(cust.churnDate)inSS.signup=cust.churnDate; flagged++; return; }
+        if(inFin){ inFin.status='Churned by finance'; flagged++; return; }
+
+        // 2) Not tracked yet — decide by type
+        if(!cust.fullyManaged){
+          // self-service (anything NOT fully managed)
+          state.selfservice.push({id:uid(),client:cust.client,mrr:cust.mrr||'',plan:cust.plan||'',signup:cust.churnDate||'',status:'Churned'});
+          ss++;
+        } else if(cust.monthsUnpaid>=3){
+          // fully-managed AND 3+ months unpaid → finance cancellation
+          state.finance.push({id:uid(),client:cust.client,mrr:cust.mrr||'',months:String(cust.monthsUnpaid||''),note:cust.plan||'',status:'Churned by finance'});
+          fin++;
+        } else {
+          // fully-managed but not 3-months-unpaid and not already tracked → IGNORE
+          ignored++;
+        }
+      });
+      changed();
+      alert('ChartMogul — '+(res.month||'this month')+': '+(res.count||incoming.length)+' cancellations.\n'
+           +flagged+' matched & flagged churned\n'
+           +ss+' new self-service\n'
+           +fin+' new unpaid/finance\n'
+           +ignored+' fully-managed ignored (not 3mo unpaid, not tracked)');
+    };
+    setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull this month churn';alert('ChartMogul pull timed out.');}},60000);
+    const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=chartmogul&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
+  }
+  document.getElementById('pullChartmogul').addEventListener('click',pullChartmogul);
+
+  function renderAll(){renderBoard();renderRetention();renderSelfservice();renderFinance();}
 
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
