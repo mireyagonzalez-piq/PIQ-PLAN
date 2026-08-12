@@ -57,7 +57,16 @@
   .sub-dot{width:5px;height:5px;border-radius:50%;background:var(--line-2);flex-shrink:0}
   .sub-dot.done-dot{background:var(--teal)}
   /* retention read-only */
-  .ret-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .ret-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .ret-stat.clickable{cursor:pointer;transition:all .15s}
+  .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(91,79,204,.12);transform:translateY(-1px)}
+  .card-panel{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2)}
+  .card-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .panel-close{font-size:12px;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:inherit}
+  .panel-close:hover{color:var(--fire);border-color:var(--fire)}
+  @media(max-width:1000px){.ret-summary{grid-template-columns:1fr 1fr 1fr}}
+  .subsection-divider{margin:40px 0 16px;padding-top:28px;border-top:2px solid var(--line)}
+  .subsection-title{font-weight:700;font-size:clamp(18px,2vw,24px);line-height:1.1;letter-spacing:-.02em;margin:2px 0 6px}
   .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
   .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
   .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
@@ -82,7 +91,7 @@
   .tbl tbody tr:hover td{background:var(--panel-2)}
   .risk-badge,.status-badge{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px}
   .r-High{background:var(--fire-dim);color:var(--fire)}.r-Medium{background:var(--amber-dim);color:var(--amber)}.r-Low{background:var(--teal-dim);color:var(--teal)}
-  .s-Churned{background:var(--fire-dim);color:var(--fire)}.s-Will-churn{background:rgba(217,80,48,.15);color:var(--fire)}.s-At-risk{background:var(--amber-dim);color:var(--amber)}.s-Working-on-it{background:var(--violet-dim);color:var(--violet)}.s-Saved{background:var(--teal-dim);color:var(--teal)}
+  .s-Churned{background:var(--fire-dim);color:var(--fire)}.s-Will-churn{background:rgba(217,80,48,.15);color:var(--fire)}.s-At-risk{background:var(--amber-dim);color:var(--amber)}.s-Working-on-it{background:var(--violet-dim);color:var(--violet)}.s-Saved{background:var(--teal-dim);color:var(--teal)}.s-Active{background:var(--teal-dim);color:var(--teal)}.s-Finance-will-churn{background:rgba(217,80,48,.15);color:var(--fire)}.s-Churned-by-finance{background:var(--fire-dim);color:var(--fire)}
   .mrr-val{font-weight:600;color:var(--teal)}
   .loading{text-align:center;padding:60px 20px;color:var(--faint);font-size:14px}
   .error-box{background:#fef2f2;border:1px solid rgba(217,80,48,.3);border-radius:10px;padding:16px 20px;color:var(--fire);font-size:13px;margin-bottom:20px}
@@ -130,13 +139,22 @@
     </div>
     <div class="ret-summary" id="retSummary"></div>
     <div id="retView"><div class="loading">Loading…</div></div>
+
+    <div id="ssPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Self-service cancellations · this month</h2><button class="panel-close" onclick="document.getElementById('ssPanel').hidden=true">✕ close</button></div>
+      <div id="ssView"></div>
+    </div>
+    <div id="finPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Unpaid clients · finance cancellations</h2><button class="panel-close" onclick="document.getElementById('finPanel').hidden=true">✕ close</button></div>
+      <div id="finView"></div>
+    </div>
   </section>
 </main>
 
 <script>
   const TIERS=['p0','p1','p2','pdone'];
   const META={p0:{tag:'P0',sub:'Non-negotiable'},p1:{tag:'P1',sub:'Growth · active pilots'},p2:{tag:'P2',sub:'Explore later'},pdone:{tag:'Done',sub:'Completed'}};
-  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
+  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Churned by finance':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','Finance will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Active':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
   const expanded=new Set();
   let state=null;
 
@@ -187,6 +205,8 @@
     if(!state)return;
     renderBoard();
     renderRetention();
+    renderSelfservice();
+    renderFinance();
   }
 
   function renderBoard(){
@@ -235,17 +255,18 @@
   function renderRetention(){
     if(!state.retention){return;}
     const r=state.retention;
-    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),sv=r.filter(x=>x.status==='Saved');
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
+    const ss=state.selfservice||[], fin=state.finance||[];
     document.getElementById('retSummary').innerHTML=`
       <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
-      <div class="ret-stat safe"><div class="ret-stat-label">Saved</div><div class="ret-stat-num">${sv.length}</div><div class="ret-stat-mrr">${fmt(mrr(sv))} MRR retained</div><div class="ret-stat-sub">retention worked</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
       <div class="ret-total-row">
-        <div class="ret-total-item"><b>${r.length}</b> total clients</div>
+        <div class="ret-total-item"><b>${r.length}</b> managed clients tracked</div>
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or leaving</div>
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
-        <div class="ret-total-item" style="color:var(--teal)"><b>${sv.length}</b> recovered</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo]))}</b> total MRR exposure</div>`:''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
@@ -263,6 +284,60 @@
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
         <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
         <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+  }
+
+  function togglePanel(id){
+    const p=document.getElementById(id);if(!p)return;
+    const other=id==='ssPanel'?'finPanel':'ssPanel';
+    const op=document.getElementById(other);if(op)op.hidden=true;
+    p.hidden=!p.hidden;
+    if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function renderSelfservice(){
+    if(!state.selfservice)return;
+    const r=state.selfservice;
+    const rv=document.getElementById('ssView');rv.innerHTML='';
+    if(!r.length){rv.innerHTML='<div class="loading">No self-service accounts.</div>';return;}
+    const wrap=document.createElement('div');wrap.className='tbl-wrap';
+    const tbl=document.createElement('table');tbl.className='tbl';
+    tbl.innerHTML='<thead><tr><th>Client</th><th>MRR</th><th>Plan</th><th>Churn date</th><th>Status</th></tr></thead>';
+    const tb=document.createElement('tbody');
+    r.forEach(row=>{
+      const tr=document.createElement('tr');
+      const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
+      tr.innerHTML=`
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
+        <td data-label="Plan" style="color:var(--muted)">${row.plan||'—'}</td>
+        <td data-label="Churn date" style="color:var(--muted)">${row.signup||'—'}</td>
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+  }
+
+  function renderFinance(){
+    if(!state.finance)return;
+    const r=state.finance;
+    const rv=document.getElementById('finView');rv.innerHTML='';
+    if(!r.length){rv.innerHTML='<div class="loading">No finance-churn accounts.</div>';return;}
+    const wrap=document.createElement('div');wrap.className='tbl-wrap';
+    const tbl=document.createElement('table');tbl.className='tbl';
+    tbl.innerHTML='<thead><tr><th>Client</th><th>MRR</th><th>Months unpaid</th><th>Note</th><th>Status</th></tr></thead>';
+    const tb=document.createElement('tbody');
+    r.forEach(row=>{
+      const tr=document.createElement('tr');
+      const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
+      tr.innerHTML=`
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
+        <td data-label="Months unpaid" style="color:var(--muted)">${row.months||'—'}</td>
+        <td data-label="Note" style="max-width:240px;color:var(--muted)">${row.note||'—'}</td>
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
