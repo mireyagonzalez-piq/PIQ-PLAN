@@ -111,7 +111,7 @@
   .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px}
   .mrr-input::placeholder{color:var(--faint);font-weight:400}
   .empty{color:var(--faint);font-size:13px;padding:20px}
-  .ret-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .ret-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
   .ret-stat.clickable{cursor:pointer;transition:all .15s}
   .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(91,79,204,.12);transform:translateY(-1px)}
   .card-panel{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2)}
@@ -263,6 +263,7 @@
     <div style="display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap">
       <button class="addbtn" id="addRetention" style="max-width:200px">+ add client</button>
       <button id="pullChartmogul" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull this month churn</button>
+      <button id="pullSlack" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull failed payments (Slack)</button>
     </div>
     <div id="retentionTable"></div>
 
@@ -275,6 +276,10 @@
       <div class="card-panel-head"><h2 class="subsection-title">Unpaid clients · finance cancellations</h2><button class="panel-close" onclick="document.getElementById('finPanel').hidden=true">✕ close</button></div>
       <button class="addbtn" id="addFinance" style="margin-bottom:12px;max-width:220px">+ add unpaid client</button>
       <div id="financeTable"></div>
+    </div>
+    <div id="fpPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Failed payments · from Slack (Mireya tagged)</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
+      <div id="failedTable"></div>
     </div>
   </section>
 
@@ -414,7 +419,7 @@
 
   // ── DATA ─────────────────────────────────────────────────────
   const TIERS=['p0','p1','p2','pdone'];
-  function defaults(){return{projects:{p0:[{id:'x1mq7izm5o',text:'Churn: target under 14%',owners:['Me'],status:'Ongoing',subs:[{id:'x2mq7n1jj7',text:'SEO addon or replacement as retention',done:true},{id:'x3mq7n1w8n',text:'Resetting expectations',done:true},{id:'x6mq7n2qr6',text:'Campaign audits',done:false}]},{id:'x2mq7izm5o',text:'Reply rate: 1% minimum',owners:['Me'],status:'Ongoing',subs:[{id:'x1mq7mu8oe',text:'audit top % vs lower %',done:false},{id:'x2mq7mudib',text:'focus on clients per AMs with highest %',done:true},{id:'x1mq8ensb9',text:'AI personalization addon',done:true},{id:'x2mq8eo54y',text:'lead source sample',done:true}]},{id:'x4mq7izm5o',text:'AM email response time - fix urgency',owners:['Me'],status:'In progress',subs:[{id:'x5mq7izm5o',text:'Set the standard: first reply within 1 business day',done:true},{id:'x7mq7izm5o',text:'Anything past SLA auto-surfaces',done:true},{id:'x9mq7izm5o',text:'Add response-time to Pulse dashboard',done:true},{id:'x10mq7izm5o',text:'Review per-AM in weekly sync',done:false}]},{id:'x11mq7izm5o',text:'QC intake - quality check for June+ clients (Andres)',owners:['Me','Andres'],status:'Done',subs:[{id:'x7mq7n3kui',text:"Shared Q's with Andres",done:true},{id:'x8mq7n3vby',text:'Work around form/airtable logic',done:true},{id:'x9mq7n45kd',text:"Add Q's to current form",done:true},{id:'x3mq8qcszm',text:'Add June clients',done:false}]},{id:'x36mq7izm5o',text:'PersistIQ - AI personalization (needs addon)',owners:['Estefania'],status:'Ongoing',subs:[{id:'x56mq7j1evf',text:'Current bug in campaign creation - Paulo reviewing',done:true},{id:'x1mqr1hvay',text:'Estef will create snapshot of ALL new clients',done:true}]}],p1:[{id:'x43mq7izm5o',text:'ClickUp to PlanHat migration',owners:['Me','Andres'],status:'In progress',subs:[{id:'x44mq7izm5o',text:'Retention tracking to PlanHat',done:true},{id:'x45mq7izm5o',text:'AM / client tracking to PlanHat',done:true},{id:'x46mq7izm5o',text:'Campaign management to PlanHat',done:false},{id:'x48mq7izm5o',text:'SEO workflows - stays in ClickUp',done:false}]},{id:'x3mq7izm5o',text:'New lead - source review',owners:['María','Usman','Me'],status:'Needs update',subs:[{id:'x10mq7n4o5n',text:'Share pricing',done:true},{id:'x11mq7n4ruu',text:'Clarification on processes with vendor',done:true},{id:'x12mq7n4yc4',text:'Confirmation on requirements',done:false},{id:'x13mq7n5lih',text:'Sample list',done:false}]},{id:'x37mq7izm5o',text:'Improve PIQ Pulse dashboard',owners:['Me'],status:'Ongoing',subs:[{id:'x39mq7izm5o',text:'Add: response time per AM',done:false},{id:'x40mq7izm5o',text:'Add: reply rate by vertical + lead source',done:false},{id:'x41mq7izm5o',text:'Add: MRR retained vs churned',done:false}]},{id:'x51mq7izm5o',text:'Paused-client reactivation (90+ days)',owners:['Me'],status:'Ongoing',subs:[]},{id:'x50mq7izm5o',text:'C.L.A.R.A - list-cleaning tool',owners:['Me'],status:'Ongoing',subs:[]},{id:'x1mqzjygsw',text:'NPS - strategy',owners:['Me','Estefania'],status:'Not started',subs:[]}],p2:[{id:'x1mq7m4r03',text:'New weekly reporting - ALL AMs',owners:['Me','Estefania'],status:'Not started',subs:[]},{id:'x31mq7izm5o',text:'Bundles: Outbound Essentials + add-ons in SOWs',owners:['Me','Mike'],status:'Not started',subs:[{id:'x2mq8hs5ta',text:'HeyReach add-on: LinkedIn outreach at $105/sender/mo',done:false}]},{id:'x15mq7n8c3h',text:'Lead Generation for Self service clients',owners:['Me','Paulo'],status:'Not started',subs:[]},{id:'x24mq7izm5o',text:'LinkedIn Ads add-on - needs dedicated Wishpond resource',owners:['Me','Mike'],status:'Not started',subs:[{id:'x26mq7izm5o',text:'Lock down dedicated WP resource assigned to PIQ',done:false}]},{id:'x52mq7izm5o',text:'Build LinkedIn outreach + ads in-house',owners:['Paulo'],status:'Not started',subs:[{id:'x3mq7mwjnb',text:'Research Hey Reach tutorials for LinkedIn automation',done:false}]}],pdone:[]},retention:[{"id":"r1","client":"Tampa Roots","owners":["Eduardo"],"mrr":"1450","risk":"High","issue":"They haven't paid since April","next":"They want a report, we told him we would give them a free month. 12 months - 4 months + 60 days clause (4 payments) - MIREYA SENT EMAIL","status":"Working on it"},{"id":"r2","client":"Roribow - Service Masters","owners":["Lorena"],"mrr":"1130","risk":"Low","issue":"4/6 - we didn't fulfill with the full lead volume","next":"Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards","status":"Working on it"},{"id":"r3","client":"Pharoplast","owners":["Estefania"],"mrr":"1450","risk":"Low","issue":"Simon is leaving Pharoplast, he is now working for another company. 6/12","next":"He still has 6 months of SOW - will pay until sept","status":"Working on it"},{"id":"r4","client":"Constructive Developments","owners":["Eduardo"],"mrr":"1000","risk":"Low","issue":"3/3 - if they pay July 24th will continue","next":"See if they pay and continue for another 3 months","status":"Working on it"},{"id":"r5","client":"Paagsa","owners":["Lorena"],"mrr":"100","risk":"Medium","issue":"Pausing fee until Sept","next":"Will resume in Sept","status":"Working on it"},{"id":"r6","client":"Cheque Guard","owners":["Lorena"],"mrr":"2000","risk":"Low","issue":"7/12 - is MIA, hasn't approved and didn't approved anything","next":"Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE","status":"Working on it"},{"id":"r7","client":"Curation","owners":["Estefania"],"mrr":"1200","risk":"Medium","issue":"2/6 - early term","next":"We have retention call Aug 5 - poor results","status":"At risk"},{"id":"r8","client":"A&M","owners":["Lorena"],"mrr":"1000","risk":"High","issue":"5/6 - needs to make 1 more payment - to cancel in August","next":"Send email to do SEO + website for the remining months $1000","status":"Will churn"},{"id":"r9","client":"Billingual","owners":["Lorena"],"mrr":"1000","risk":"High","issue":"2/12 - hasn't paid","next":"Might be cancelled by Finance after 3rd attempt","status":"Will churn"},{"id":"r10","client":"Atica Global","owners":["María"],"mrr":"750","risk":"High","issue":"They requested non renewal after their 3month term 2/3","next":"Last payment July 15 - will cancel in August","status":"Will churn"},{"id":"r11","client":"JLH","owners":["Eduardo"],"mrr":"1400","risk":"High","issue":"3/3 - NON RENEWAL","next":"Move July's payment - bill June and cancel by August 2","status":"Will churn"},{"id":"r12","client":"Zenova","owners":["Estefania"],"mrr":"1250","risk":"High","issue":"4/6 - non renewal","next":"threaten to dispute, agreed not to bill 2 remaining months from auto renewal, we will keep the 4th payme t","status":"Will churn"},{"id":"r13","client":"Netwave","owners":["Roberto"],"mrr":"1000","risk":"High","issue":"4/3 - non auto renewal","next":"we need to refund 4th payment, there is no auto renewal we billed 4th time","status":"Will churn"},{"id":"r14","client":"4B plastics","owners":["Roberto"],"mrr":"1450","risk":"Medium","issue":"3/6 - early term","next":"cancel before aug 24","status":"Will churn"},{"id":"r15","client":"Tibbo","owners":["Estefania"],"mrr":"1400","risk":"High","issue":"3/3 early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r16","client":"Mindflow","owners":["María"],"mrr":"900","risk":"High","issue":"3/3 - early term, but we are delayed by 1 month","next":"We will move July's payment to fulfill 3 months and book the remaining 3 meetings we need for the early term","status":"Churned"},{"id":"r17","client":"Evolution Benefits","owners":["Roberto"],"mrr":"1400","risk":"High","issue":"6/6 - non renewal","next":"cancel before Aug 11","status":"Churned"},{"id":"r18","client":"POS solutions","owners":["Eduardo"],"mrr":"1000","risk":"High","issue":"4/3 - auto renewal","next":"They auto-renewed / requested cancellation","status":"Churned"},{"id":"r19","client":"Instant card","owners":["Roberto"],"mrr":"1250","risk":"High","issue":"3/3 - non renewal","next":"cancel before Aug 6","status":"Churned"},{"id":"r20","client":"Chemship","owners":["Tania"],"mrr":"1200","risk":"Medium","issue":"8/3 - early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r21","client":"Mimo","owners":["María"],"mrr":"950","risk":"High","issue":"3/3 - non renewal","next":"cancel before aug 10","status":"Churned"}],selfservice:[],finance:[]};}
+  function defaults(){return{projects:{"p0":[{"id":"x1","text":"Churn: target under 14%","owners":["Me"],"status":"Ongoing","subs":[{"id":"s1","text":"SEO addon or replacement as retention","done":true},{"id":"s2","text":"Resetting expectations","done":true},{"id":"s3","text":"Campaign audits","done":false}]},{"id":"x2","text":"Reply rate: 1% minimum","owners":["Me"],"status":"Ongoing","subs":[{"id":"s4","text":"audit top % vs lower %","done":true},{"id":"s5","text":"focus on clients per AMs with highest %","done":true},{"id":"s6","text":"AI personalization addon","done":true},{"id":"s7","text":"lead source sample","done":false}]},{"id":"x3","text":"AM email response time - fix urgency","owners":["Me"],"status":"In progress","subs":[{"id":"s8","text":"Set the standard: first reply within 1 business day","done":true},{"id":"s9","text":"Anything past SLA auto-surfaces","done":true},{"id":"s10","text":"Add response-time to Pulse dashboard","done":true},{"id":"s11","text":"Review per-AM in weekly sync","done":false}]},{"id":"x5","text":"PersistIQ - AI personalization (needs addon)","owners":["Estefania"],"status":"Ongoing","subs":[{"id":"s16","text":"Current bug in campaign creation - Paulo reviewing","done":true},{"id":"s17","text":"Estef will create snapshot of ALL new clients","done":true}]},{"id":"x1mrlc69q1","text":"Agent building for PIQ","owners":["Me"],"status":"In progress","subs":[{"id":"x2mrlc6kd3","text":"Create a lead gen agent","done":false},{"id":"x3mrlc6umv","text":"Create a CSM / Report generated agent","done":false}]}],"p1":[{"id":"x6","text":"ClickUp to PlanHat migration","owners":["Me","Andres"],"status":"In progress","subs":[{"id":"s18","text":"Retention tracking to PlanHat","done":true},{"id":"s19","text":"AM / client tracking to PlanHat","done":true},{"id":"s20","text":"Campaign management to PlanHat","done":false},{"id":"s21","text":"SEO workflows - stays in ClickUp","done":false}]},{"id":"x7","text":"New lead - source review","owners":["María","Usman","Me"],"status":"Needs update","subs":[{"id":"s22","text":"Share pricing","done":true},{"id":"s23","text":"Clarification on processes with vendor","done":true},{"id":"s24","text":"Confirmation on requirements","done":false},{"id":"s25","text":"Sample list","done":false}]}],"p2":[{"id":"x12","text":"New weekly reporting - ALL AMs","owners":["Me","Estefania"],"status":"Not started","subs":[]},{"id":"x13","text":"Bundles: Outbound Essentials + add-ons in SOWs","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s29","text":"HeyReach add-on: LinkedIn outreach at $105/sender/mo","done":false}]},{"id":"x14","text":"Lead Generation for Self service clients","owners":["Me","Paulo"],"status":"Not started","subs":[]},{"id":"x15","text":"LinkedIn Ads add-on - needs dedicated Wishpond resource","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s30","text":"Lock down dedicated WP resource assigned to PIQ","done":false}]},{"id":"x16","text":"Build LinkedIn outreach + ads in-house","owners":["Paulo"],"status":"Not started","subs":[{"id":"s31","text":"Research Hey Reach tutorials for LinkedIn automation","done":false}]}],"pdone":[{"id":"x11","text":"NPS - strategy","owners":["Me"],"status":"Done","subs":[]},{"id":"x9","text":"Paused-client reactivation (90+ days)","owners":["Me"],"status":"Done","subs":[]},{"id":"x4","text":"QC intake - quality check for June+ clients (Andres)","owners":["Me","Andres"],"status":"Monitoring","subs":[{"id":"s12","text":"Shared Q's with Andres","done":true},{"id":"s13","text":"Work around form/airtable logic","done":true},{"id":"s14","text":"Add Q's to current form","done":true},{"id":"s15","text":"Add June clients","done":false}]},{"id":"x10","text":"C.L.A.R.A - list-cleaning tool","owners":["Me"],"status":"Maintenance","subs":[]},{"id":"x8","text":"Improve PIQ Pulse dashboard","owners":["Me"],"status":"Maintenance","subs":[{"id":"s26","text":"Add: response time per AM","done":false},{"id":"s27","text":"Add: reply rate by vertical + lead source","done":false},{"id":"s28","text":"Add: MRR retained vs churned","done":false}]}]},retention:[{"id":"r3","client":"Roribow - Service Masters","owners":["Lorena"],"mrr":"1130","risk":"Low","issue":"4/6 - we didn't fulfill with the full lead volume","next":"Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards","status":"Working on it"},{"id":"r4","client":"Pharoplast","owners":["Estefania"],"mrr":"1450","risk":"Low","issue":"Simon is leaving Pharoplast, he is now working for another company. 6/12","next":"He still has 6 months of SOW - will pay until sept","status":"Working on it"},{"id":"r5","client":"Constructive Developments","owners":["Eduardo"],"mrr":"1000","risk":"Low","issue":"3/3 - if they pay July 24th will continue","next":"See if they pay and continue for another 3 months","status":"Working on it"},{"id":"r10","client":"Cheque Guard","owners":["Lorena"],"mrr":"2000","risk":"Low","issue":"7/12 - is MIA, hasn't approved and didn't approved anything","next":"Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE","status":"Working on it"},{"id":"x2msq9w6wm","client":"Adams Digital","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"3/3 - non renewal","next":"will move payment to mid October","status":"Working on it"},{"id":"x4ms9btcdu","client":"Curation","owners":["Estefania"],"mrr":"1200","risk":"Medium","issue":"2/6 - early term","next":"We have retention call Aug 5 - poor results","status":"At risk"},{"id":"x1msxtz7iv","client":"Palette Panda","owners":["Tania"],"mrr":"1000","risk":"High","issue":"4/3 non renewal","next":"cancel before sept 17 - will void invoices for aug","status":"At risk"},{"id":"r6","client":"A&M","owners":["Tania"],"mrr":"1000","risk":"High","issue":"5/6 - needs to make 1 more payment - to cancel in August","next":"Send email to do SEO + website for the remining months $1000","status":"Will churn"},{"id":"x6ms9bz3hh","client":"Netwave","owners":["Roberto"],"mrr":"1000","risk":"High","issue":"4/3 - non auto renewal","next":"we need to refund 4th payment, there is no auto renewal we billed 4th time (DO NOT BILL AUG 24)","status":"Will churn"},{"id":"x1mt349pfd","client":"United Distribution","owners":["Estefania"],"mrr":"1250","risk":"Medium","issue":"3/3 - no auto renewal","next":"cancel before aug 24","status":"Churned"},{"id":"r7","client":"Laura Lopicollo","owners":["Estefania"],"mrr":"1000","risk":"High","issue":"2/12 - hasn't paid","next":"Might be cancelled by Finance after 3rd attempt","status":"Churned"},{"id":"x1msq9vst3","client":"Hydro Bioscience","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"15/3 - 5 auto renewals","next":"cancel before Aug 13","status":"Churned"},{"id":"x1mshw9rdz","client":"4B plastics","owners":["Roberto"],"mrr":"1450","risk":"Medium","issue":"3/6 - early term","next":"cancel before aug 24","status":"Churned"},{"id":"x5ms9bv5s3","client":"Tibbo","owners":["Estefania"],"mrr":"1400","risk":"High","issue":"3/3 early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r8","client":"Atica Global","owners":["María"],"mrr":"750","risk":"High","issue":"They requested non renewal after their 3month term 2/3","next":"Last payment July 15 - will cancel in August","status":"Churned"},{"id":"x3ms9brm24","client":"Zenova","owners":["Estefania"],"mrr":"1250","risk":"High","issue":"4/6 - non renewal","next":"threaten to dispute, agreed not to bill 2 remaining months from auto renewal, we will keep the 4th payme t","status":"Churned"},{"id":"x1mrcbcmkt","client":"Mindflow","owners":["María"],"mrr":"900","risk":"High","issue":"3/3 - early term, but we are delayed by 1 month","next":"We will move July's payment to fulfill 3 months and book the remaining 3 meetings we need for the early term","status":"Churned"},{"id":"x2ms9bpb0j","client":"Evolution Benefits","owners":["Roberto"],"mrr":"1400","risk":"High","issue":"6/6 - non renewal","next":"cancel before Aug 11","status":"Churned"},{"id":"x1msnjk2cs","client":"POS solutions","owners":["Eduardo"],"mrr":"1,000","risk":"High","issue":"4/3 - auto renewal","next":"They auto-renewed / requested cancellation","status":"Churned"},{"id":"x1ms9bm0v4","client":"Instant card","owners":["Roberto"],"mrr":"1250","risk":"High","issue":"3/3 - non renewal","next":"cancel before Aug 6","status":"Churned"},{"id":"x1msj8v4rm","client":"Chemship","owners":["Tania"],"mrr":"1200","risk":"Medium","issue":"8/3 - early term","next":"cancel before Aug 7","status":"Churned"},{"id":"x7ms9c228j","client":"Mimo","owners":["María"],"mrr":"950","risk":"High","issue":"3/3 - non renewal","next":"cancel before aug 10","status":"Churned"}],selfservice:[{"id":"x1mspoh760","client":"plumlending.com","mrr":"150","plan":"cancelled their Premium Monthly plan (x4)","signup":"Aug 5, 2026","status":"Churned"},{"id":"x2mspoh760","client":"landhold.com","mrr":"59","plan":"cancelled their Essentials Yearly plan","signup":"Aug 10, 2026","status":"Churned"},{"id":"x1mt98zhv0","client":"crustdata.co","mrr":"75","plan":"cancelled their Essentials Monthly plan","signup":"Aug 23, 2026","status":"Churned"}],finance:[{"id":"x3mspoht88","client":"Vegan Vitality","mrr":"1200","months":"3","note":"MIA - not paid","status":"Churned by finance"},{"id":"x11msppdu4l","client":"Beantastic","mrr":"913","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x3mt999yr9","client":"LMS","mrr":"1450","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x4mspot0u5","client":"Billingual productions","mrr":"1250","months":"4","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x5mspovydj","client":"Transparency Studio","mrr":"750","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x6mspoy6mr","client":"McClintock Tax","mrr":"1000","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x7mspp0or8","client":"Tampa Roots","mrr":"1450","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x2mt996vdk","client":"JLH","mrr":"1400","months":"1","note":"2/3 - NON RENEWAL, needs to pay 1 more","status":"Finance will churn"}],failed:[]};}
 
   let state=defaults();
   function normalize(s){
@@ -429,6 +434,8 @@
     s.selfservice.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.status)r.status='Active';});
     if(!Array.isArray(s.finance))s.finance=[];
     s.finance.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.months)r.months='';if(!r.status)r.status='Finance will churn';});
+    if(!Array.isArray(s.failed))s.failed=[];
+    s.failed.forEach(r=>{if(!r.client)r.client='';if(!r.attempt)r.attempt='';});
     return s;
   }
   function changed(){renderAll();persist();}
@@ -541,23 +548,25 @@
     const r=state.retention;
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
     const ss=state.selfservice||[], fin=state.finance||[];
+    const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
     el.innerHTML=`
       <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${(state.failed||[]).length}</div><div class="ret-stat-mrr">from Slack</div><div class="ret-stat-sub">payment alerts · tap to view</div></div>
       <div class="ret-total-row">
         <div class="ret-total-item"><b>${r.length+ss.length+fin.length}</b> clients tracked</div>
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or confirmed leaving</div>
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))}</b> total MRR exposure</div>`:''}
+        ${churnedMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(churnedMRR)}</b> total MRR churned</div>`:''}
       </div>`;
   }
   function togglePanel(id){
     const p=document.getElementById(id);if(!p)return;
-    const other=id==='ssPanel'?'finPanel':'ssPanel';
-    const op=document.getElementById(other);if(op)op.hidden=true;
+    ['ssPanel','finPanel','fpPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
     p.hidden=!p.hidden;
     if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -615,11 +624,17 @@
   }
   document.getElementById('addFinance').addEventListener('click',()=>{state.finance.push({id:uid(),client:'',mrr:'',months:'',note:'',status:'Finance will churn'});changed();});
 
+  // ── FAILED PAYMENTS list (pulled from Slack, shown in the click-through panel) ──
+  function renderFailed(){
+    const cols=[{key:'client',label:'Client'},{key:'attempt',label:'Attempt #',cls:'mrr-cell'},{key:'am',label:'AM'},{key:'ad',label:'AD'},{key:'date',label:'Date'}];
+    renderGenericTable('failedTable','failed',cols,renderRetentionSummary,'No failed payments pulled yet. Use "Pull failed payments (Slack)".');
+  }
+
   // ── GENERIC TABLE RENDERER (drag-sortable, editable) ──
   let genDragId=null;
   function renderGenericTable(containerId,key,cols,summaryFn,emptyMsg){
     const c=document.getElementById(containerId);if(!c)return;c.innerHTML='';
-    const arr=state[key];
+    const arr=state[key]||[];
     if(!arr.length){c.innerHTML=`<div class="empty">${emptyMsg}</div>`;return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
@@ -671,26 +686,43 @@
       if(!res||!res.ok){alert('ChartMogul pull failed: '+(res&&res.error?res.error:'unknown'));return;}
       const incoming=res.customers||[];
       let flagged=0,ss=0,fin=0,ignored=0;
-      incoming.forEach(cust=>{
-        const nm=(cust.client||'').trim().toLowerCase();
-        if(!nm)return;
+
+      // Aggregate incoming cancellations per client. A customer can cancel
+      // several subscriptions in the same month (e.g. plumlending.com x4) —
+      // sum their MRR into one record instead of letting them overwrite.
+      const agg={};
+      incoming.forEach(c=>{
+        const nm=(c.client||'').trim();if(!nm)return;
+        const key=(c.fullyManaged?'mg|':'ss|')+nm.toLowerCase();
+        if(!agg[key])agg[key]={client:nm,mrr:0,plans:[],churnDate:c.churnDate||'',fullyManaged:!!c.fullyManaged,monthsUnpaid:c.monthsUnpaid||0};
+        const n=parseFloat(String(c.mrr||'').replace(/[^0-9.]/g,''));if(!isNaN(n))agg[key].mrr+=n;
+        if(c.plan&&agg[key].plans.indexOf(c.plan)<0)agg[key].plans.push(c.plan);
+        if(c.churnDate&&(!agg[key].churnDate||new Date(c.churnDate)>new Date(agg[key].churnDate)))agg[key].churnDate=c.churnDate;
+        if((c.monthsUnpaid||0)>agg[key].monthsUnpaid)agg[key].monthsUnpaid=c.monthsUnpaid||0;
+      });
+
+      Object.keys(agg).forEach(k=>{
+        const cust=agg[k];
+        const nm=cust.client.trim().toLowerCase();
+        const mrrStr=String(Math.round(cust.mrr));
+        const plan=cust.plans.join(' · ');
         const inRet=state.retention.find(x=>(x.client||'').trim().toLowerCase()===nm);
         const inSS =state.selfservice.find(x=>(x.client||'').trim().toLowerCase()===nm);
         const inFin=state.finance.find(x=>(x.client||'').trim().toLowerCase()===nm);
 
-        // 1) Already tracked anywhere → flag as churned, never duplicate
+        // 1) Already tracked anywhere → flag churned, never duplicate
         if(inRet){ inRet.status='Churned'; flagged++; return; }
-        if(inSS){ inSS.status='Churned'; if(cust.mrr)inSS.mrr=cust.mrr; if(cust.churnDate)inSS.signup=cust.churnDate; flagged++; return; }
-        if(inFin){ inFin.status='Churned by finance'; flagged++; return; }
+        if(inSS){ inSS.status='Churned'; inSS.mrr=mrrStr; if(cust.churnDate)inSS.signup=cust.churnDate; if(plan)inSS.plan=plan; flagged++; return; }
+        if(inFin){ inFin.status='Churned by finance'; inFin.mrr=mrrStr; flagged++; return; }
 
         // 2) Not tracked yet — decide by type
         if(!cust.fullyManaged){
           // self-service (anything NOT fully managed)
-          state.selfservice.push({id:uid(),client:cust.client,mrr:cust.mrr||'',plan:cust.plan||'',signup:cust.churnDate||'',status:'Churned'});
+          state.selfservice.push({id:uid(),client:cust.client,mrr:mrrStr,plan:plan,signup:cust.churnDate||'',status:'Churned'});
           ss++;
         } else if(cust.monthsUnpaid>=3){
           // fully-managed AND 3+ months unpaid → finance cancellation
-          state.finance.push({id:uid(),client:cust.client,mrr:cust.mrr||'',months:String(cust.monthsUnpaid||''),note:cust.plan||'',status:'Churned by finance'});
+          state.finance.push({id:uid(),client:cust.client,mrr:mrrStr,months:String(cust.monthsUnpaid||''),note:plan,status:'Churned by finance'});
           fin++;
         } else {
           // fully-managed but not 3-months-unpaid and not already tracked → IGNORE
@@ -698,7 +730,7 @@
         }
       });
       changed();
-      alert('ChartMogul — '+(res.month||'this month')+': '+(res.count||incoming.length)+' cancellations.\n'
+      alert('ChartMogul — '+(res.month||'this month')+': '+(res.count||incoming.length)+' cancellations across '+Object.keys(agg).length+' clients.\n'
            +flagged+' matched & flagged churned\n'
            +ss+' new self-service\n'
            +fin+' new unpaid/finance\n'
@@ -709,7 +741,37 @@
   }
   document.getElementById('pullChartmogul').addEventListener('click',pullChartmogul);
 
-  function renderAll(){renderBoard();renderRetention();renderSelfservice();renderFinance();}
+  // ── PULL FAILED PAYMENTS FROM SLACK (via Apps Script proxy) ──
+  // Only messages where Mireya is tagged + mention a failed payment.
+  // Dedup by client + attempt number, so re-pulling never duplicates a row.
+  function pullSlack(){
+    const url=getScriptUrl();
+    if(!url)return;
+    const btn=document.getElementById('pullSlack');
+    btn.disabled=true;btn.textContent='⟳ Pulling…';
+    const cb='sl_'+Date.now();let done=false;
+    window[cb]=function(res){
+      done=true;delete window[cb];const s=document.getElementById(cb);if(s)s.remove();
+      btn.disabled=false;btn.textContent='⟳ Pull failed payments (Slack)';
+      if(!res||!res.ok){alert('Slack pull failed: '+(res&&res.error?res.error:'unknown'));return;}
+      if(!Array.isArray(state.failed))state.failed=[];
+      const seen={};
+      state.failed.forEach(f=>{seen[(f.client||'').trim().toLowerCase()+'|'+(f.attempt||'')]=f;});
+      let added=0,updated=0;
+      (res.items||[]).forEach(it=>{
+        const k=(it.client||'').trim().toLowerCase()+'|'+(it.attempt||'');
+        if(seen[k]){seen[k].date=it.date;seen[k].am=it.am;seen[k].ad=it.ad;seen[k].note=it.text;updated++;}
+        else{const row={id:uid(),client:it.client,attempt:it.attempt,am:it.am,ad:it.ad,date:it.date,note:it.text};state.failed.push(row);seen[k]=row;added++;}
+      });
+      changed();
+      alert('Slack — '+(res.count||0)+' failed-payment alerts where you\'re tagged.\n'+added+' new\n'+updated+' updated');
+    };
+    setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull failed payments (Slack)';alert('Slack pull timed out.');}},60000);
+    const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=slack&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
+  }
+  document.getElementById('pullSlack').addEventListener('click',pullSlack);
+
+  function renderAll(){renderBoard();renderRetention();renderSelfservice();renderFinance();renderFailed();}
 
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
