@@ -57,7 +57,7 @@
   .sub-dot{width:5px;height:5px;border-radius:50%;background:var(--line-2);flex-shrink:0}
   .sub-dot.done-dot{background:var(--teal)}
   /* retention read-only */
-  .ret-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .ret-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
   .ret-stat.clickable{cursor:pointer;transition:all .15s}
   .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(91,79,204,.12);transform:translateY(-1px)}
   .card-panel{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2)}
@@ -148,6 +148,10 @@
       <div class="card-panel-head"><h2 class="subsection-title">Unpaid clients · finance cancellations</h2><button class="panel-close" onclick="document.getElementById('finPanel').hidden=true">✕ close</button></div>
       <div id="finView"></div>
     </div>
+    <div id="fpPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Failed payments · from Slack</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
+      <div id="fpView"></div>
+    </div>
   </section>
 </main>
 
@@ -207,6 +211,7 @@
     renderRetention();
     renderSelfservice();
     renderFinance();
+    renderFailed();
   }
 
   function renderBoard(){
@@ -257,17 +262,20 @@
     const r=state.retention;
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
     const ss=state.selfservice||[], fin=state.finance||[];
+    const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
     document.getElementById('retSummary').innerHTML=`
       <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${(state.failed||[]).length}</div><div class="ret-stat-mrr">from Slack</div><div class="ret-stat-sub">payment alerts · tap to view</div></div>
       <div class="ret-total-row">
         <div class="ret-total-item"><b>${r.length+ss.length+fin.length}</b> clients tracked</div>
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or leaving</div>
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))}</b> total MRR exposure</div>`:''}
+        ${churnedMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(churnedMRR)}</b> total MRR churned</div>`:''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
@@ -292,8 +300,7 @@
 
   function togglePanel(id){
     const p=document.getElementById(id);if(!p)return;
-    const other=id==='ssPanel'?'finPanel':'ssPanel';
-    const op=document.getElementById(other);if(op)op.hidden=true;
+    ['ssPanel','finPanel','fpPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
     p.hidden=!p.hidden;
     if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -339,6 +346,27 @@
         <td data-label="Months unpaid" style="color:var(--muted)">${row.months||'—'}</td>
         <td data-label="Note" style="max-width:240px;color:var(--muted)">${row.note||'—'}</td>
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+      tb.appendChild(tr);
+    });
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+  }
+
+  function renderFailed(){
+    const r=state.failed||[];
+    const rv=document.getElementById('fpView');if(!rv)return;rv.innerHTML='';
+    if(!r.length){rv.innerHTML='<div class="loading">No failed payments pulled yet.</div>';return;}
+    const wrap=document.createElement('div');wrap.className='tbl-wrap';
+    const tbl=document.createElement('table');tbl.className='tbl';
+    tbl.innerHTML='<thead><tr><th>Client</th><th>Attempt #</th><th>AM</th><th>AD</th><th>Date</th></tr></thead>';
+    const tb=document.createElement('tbody');
+    r.forEach(row=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="Attempt #" style="color:var(--muted)">${row.attempt||'—'}</td>
+        <td data-label="AM" style="color:var(--muted)">${row.am||'—'}</td>
+        <td data-label="AD" style="color:var(--muted)">${row.ad||'—'}</td>
+        <td data-label="Date" style="color:var(--muted)">${row.date||'—'}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
