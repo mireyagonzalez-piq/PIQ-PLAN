@@ -9,37 +9,56 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#F4F6F9;--panel:#FFFFFF;--panel-2:#EEF1F5;--panel-3:#E6EAF0;
-    --line:#D8DCE6;--line-2:#C4CAD8;--text:#141820;--muted:#526070;--faint:#8A97A8;
-    --fire:#D95030;--fire-dim:rgba(217,80,48,.09);
-    --amber:#B87A10;--amber-dim:rgba(184,122,16,.09);
-    --teal:#187A6E;--teal-dim:rgba(24,122,110,.09);
-    --slate:#607080;--violet:#5B4FCC;--violet-dim:rgba(91,79,204,.09);
+    --ink:#F6F8FB;--panel:#FFFFFF;--panel-2:#F2F5F9;--panel-3:#EAEEF4;
+    --line:#E4E8EF;--line-2:#D3DAE4;--text:#111827;--muted:#5B6472;--faint:#98A2B3;
+    --brand:#2563EB;--brand-2:#0EA5E9;--brand-dim:rgba(37,99,235,.08);
+    --fire:#DC2626;--fire-dim:rgba(220,38,38,.08);
+    --amber:#D97706;--amber-dim:rgba(217,119,6,.10);
+    --teal:#16A34A;--teal-dim:rgba(22,163,74,.10);
+    --slate:#64748B;--violet:#7C3AED;--violet-dim:rgba(124,58,237,.10);
+    --shadow:0 1px 2px rgba(16,24,40,.04),0 6px 18px -8px rgba(16,24,40,.10);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--ink);color:var(--text);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
-  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:12px clamp(16px,3.5vw,44px);background:rgba(244,246,249,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+  body{background:radial-gradient(1000px 600px at 85% -8%,#eaf1ff 0,transparent 55%),#F6F8FB;background-color:var(--ink);color:var(--text);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:12px clamp(16px,3.5vw,44px);background:rgba(246,248,251,.85);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
-  .brand-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--fire),#C94B2A);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+  .brand-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--brand),#0A5CFF);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
   .brand-text{font-weight:700;font-size:14px;letter-spacing:-.02em}
   .brand-text span{color:var(--faint);font-weight:600}
   .tabs{display:flex;gap:2px;flex-wrap:wrap;padding:3px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
   .tabs button{font-size:12px;font-weight:500;background:none;border:none;color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;transition:color .15s,background .15s}
   .tabs button:hover{color:var(--text)}
   .tabs button.active{color:var(--text);background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  .pprog{height:6px;border-radius:4px;background:var(--line);overflow:hidden;margin:8px 0 2px}
+  .pprog-fill{height:100%;background:var(--teal);border-radius:4px;transition:width .25s}
+  .card-pprog{margin:6px 0 0}
+  .roster-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .roster-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-right:2px}
+  .roster-add{font-size:12px;background:var(--panel-2,#f0f0f3);border:1px dashed var(--line);color:var(--muted);border-radius:7px;padding:4px 10px;cursor:pointer;font-family:inherit}
+  .roster-add:hover{border-color:var(--violet);color:var(--violet)}
+  .proj-summary{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;background:var(--panel-2,#f6f6f8);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:20px}
+  .proj-stat{text-align:center;padding:0 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;min-width:90px}
+  .proj-stat-num{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+  .proj-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+  .proj-progress-wrap{flex:1;min-width:220px;display:flex;flex-direction:column;justify-content:center}
+  .proj-progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .proj-progress-top b{color:var(--text)}
+  .proj-tier-counts{font-size:12px;color:var(--muted);margin-top:8px}
+  .proj-tier-counts b{color:var(--text)}
+  @media(max-width:700px){.proj-stat{border-right:none}}
   .tools{margin-left:auto;display:flex;align-items:center;gap:6px}
   .tools button,.tools .imp,.tools a.dash{font-size:11.5px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s;font-family:inherit}
-  .tools a.dash{color:var(--teal);border-color:rgba(77,189,172,.25);background:rgba(77,189,172,.06)}
-  .tools a.dash:hover{background:rgba(77,189,172,.12)}
+  .tools a.dash{color:var(--brand);border-color:rgba(0,71,255,.22);background:var(--brand-dim)}
+  .tools a.dash:hover{background:rgba(0,71,255,.14)}
   .tools button:hover,.tools .imp:hover{color:var(--text);border-color:var(--faint);background:var(--panel-2)}
-  .sync-btn{background:var(--teal)!important;color:#fff!important;border-color:var(--teal)!important;font-weight:600!important;display:flex;align-items:center;gap:5px}
-  .sync-btn:hover{opacity:.88;background:var(--teal)!important}
+  .sync-btn{background:var(--brand)!important;color:#fff!important;border-color:var(--brand)!important;font-weight:600!important;display:flex;align-items:center;gap:5px}
+  .sync-btn:hover{opacity:.9;background:var(--brand)!important}
   .sync-btn:disabled{opacity:.5;cursor:not-allowed!important}
   #savetag{font-size:11px;font-weight:500;color:var(--teal);min-width:36px}
   main{padding:clamp(20px,3.5vw,42px) clamp(16px,3.5vw,44px);max-width:1280px;margin:0 auto}
   .head{margin-bottom:24px}
-  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fire);margin-bottom:12px}
-  .eyebrow::before{content:'';width:18px;height:1px;background:var(--fire);opacity:.5}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin-bottom:12px}
+  .eyebrow::before{content:'';width:18px;height:1px;background:var(--brand);opacity:.55}
   h1{font-weight:700;font-size:clamp(22px,2.6vw,34px);line-height:1.1;letter-spacing:-.03em}
   .head-sub{color:var(--muted);margin-top:9px;max-width:72ch;font-size:14.5px;line-height:1.6}
   [hidden]{display:none!important}
@@ -56,7 +75,7 @@
   .board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
   .tier{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 14px;display:flex;flex-direction:column;min-height:200px}
   .tier.t0{border-top:2px solid var(--fire)}.tier.t1{border-top:2px solid var(--amber)}.tier.t2{border-top:2px solid var(--slate)}
-  .tier.tdone{border-top:2px solid var(--teal);background:rgba(24,122,110,.03);grid-column:1/-1}
+  .tier.tdone{border-top:2px solid var(--teal);background:rgba(22,163,74,.03);grid-column:1/-1}
   .tier.tdone .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex:none}
   .tier-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:14px}
   .tier-label{display:flex;flex-direction:column;gap:3px}
@@ -65,7 +84,7 @@
   .tier-sub{font-size:11px;font-weight:400;color:var(--faint);line-height:1.35}
   .tier-count{font-size:11px;font-weight:600;color:var(--faint);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 7px;height:fit-content}
   .cards{display:flex;flex-direction:column;gap:7px;flex:1;min-height:44px;border-radius:8px;padding:2px}
-  .cards.over{outline:2px dashed var(--line-2);outline-offset:2px;background:rgba(24,122,110,.04)}
+  .cards.over{outline:2px dashed var(--line-2);outline-offset:2px;background:rgba(22,163,74,.04)}
   .pcard{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 8px 10px 6px;display:flex;gap:5px;align-items:flex-start;font-size:13px;transition:border-color .15s,box-shadow .15s}
   .pcard:hover{border-color:var(--line-2);box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .pcard.dragging{opacity:.3;scale:.98}
@@ -108,12 +127,12 @@
   .cell{outline:none;min-height:20px;line-height:1.4}
   .cell:focus{box-shadow:inset 0 -1px 0 var(--faint)}
   .mrr-input{font-family:"Inter",sans-serif;font-size:13px;font-weight:600;color:var(--teal);background:transparent;border:none;border-bottom:1.5px solid transparent;outline:none;width:80px;padding:2px 0;cursor:text;min-width:60px}
-  .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(24,122,110,.05);border-radius:3px 3px 0 0;padding:2px 4px}
+  .mrr-input:focus{border-bottom-color:var(--teal);background:rgba(22,163,74,.05);border-radius:3px 3px 0 0;padding:2px 4px}
   .mrr-input::placeholder{color:var(--faint);font-weight:400}
   .empty{color:var(--faint);font-size:13px;padding:20px}
   .ret-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
   .ret-stat.clickable{cursor:pointer;transition:all .15s}
-  .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(91,79,204,.12);transform:translateY(-1px)}
+  .ret-stat.clickable:hover{border-color:var(--violet);box-shadow:0 2px 10px rgba(127,119,221,.12);transform:translateY(-1px)}
   .card-panel{margin-top:24px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2)}
   .card-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
   .panel-close{font-size:12px;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:inherit}
@@ -121,10 +140,10 @@
   .subsection-title{font-weight:700;font-size:clamp(16px,1.8vw,20px);line-height:1.1;letter-spacing:-.02em;margin:0}
   @media(max-width:1000px){.ret-summary{grid-template-columns:1fr 1fr 1fr}}
   .ret-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
-  .ret-stat.danger{border-color:rgba(217,80,48,.3);background:rgba(217,80,48,.04)}
-  .ret-stat.danger-soft{border-color:rgba(217,80,48,.15);background:rgba(217,80,48,.02)}
-  .ret-stat.safe{border-color:rgba(24,122,110,.3);background:rgba(24,122,110,.04)}
-  .ret-stat.warn{border-color:rgba(184,122,16,.3);background:rgba(184,122,16,.04)}
+  .ret-stat.danger{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.04)}
+  .ret-stat.danger-soft{border-color:rgba(220,38,38,.15);background:rgba(220,38,38,.02)}
+  .ret-stat.safe{border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.04)}
+  .ret-stat.warn{border-color:rgba(217,119,6,.3);background:rgba(217,119,6,.04)}
   .ret-stat-label{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
   .ret-stat-num{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1}
   .ret-stat-mrr{font-size:14px;font-weight:600;margin-top:4px;opacity:.75}
@@ -143,11 +162,11 @@
   .pblock:hover{border-color:var(--line-2);box-shadow:0 2px 12px rgba(0,0,0,.06)}
   .pblock.full{grid-column:1/-1}
   .pblock h3{font-weight:700;font-size:15px;letter-spacing:-.015em;margin-bottom:12px;display:flex;align-items:center;gap:10px}
-  .pblock h3 .k{font-size:10px;font-weight:700;color:var(--fire);letter-spacing:.1em;text-transform:uppercase;background:var(--fire-dim);border:1px solid rgba(217,80,48,.18);border-radius:5px;padding:3px 7px}
+  .pblock h3 .k{font-size:10px;font-weight:700;color:var(--fire);letter-spacing:.1em;text-transform:uppercase;background:var(--fire-dim);border:1px solid rgba(220,38,38,.18);border-radius:5px;padding:3px 7px}
   .pblock p{color:var(--muted);font-size:14px;max-width:84ch;line-height:1.65}
   .pblock p+p{margin-top:10px}
   .pblock b{color:var(--text);font-weight:600}
-  .rulebox{background:linear-gradient(135deg,rgba(217,80,48,.06) 0%,transparent 60%);border:1px solid rgba(217,80,48,.18)}
+  .rulebox{background:linear-gradient(135deg,rgba(220,38,38,.06) 0%,transparent 60%);border:1px solid rgba(220,38,38,.18)}
   .rulebox .big{font-weight:700;font-size:clamp(17px,2.2vw,24px);line-height:1.15;letter-spacing:-.02em;color:var(--text)}
   .rulebox .big b{color:var(--fire)}
   /* bundles */
@@ -157,7 +176,7 @@
   .bundle-card.featured{border-color:var(--teal);border-width:1.5px}
   .bundle-hero{padding:22px 22px 16px;border-bottom:1px solid var(--line)}
   .bundle-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:12px}
-  .badge-base{background:var(--panel-2);color:var(--slate)}.badge-growth{background:var(--teal-dim);color:var(--teal)}.badge-scale{background:var(--violet-dim);color:var(--violet)}.badge-brand{background:rgba(217,80,48,.08);color:var(--fire)}
+  .badge-base{background:var(--panel-2);color:var(--slate)}.badge-growth{background:var(--teal-dim);color:var(--teal)}.badge-scale{background:var(--violet-dim);color:var(--violet)}.badge-brand{background:rgba(220,38,38,.08);color:var(--fire)}
   .bundle-name{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:6px}
   .bundle-tagline{font-size:13px;color:var(--muted);line-height:1.5}
   .bundle-price{margin-top:14px;display:flex;align-items:baseline;gap:6px}
@@ -201,16 +220,166 @@
     .tbl td{border:none;padding:4px 14px}
     .tbl td::before{content:attr(data-label);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:2px}
   }
+  /* ---- Projects: review layout (stacked, full-width rows) ---- */
+  .board{display:flex;flex-direction:column;gap:16px}
+  .tier{display:block;min-height:0}
+  .tier.tdone{grid-column:auto}
+  .tier.tdone .cards{display:flex!important;flex-direction:column;gap:8px}
+  .cards{display:flex;flex-direction:column;gap:8px;flex:none}
+  .pcard{flex-direction:column;align-items:stretch;padding:12px 14px;gap:8px}
+  .prow{display:flex;align-items:center;gap:12px}
+  .pmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .pmain .ctext{font-size:14px;font-weight:500}
+  .pside{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+  .pside .owners{justify-content:flex-end}
+  .pprog.mini{width:70px;margin:0;flex:none}
+  .ochip.principal{background:var(--violet-dim,#ece9fb);color:var(--violet);border-color:transparent;font-weight:600}
+  .ochip.principal .ox{display:none}
+  .pcard .subs{margin-left:26px}
+  @media(max-width:760px){.prow{flex-wrap:wrap}.pside{justify-content:flex-start;width:100%}.pprog.mini{width:100%}}
+  /* ---- Pulse visual polish ---- */
+  .ret-stat,.tier,.card-panel,.proj-summary,.roster-bar,.pcard,.tbl-wrap{box-shadow:var(--shadow)}
+  .tabs button.active{color:var(--brand);background:var(--panel);box-shadow:var(--shadow)}
+  .ret-stat.clickable:hover{border-color:var(--brand);box-shadow:0 2px 12px rgba(0,71,255,.12)}
+  .head h1{letter-spacing:-.025em}
+  .sync-btn{box-shadow:0 1px 3px rgba(0,71,255,.28)}
+  .pprog-fill{background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+  select:focus,input:focus,[contenteditable]:focus{outline:none}
+  .oadd:focus,.mrr-input:focus{box-shadow:0 0 0 2px var(--brand-dim)}
+  /* ===== Projects review board v2 ===== */
+  .psection{--e:var(--line-2);--ed:var(--panel-2);background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--e);border-radius:14px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .sec-crit{--e:var(--fire);--ed:rgba(220,38,38,.10)}
+  .sec-grow{--e:var(--brand);--ed:var(--brand-dim)}
+  .sec-later{--e:var(--slate);--ed:rgba(100,116,139,.12)}
+  .sec-ship{--e:var(--teal);--ed:rgba(22,163,74,.12)}
+  .sec-cancel{--e:var(--faint);--ed:rgba(148,163,184,.14)}
+  .sec-head{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  .sec-tag{font-size:11.5px;font-weight:800;letter-spacing:.01em;padding:3px 10px;border-radius:7px;background:var(--ed);color:var(--e)}
+  .sec-name{font-size:12.5px;color:var(--muted)}
+  .sec-name span{color:var(--muted)}
+  .sec-meta{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11.5px;color:var(--muted)}
+  .sec-bar{width:110px;height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+  .sec-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+  .sec-chev{background:none;border:none;color:var(--faint);font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;padding:2px 4px}
+  .sec-chev:hover{color:var(--brand)}
+  .sec-body .cards{display:flex;flex-direction:column;gap:8px}
+  .sec-empty{color:var(--faint);font-size:12.5px;padding:6px 2px}
+  .sec-cancel .pcard .ctext{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--faint)}
+
+  /* health pill (styled select) */
+  .hpill{appearance:none;-webkit-appearance:none;font-family:inherit;font-size:11.5px;font-weight:600;border:1px solid transparent;border-radius:20px;padding:4px 12px;cursor:pointer;line-height:1.1}
+  .hpill.h-none{color:var(--slate);background:rgba(100,116,139,.12)}
+  .hpill.h-ok{color:#16A34A;background:rgba(22,163,74,.12)}
+  .hpill.h-risk{color:var(--amber);background:rgba(217,119,6,.14)}
+  .hpill.h-block{color:var(--fire);background:rgba(220,38,38,.10)}
+  .hpill.h-done{color:#059669;background:rgba(5,150,105,.14)}
+  .hpill.h-cancel{color:var(--faint);background:rgba(148,163,184,.16);text-decoration:line-through}
+
+  /* avatars */
+  .avs{display:flex;align-items:center}
+  .avs>*{margin-left:-6px}.avs>*:first-child{margin-left:0}
+  .av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid var(--panel);box-sizing:border-box;white-space:nowrap}
+  .av.you{background:var(--violet)}
+  .av.sm{width:19px;height:19px;font-size:9px}
+  .av.add{background:var(--panel-2);color:var(--muted);border:1px dashed var(--line-2);cursor:pointer;font-weight:600}
+  .av-h{position:relative;display:inline-flex}
+  .av-x{position:absolute;top:-6px;right:-6px;width:15px;height:15px;border-radius:50%;background:var(--fire);color:#fff;border:none;font-size:11px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0}
+  .av-h:hover .av-x{display:flex}
+  .av-sel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+  .step-owner{margin-left:4px}
+
+  /* step line on collapsed card */
+  .stepline{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-top:3px;cursor:pointer;user-select:none}
+  .stepline .mini{width:54px;height:5px;border-radius:4px;background:var(--line);overflow:hidden;display:inline-block}
+  .stepline .mini>span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+  .stepline:hover{color:var(--brand)}
+
+  /* expanded steps */
+  .subs{border-top:1px dashed var(--line);margin-top:9px;padding-top:8px;padding-left:26px;display:flex;flex-direction:column;gap:2px}
+  .sub{display:flex;align-items:center;gap:9px}
+  .sub input[type=checkbox]{width:15px;height:15px;accent-color:var(--brand);cursor:pointer;flex:none}
+  .sub .stext{flex:1}
+  .sub.done .stext{color:var(--faint);text-decoration:line-through}
+  .addstep{display:flex;align-items:center;gap:9px;padding-top:3px}
+  .addstep .ap{color:var(--faint);font-size:14px}
+  .addstep input{flex:1;border:none;background:none;font-family:inherit;font-size:13px;color:var(--text);outline:none;padding:2px 0}
+  .addstep input::placeholder{color:var(--faint)}
+
+  /* updated + roster dot */
+  .updated{font-size:10.5px;color:var(--faint);white-space:nowrap}
+  .roster-chip{display:inline-flex;align-items:center;gap:6px}
+  .ochip-dot{width:8px;height:8px;border-radius:50%;flex:none}
+  /* ===== Light · modern polish ===== */
+  .ret-stat,.psection,.card-panel,.proj-summary,.roster-bar,.pcard,.tbl-wrap{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .ret-stat,.psection,.card-panel,.proj-summary{background:linear-gradient(180deg,#ffffff 0,#fbfcfe 100%)}
+  .pcard{border-radius:12px}
+  .eyebrow{color:var(--brand)}.eyebrow::before{background:var(--brand)}
+  .head h1{font-weight:800;letter-spacing:-.03em}
+  .tabs{background:var(--panel-2)}
+  .tabs button.active{color:var(--brand)!important;background:#fff!important;box-shadow:0 1px 3px rgba(16,24,40,.12)}
+  .sync-btn{background:linear-gradient(180deg,#2f6bff,#2563EB)!important;border-color:transparent!important;box-shadow:0 8px 20px -8px rgba(37,99,235,.5)}
+  .addbtn:hover,.subadd:hover{border-color:var(--brand);color:var(--brand)}
+  select option{background:#fff;color:var(--text)}
+  .tbl tbody tr:hover{background:var(--panel-2)}
+  ::selection{background:rgba(37,99,235,.2)}
+  /* ===== Projects dashboard (Asana/ClickUp/Trello-style) ===== */
+  .proj-viewswitch{display:inline-flex;gap:2px;padding:3px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;margin-bottom:16px}
+  .proj-viewswitch button{font-size:12.5px;font-weight:500;background:none;border:none;color:var(--muted);border-radius:7px;padding:6px 14px;cursor:pointer;font-family:inherit}
+  .proj-viewswitch button.active{color:var(--brand);background:#fff;box-shadow:0 1px 3px rgba(16,24,40,.12);font-weight:600}
+  .dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+  .kpi{background:linear-gradient(180deg,#fff,#fbfcfe);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi-num{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em}
+  .kpi-lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:6px}
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .dash-panel{background:linear-gradient(180deg,#fff,#fbfcfe);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+  .dash-h{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:14px}
+  .donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .donut{width:140px;height:140px;flex:none}
+  .donut-num{font-size:26px;font-weight:800;fill:var(--text)}
+  .donut-lab{font-size:9px;fill:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .donut-legend{flex:1;min-width:150px;display:flex;flex-direction:column;gap:7px}
+  .leg-row{display:flex;align-items:center;gap:9px;font-size:13px}
+  .leg-dot{width:10px;height:10px;border-radius:3px;flex:none}
+  .leg-lab{color:var(--text)}.leg-val{margin-left:auto;font-weight:700;color:var(--text)}
+  .workload{display:flex;flex-direction:column;gap:11px}
+  .wl-row{display:grid;grid-template-columns:80px 1fr 28px;align-items:center;gap:11px}
+  .wl-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-track{height:22px;background:var(--panel-2);border-radius:7px;overflow:hidden}
+  .wl-fill{display:block;height:100%;border-radius:7px;transition:width .5s}
+  .wl-val{font-size:13px;font-weight:700;color:var(--text);text-align:right}
+  @media(max-width:760px){.dash-kpis{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
+  /* ===== Churn by AM (retention) ===== */
+  .churn-am .dash-h{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .cam-legend{font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px}
+  .cam-legend span{margin-left:12px}
+  .cam-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .cam-rows{display:flex;flex-direction:column;gap:9px}
+  .cam-row{display:grid;grid-template-columns:130px 1fr 96px;align-items:center;gap:11px}
+  .cam-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cam-track{height:20px;background:var(--panel-2);border-radius:6px;overflow:hidden;display:flex}
+  .cam-seg{height:100%;transition:width .5s}
+  .cam-val{font-size:12px;font-weight:700;text-align:right;color:var(--text);white-space:nowrap}
+  @media(max-width:620px){.cam-row{grid-template-columns:96px 1fr 80px}}
+  /* ===== Due dates ===== */
+  .due-h{position:relative;display:inline-flex;align-items:center;gap:1px}
+  .duechip{font-size:11px;font-weight:600;border-radius:20px;padding:3px 9px;cursor:pointer;white-space:nowrap;border:1px solid transparent;line-height:1.15}
+  .duechip.due-add{color:var(--faint);background:var(--panel-2);border:1px dashed var(--line-2)}
+  .duechip.due-add:hover{color:var(--brand);border-color:var(--brand)}
+  .duechip.due-ok{color:var(--brand);background:var(--brand-dim)}
+  .duechip.due-soon{color:var(--amber);background:var(--amber-dim)}
+  .duechip.due-over{color:var(--fire);background:var(--fire-dim)}
+  .duechip.due-done{color:var(--faint);background:var(--panel-2);text-decoration:line-through}
+  .due-input{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none}
+  .due-x{background:none;border:none;color:var(--faint);cursor:pointer;font-size:13px;padding:0 2px;line-height:1}
+  .due-x:hover{color:var(--fire)}
 </style>
 </head>
 <body>
 <header>
   <div class="brand"><div class="brand-mark">P</div><div class="brand-text">PIQ Operating Hub <span>· Mireya</span></div></div>
   <nav class="tabs" id="tabs">
-    <button data-tab="projects" class="active">Projects</button>
-    <button data-tab="retention">Retention</button>
-    <button data-tab="plan">Plan for PIQ</button>
-    <button data-tab="bundles">Bundles</button>
+    <button data-tab="retention" class="active">Retention</button>
+    <button data-tab="projects">Projects</button>
   </nav>
   <div class="tools">
     <span id="savetag"></span>
@@ -237,33 +406,40 @@
     </div>
   </div>
 
-  <section id="tab-projects">
+  <section id="tab-projects" hidden>
     <div class="head">
-      <div class="eyebrow">Projects · live board</div>
-      <h1>What happens now, what waits.</h1>
-      <p class="head-sub">Drag a card by the ⠿ handle to re-tier it. Each card can have more than one owner and its own checklist of steps.</p>
+      <div class="eyebrow">Projects · review board</div>
+      <h1>What's moving, who's on it, what's stuck.</h1>
+      <p class="head-sub">Delegated and tracked — updated live.</p>
       <div class="legend">
         <span><i class="dot" style="background:var(--slate)"></i>Not started</span>
-        <span><i class="dot" style="background:var(--amber)"></i>In progress / Needs update</span>
-        <span><i class="dot" style="background:var(--violet)"></i>Ongoing</span>
-        <span><i class="dot" style="background:var(--fire)"></i>Blocked / Needs approval</span>
-        <span><i class="dot" style="background:var(--teal)"></i>Done</span>
+        <span><i class="dot" style="background:#16A34A"></i>On track</span>
+        <span><i class="dot" style="background:var(--amber)"></i>At risk</span>
+        <span><i class="dot" style="background:var(--fire)"></i>Blocked</span>
+        <span><i class="dot" style="background:#059669"></i>Done</span>
       </div>
     </div>
+    <div class="roster-bar" id="rosterBar"></div>
+    <div class="proj-viewswitch">
+      <button data-pv="board" class="active" onclick="setProjMode('board')">▦ Board</button>
+      <button data-pv="dashboard" onclick="setProjMode('dashboard')">◔ Dashboard</button>
+    </div>
+    <div class="proj-summary" id="projSummary"></div>
     <div class="board" id="board"></div>
+    <div id="projDashboard" hidden></div>
   </section>
 
-  <section id="tab-retention" hidden>
+  <section id="tab-retention">
     <div class="head">
       <div class="eyebrow">Retention · interim list</div>
       <h1>Current at-risk clients.</h1>
-      <p class="head-sub">The holding pen, worked one by one. Target: churn under 14%.</p>
     </div>
     <div class="ret-summary" id="retSummary"></div>
+    <div class="churn-am dash-panel" id="churnByAM" style="margin-bottom:14px"></div>
     <div style="display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap">
       <button class="addbtn" id="addRetention" style="max-width:200px">+ add client</button>
       <button id="pullChartmogul" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull this month churn</button>
-      <button id="pullSlack" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull failed payments (Slack)</button>
+      <button id="pullSlack" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull failed payments</button>
     </div>
     <div id="retentionTable"></div>
 
@@ -278,46 +454,26 @@
       <div id="financeTable"></div>
     </div>
     <div id="fpPanel" class="card-panel" hidden>
-      <div class="card-panel-head"><h2 class="subsection-title">Failed payments · from Slack (Mireya tagged)</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
+      <div class="card-panel-head"><h2 class="subsection-title">Failed payments</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
+      <button class="addbtn" id="addFailed" style="margin-bottom:12px;max-width:220px">+ add failed payment</button>
       <div id="failedTable"></div>
     </div>
   </section>
 
-  <section id="tab-plan" hidden>
-    <div class="head"><div class="eyebrow">Plan for PIQ</div><h1>Where PIQ is going.</h1></div>
-    <div class="plan-grid">
-      <div class="pblock"><h3><span class="k">01</span>Where we are</h3><p>PersistIQ has grown to where running the operation and driving the strategy are two different jobs. I'm splitting them so my time goes to what grows the accounts: pilots, reply-rate, retention strategy, instead of day-to-day firefighting.</p></div>
-      <div class="pblock"><h3><span class="k">02</span>The restructure, in motion this week</h3><p>Already happening, no approval needed. <b>Estefania</b> takes on some of the KOCs, becomes first filter for the AMs, and is first responder on retention. Her blue-flagged accounts move to <b>María</b>: Sustainable Materials, Voicenx, Clear Plan, Atica Global, Mimosa Life Sciences.</p></div>
-      <div class="pblock"><h3><span class="k">03</span>Channel strategy</h3><p><b>Month 1:</b> Outbound Essentials — fully managed cold email. <b>Month 2:</b> SEO runs in parallel as a retention tool. When cold email hits its ceiling: <b>LinkedIn Outreach</b> via HeyReach at $200–250/sender/mo, <b>SEO</b> at $850/mo, <b>LinkedIn Ads</b> at $350/mo + client budget.</p></div>
-      <div class="pblock"><h3><span class="k">04</span>The add-on package</h3><p>Package add-ons on top of Outbound Essentials and write them into SOWs as a <b>replacement for termination</b>. Outsource to start, build in-house once volume justifies it. Lock down dedicated Wishpond resource with Mike before Ads launch.</p></div>
-      <div class="pblock"><h3><span class="k">05</span>The bigger play</h3><p>Full <b>B2B outreach chain</b> on the same ICP: cold email + LinkedIn Outreach + SEO + LinkedIn Ads. Each channel outsourced first, then brought in-house once margin and delivery are ours.</p></div>
-      <div class="pblock rulebox full"><h3><span class="k">★</span>How we'll run priorities</h3><p class="big">New work comes in by <b>replacing</b>, not adding.</p><p style="margin-top:14px">When something new comes up, we open the board together and decide what moves down.</p></div>
-    </div>
-  </section>
-
-  <section id="tab-bundles" hidden>
-    <div class="head">
-      <div class="eyebrow">Bundles · service packages</div>
-      <h1>What PIQ sells.</h1>
-      <p class="head-sub">Everything starts with <b style="color:var(--text)">Outbound Essentials</b>. From there, clients add channels as cold email hits its ceiling.</p>
-    </div>
-    <div class="bundles-grid">
-      <div class="bundle-card featured"><div class="bundle-hero"><div class="bundle-badge badge-base">Base package</div><div class="bundle-name">Outbound Essentials</div><div class="bundle-tagline">Fully managed cold email. Prospect list, campaigns, dedicated SDR &amp; Account Manager.</div><div class="bundle-price"><span class="price-num">Core</span><span class="price-unit">monthly retainer</span></div></div><div class="bundle-body"><div><div class="bundle-section-label">What's included</div><div style="display:flex;flex-direction:column;gap:6px"><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Managed email campaigns</div><div class="channel-desc">Built, managed &amp; A/B tested ongoing</div></div></div><div class="channel-row"><div class="channel-dot dot-email"></div><div class="channel-info"><div class="channel-name">Dedicated AM + SDR</div><div class="channel-desc">Named contacts · SDR books meetings on your calendar</div></div></div></div></div></div><div class="bundle-footer"><span class="bundle-status status-live">● Live</span></div></div>
-      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-growth">Add-on · ready to start</div><div class="bundle-name">+ LinkedIn Outreach</div><div class="bundle-tagline">1-to-1 LinkedIn messaging (HeyReach) alongside cold email.</div><div class="bundle-price"><span class="price-num">+$200–250</span><span class="price-unit">/ sender / mo</span></div><div class="price-note">PIQ cost ~$105/sender · sell at $200–250</div></div><div class="bundle-body"><div class="bundle-note"><b>Hard ceiling:</b> ~100 connection requests/week. Daily actions cap at ~30–40 total. No new budget approval needed.</div></div><div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div></div>
-      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-scale">Add-on or retention tool</div><div class="bundle-name">+ SEO</div><div class="bundle-tagline">Paid add-on or retention tool bundled in to give clients proof of value.</div><div class="bundle-price"><span class="price-num">+$850</span><span class="price-unit">/ mo · basics</span></div></div><div class="bundle-body"><div class="bundle-note"><b>SOW language:</b> when used for retention, write SEO in as a parallel channel, not an upsell.</div></div><div class="bundle-footer"><span class="bundle-status status-ready">◐ Ready to pilot</span></div></div>
-      <div class="bundle-card"><div class="bundle-hero"><div class="bundle-badge badge-brand">Add-on · needs approval</div><div class="bundle-name">+ LinkedIn Ads</div><div class="bundle-tagline">Paid LinkedIn Ads for brand awareness. Separate from Outreach — this is paid media.</div><div class="bundle-price"><span class="price-num">+$350</span><span class="price-unit">/ mo + ad budget</span></div></div><div class="bundle-body"><div class="bundle-note"><b>Blocker:</b> needs a dedicated Wishpond resource assigned to PIQ. Lock down with Mike before offering.</div></div><div class="bundle-footer"><span class="bundle-status status-pending">⚑ Needs Mike approval</span></div></div>
-    </div>
-  </section>
 </main>
 
 <script>
   const PEOPLE=['Me','Estefania','Roberto','Eduardo','Lorena','Tania','María','Andres','Usman','Mike','Paulo'];
+  // Team roster lives in state so you can add/remove people from the dashboard.
+  function getPeople(){if(!Array.isArray(state.people)||!state.people.length)state.people=PEOPLE.slice();return state.people;}
+  function addPerson(name){name=(name||'').trim();if(!name)return false;const p=getPeople();if(!p.some(x=>x.toLowerCase()===name.toLowerCase())){p.push(name);persist();}return true;}
+  function removePerson(name){const p=getPeople();const i=p.indexOf(name);if(i>-1){p.splice(i,1);persist();}}
   const PSTATUS=['Not started','In progress','Needs approval','Needs update','Ongoing','Monitoring','Maintenance','Blocked','Done'];
   const RISK=['High','Medium','Low'];
   const RSTATUS=['At risk','Working on it','Will churn','Churned','Saved'];
   const SSSTATUS=['Active','At risk','Churned'];
-  const FINSTATUS=['Finance will churn','Churned by finance'];
-  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Churned by finance':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','Finance will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Active':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)'};
+  const FINSTATUS=['Finance will churn','Pending - not cancelled yet','Churned by finance'];
+  const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Churned by finance':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','Finance will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Active':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)','PAID':'var(--teal)','WIRE TRANSFER-PAID':'var(--teal)','UNPAID':'var(--fire)','BLOCKED':'var(--fire)','INVOICE SENT':'var(--amber)','WILL PAY - INVOICE SENT':'var(--amber)','Pending - not cancelled yet':'var(--amber)'};
   const SECRET='piq2026'; // must match Backend.gs getSecret()
   let idc=0; const uid=()=>'x'+(++idc)+Date.now().toString(36);
   const expanded=new Set();
@@ -348,7 +504,7 @@
       const s=document.getElementById(cbName); if(s)s.remove();
       btn.disabled=false; btn.textContent='↓ Pull from sheet';
       if(res&&res.ok&&res.data){
-        state=normalize(res.data)||state;
+        state=normalize(res.data)||state; seedFailedIfEmpty();
         persist();
         renderAll();
         document.getElementById('savetag').textContent='pulled ✓';
@@ -419,13 +575,15 @@
 
   // ── DATA ─────────────────────────────────────────────────────
   const TIERS=['p0','p1','p2','pdone'];
-  function defaults(){return{projects:{"p0":[{"id":"x1","text":"Churn: target under 14%","owners":["Me"],"status":"Ongoing","subs":[{"id":"s1","text":"SEO addon or replacement as retention","done":true},{"id":"s2","text":"Resetting expectations","done":true},{"id":"s3","text":"Campaign audits","done":false}]},{"id":"x2","text":"Reply rate: 1% minimum","owners":["Me"],"status":"Ongoing","subs":[{"id":"s4","text":"audit top % vs lower %","done":true},{"id":"s5","text":"focus on clients per AMs with highest %","done":true},{"id":"s6","text":"AI personalization addon","done":true},{"id":"s7","text":"lead source sample","done":false}]},{"id":"x3","text":"AM email response time - fix urgency","owners":["Me"],"status":"In progress","subs":[{"id":"s8","text":"Set the standard: first reply within 1 business day","done":true},{"id":"s9","text":"Anything past SLA auto-surfaces","done":true},{"id":"s10","text":"Add response-time to Pulse dashboard","done":true},{"id":"s11","text":"Review per-AM in weekly sync","done":false}]},{"id":"x5","text":"PersistIQ - AI personalization (needs addon)","owners":["Estefania"],"status":"Ongoing","subs":[{"id":"s16","text":"Current bug in campaign creation - Paulo reviewing","done":true},{"id":"s17","text":"Estef will create snapshot of ALL new clients","done":true}]},{"id":"x1mrlc69q1","text":"Agent building for PIQ","owners":["Me"],"status":"In progress","subs":[{"id":"x2mrlc6kd3","text":"Create a lead gen agent","done":false},{"id":"x3mrlc6umv","text":"Create a CSM / Report generated agent","done":false}]}],"p1":[{"id":"x6","text":"ClickUp to PlanHat migration","owners":["Me","Andres"],"status":"In progress","subs":[{"id":"s18","text":"Retention tracking to PlanHat","done":true},{"id":"s19","text":"AM / client tracking to PlanHat","done":true},{"id":"s20","text":"Campaign management to PlanHat","done":false},{"id":"s21","text":"SEO workflows - stays in ClickUp","done":false}]},{"id":"x7","text":"New lead - source review","owners":["María","Usman","Me"],"status":"Needs update","subs":[{"id":"s22","text":"Share pricing","done":true},{"id":"s23","text":"Clarification on processes with vendor","done":true},{"id":"s24","text":"Confirmation on requirements","done":false},{"id":"s25","text":"Sample list","done":false}]}],"p2":[{"id":"x12","text":"New weekly reporting - ALL AMs","owners":["Me","Estefania"],"status":"Not started","subs":[]},{"id":"x13","text":"Bundles: Outbound Essentials + add-ons in SOWs","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s29","text":"HeyReach add-on: LinkedIn outreach at $105/sender/mo","done":false}]},{"id":"x14","text":"Lead Generation for Self service clients","owners":["Me","Paulo"],"status":"Not started","subs":[]},{"id":"x15","text":"LinkedIn Ads add-on - needs dedicated Wishpond resource","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s30","text":"Lock down dedicated WP resource assigned to PIQ","done":false}]},{"id":"x16","text":"Build LinkedIn outreach + ads in-house","owners":["Paulo"],"status":"Not started","subs":[{"id":"s31","text":"Research Hey Reach tutorials for LinkedIn automation","done":false}]}],"pdone":[{"id":"x11","text":"NPS - strategy","owners":["Me"],"status":"Done","subs":[]},{"id":"x9","text":"Paused-client reactivation (90+ days)","owners":["Me"],"status":"Done","subs":[]},{"id":"x4","text":"QC intake - quality check for June+ clients (Andres)","owners":["Me","Andres"],"status":"Monitoring","subs":[{"id":"s12","text":"Shared Q's with Andres","done":true},{"id":"s13","text":"Work around form/airtable logic","done":true},{"id":"s14","text":"Add Q's to current form","done":true},{"id":"s15","text":"Add June clients","done":false}]},{"id":"x10","text":"C.L.A.R.A - list-cleaning tool","owners":["Me"],"status":"Maintenance","subs":[]},{"id":"x8","text":"Improve PIQ Pulse dashboard","owners":["Me"],"status":"Maintenance","subs":[{"id":"s26","text":"Add: response time per AM","done":false},{"id":"s27","text":"Add: reply rate by vertical + lead source","done":false},{"id":"s28","text":"Add: MRR retained vs churned","done":false}]}]},retention:[{"id":"r3","client":"Roribow - Service Masters","owners":["Lorena"],"mrr":"1130","risk":"Low","issue":"4/6 - we didn't fulfill with the full lead volume","next":"Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards","status":"Working on it"},{"id":"r4","client":"Pharoplast","owners":["Estefania"],"mrr":"1450","risk":"Low","issue":"Simon is leaving Pharoplast, he is now working for another company. 6/12","next":"He still has 6 months of SOW - will pay until sept","status":"Working on it"},{"id":"r5","client":"Constructive Developments","owners":["Eduardo"],"mrr":"1000","risk":"Low","issue":"3/3 - if they pay July 24th will continue","next":"See if they pay and continue for another 3 months","status":"Working on it"},{"id":"r10","client":"Cheque Guard","owners":["Lorena"],"mrr":"2000","risk":"Low","issue":"7/12 - is MIA, hasn't approved and didn't approved anything","next":"Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE","status":"Working on it"},{"id":"x2msq9w6wm","client":"Adams Digital","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"3/3 - non renewal","next":"will move payment to mid October","status":"Working on it"},{"id":"x4ms9btcdu","client":"Curation","owners":["Estefania"],"mrr":"1200","risk":"Medium","issue":"2/6 - early term","next":"We have retention call Aug 5 - poor results","status":"At risk"},{"id":"x1msxtz7iv","client":"Palette Panda","owners":["Tania"],"mrr":"1000","risk":"High","issue":"4/3 non renewal","next":"cancel before sept 17 - will void invoices for aug","status":"At risk"},{"id":"r6","client":"A&M","owners":["Tania"],"mrr":"1000","risk":"High","issue":"5/6 - needs to make 1 more payment - to cancel in August","next":"Send email to do SEO + website for the remining months $1000","status":"Will churn"},{"id":"x6ms9bz3hh","client":"Netwave","owners":["Roberto"],"mrr":"1000","risk":"High","issue":"4/3 - non auto renewal","next":"we need to refund 4th payment, there is no auto renewal we billed 4th time (DO NOT BILL AUG 24)","status":"Will churn"},{"id":"x1mt349pfd","client":"United Distribution","owners":["Estefania"],"mrr":"1250","risk":"Medium","issue":"3/3 - no auto renewal","next":"cancel before aug 24","status":"Churned"},{"id":"r7","client":"Laura Lopicollo","owners":["Estefania"],"mrr":"1000","risk":"High","issue":"2/12 - hasn't paid","next":"Might be cancelled by Finance after 3rd attempt","status":"Churned"},{"id":"x1msq9vst3","client":"Hydro Bioscience","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"15/3 - 5 auto renewals","next":"cancel before Aug 13","status":"Churned"},{"id":"x1mshw9rdz","client":"4B plastics","owners":["Roberto"],"mrr":"1450","risk":"Medium","issue":"3/6 - early term","next":"cancel before aug 24","status":"Churned"},{"id":"x5ms9bv5s3","client":"Tibbo","owners":["Estefania"],"mrr":"1400","risk":"High","issue":"3/3 early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r8","client":"Atica Global","owners":["María"],"mrr":"750","risk":"High","issue":"They requested non renewal after their 3month term 2/3","next":"Last payment July 15 - will cancel in August","status":"Churned"},{"id":"x3ms9brm24","client":"Zenova","owners":["Estefania"],"mrr":"1250","risk":"High","issue":"4/6 - non renewal","next":"threaten to dispute, agreed not to bill 2 remaining months from auto renewal, we will keep the 4th payme t","status":"Churned"},{"id":"x1mrcbcmkt","client":"Mindflow","owners":["María"],"mrr":"900","risk":"High","issue":"3/3 - early term, but we are delayed by 1 month","next":"We will move July's payment to fulfill 3 months and book the remaining 3 meetings we need for the early term","status":"Churned"},{"id":"x2ms9bpb0j","client":"Evolution Benefits","owners":["Roberto"],"mrr":"1400","risk":"High","issue":"6/6 - non renewal","next":"cancel before Aug 11","status":"Churned"},{"id":"x1msnjk2cs","client":"POS solutions","owners":["Eduardo"],"mrr":"1,000","risk":"High","issue":"4/3 - auto renewal","next":"They auto-renewed / requested cancellation","status":"Churned"},{"id":"x1ms9bm0v4","client":"Instant card","owners":["Roberto"],"mrr":"1250","risk":"High","issue":"3/3 - non renewal","next":"cancel before Aug 6","status":"Churned"},{"id":"x1msj8v4rm","client":"Chemship","owners":["Tania"],"mrr":"1200","risk":"Medium","issue":"8/3 - early term","next":"cancel before Aug 7","status":"Churned"},{"id":"x7ms9c228j","client":"Mimo","owners":["María"],"mrr":"950","risk":"High","issue":"3/3 - non renewal","next":"cancel before aug 10","status":"Churned"}],selfservice:[{"id":"x1mspoh760","client":"plumlending.com","mrr":"150","plan":"cancelled their Premium Monthly plan (x4)","signup":"Aug 5, 2026","status":"Churned"},{"id":"x2mspoh760","client":"landhold.com","mrr":"59","plan":"cancelled their Essentials Yearly plan","signup":"Aug 10, 2026","status":"Churned"},{"id":"x1mt98zhv0","client":"crustdata.co","mrr":"75","plan":"cancelled their Essentials Monthly plan","signup":"Aug 23, 2026","status":"Churned"}],finance:[{"id":"x3mspoht88","client":"Vegan Vitality","mrr":"1200","months":"3","note":"MIA - not paid","status":"Churned by finance"},{"id":"x11msppdu4l","client":"Beantastic","mrr":"913","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x3mt999yr9","client":"LMS","mrr":"1450","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x4mspot0u5","client":"Billingual productions","mrr":"1250","months":"4","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x5mspovydj","client":"Transparency Studio","mrr":"750","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x6mspoy6mr","client":"McClintock Tax","mrr":"1000","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x7mspp0or8","client":"Tampa Roots","mrr":"1450","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x2mt996vdk","client":"JLH","mrr":"1400","months":"1","note":"2/3 - NON RENEWAL, needs to pay 1 more","status":"Finance will churn"}],failed:[]};}
+  function defaults(){return{projects:{"p0":[{"id":"x1","text":"Churn: target under 14%","owners":["Me"],"status":"Ongoing","subs":[{"id":"s1","text":"SEO addon or replacement as retention","done":true},{"id":"s2","text":"Resetting expectations","done":true},{"id":"s3","text":"Campaign audits","done":false}]},{"id":"x2","text":"Reply rate: 1% minimum","owners":["Me"],"status":"Ongoing","subs":[{"id":"s4","text":"audit top % vs lower %","done":true},{"id":"s5","text":"focus on clients per AMs with highest %","done":true},{"id":"s6","text":"AI personalization addon","done":true},{"id":"s7","text":"lead source sample","done":false}]},{"id":"x3","text":"AM email response time - fix urgency","owners":["Me"],"status":"In progress","subs":[{"id":"s8","text":"Set the standard: first reply within 1 business day","done":true},{"id":"s9","text":"Anything past SLA auto-surfaces","done":true},{"id":"s10","text":"Add response-time to Pulse dashboard","done":true},{"id":"s11","text":"Review per-AM in weekly sync","done":false}]},{"id":"x5","text":"PersistIQ - AI personalization (needs addon)","owners":["Estefania"],"status":"Ongoing","subs":[{"id":"s16","text":"Current bug in campaign creation - Paulo reviewing","done":true},{"id":"s17","text":"Estef will create snapshot of ALL new clients","done":true}]},{"id":"x1mrlc69q1","text":"Agent building for PIQ","owners":["Me"],"status":"In progress","subs":[{"id":"x2mrlc6kd3","text":"Create a lead gen agent","done":false},{"id":"x3mrlc6umv","text":"Create a CSM / Report generated agent","done":false}]}],"p1":[{"id":"x6","text":"ClickUp to PlanHat migration","owners":["Me","Andres"],"status":"In progress","subs":[{"id":"s18","text":"Retention tracking to PlanHat","done":true},{"id":"s19","text":"AM / client tracking to PlanHat","done":true},{"id":"s20","text":"Campaign management to PlanHat","done":false},{"id":"s21","text":"SEO workflows - stays in ClickUp","done":false}]},{"id":"x7","text":"New lead - source review","owners":["María","Usman","Me"],"status":"Needs update","subs":[{"id":"s22","text":"Share pricing","done":true},{"id":"s23","text":"Clarification on processes with vendor","done":true},{"id":"s24","text":"Confirmation on requirements","done":false},{"id":"s25","text":"Sample list","done":false}]}],"p2":[{"id":"x12","text":"New weekly reporting - ALL AMs","owners":["Me","Estefania"],"status":"Not started","subs":[]},{"id":"x13","text":"Bundles: Outbound Essentials + add-ons in SOWs","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s29","text":"HeyReach add-on: LinkedIn outreach at $105/sender/mo","done":false}]},{"id":"x14","text":"Lead Generation for Self service clients","owners":["Me","Paulo"],"status":"Not started","subs":[]},{"id":"x15","text":"LinkedIn Ads add-on - needs dedicated Wishpond resource","owners":["Me","Mike"],"status":"Not started","subs":[{"id":"s30","text":"Lock down dedicated WP resource assigned to PIQ","done":false}]},{"id":"x16","text":"Build LinkedIn outreach + ads in-house","owners":["Paulo"],"status":"Not started","subs":[{"id":"s31","text":"Research Hey Reach tutorials for LinkedIn automation","done":false}]}],"pdone":[{"id":"x11","text":"NPS - strategy","owners":["Me"],"status":"Done","subs":[]},{"id":"x9","text":"Paused-client reactivation (90+ days)","owners":["Me"],"status":"Done","subs":[]},{"id":"x4","text":"QC intake - quality check for June+ clients (Andres)","owners":["Me","Andres"],"status":"Monitoring","subs":[{"id":"s12","text":"Shared Q's with Andres","done":true},{"id":"s13","text":"Work around form/airtable logic","done":true},{"id":"s14","text":"Add Q's to current form","done":true},{"id":"s15","text":"Add June clients","done":false}]},{"id":"x10","text":"C.L.A.R.A - list-cleaning tool","owners":["Me"],"status":"Maintenance","subs":[]},{"id":"x8","text":"Improve PIQ Pulse dashboard","owners":["Me"],"status":"Maintenance","subs":[{"id":"s26","text":"Add: response time per AM","done":false},{"id":"s27","text":"Add: reply rate by vertical + lead source","done":false},{"id":"s28","text":"Add: MRR retained vs churned","done":false}]}]},retention:[{"id":"r3","client":"Roribow - Service Masters","owners":["Lorena"],"mrr":"1130","risk":"Low","issue":"4/6 - we didn't fulfill with the full lead volume","next":"Move payment to August 6 - for retention / if this last list works, they are open to continue and pay afterwards","status":"Working on it"},{"id":"r4","client":"Pharoplast","owners":["Estefania"],"mrr":"1450","risk":"Low","issue":"Simon is leaving Pharoplast, he is now working for another company. 6/12","next":"He still has 6 months of SOW - will pay until sept","status":"Working on it"},{"id":"r5","client":"Constructive Developments","owners":["Eduardo"],"mrr":"1000","risk":"Low","issue":"3/3 - if they pay July 24th will continue","next":"See if they pay and continue for another 3 months","status":"Working on it"},{"id":"r10","client":"Cheque Guard","owners":["Lorena"],"mrr":"2000","risk":"Low","issue":"7/12 - is MIA, hasn't approved and didn't approved anything","next":"Follow up on him, send an email informing him that we were going to upload lead list, SEO+WEBSITE","status":"Working on it"},{"id":"x2msq9w6wm","client":"Adams Digital","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"3/3 - non renewal","next":"will move payment to mid October","status":"Working on it"},{"id":"x4ms9btcdu","client":"Curation","owners":["Estefania"],"mrr":"1200","risk":"Medium","issue":"2/6 - early term","next":"We have retention call Aug 5 - poor results","status":"At risk"},{"id":"x1msxtz7iv","client":"Palette Panda","owners":["Tania"],"mrr":"1000","risk":"High","issue":"4/3 non renewal","next":"cancel before sept 17 - will void invoices for aug","status":"At risk"},{"id":"r6","client":"A&M","owners":["Tania"],"mrr":"1000","risk":"High","issue":"5/6 - needs to make 1 more payment - to cancel in August","next":"Send email to do SEO + website for the remining months $1000","status":"Will churn"},{"id":"x6ms9bz3hh","client":"Netwave","owners":["Roberto"],"mrr":"1000","risk":"High","issue":"4/3 - non auto renewal","next":"we need to refund 4th payment, there is no auto renewal we billed 4th time (DO NOT BILL AUG 24)","status":"Will churn"},{"id":"x1mt349pfd","client":"United Distribution","owners":["Estefania"],"mrr":"1250","risk":"Medium","issue":"3/3 - no auto renewal","next":"cancel before aug 24","status":"Churned"},{"id":"r7","client":"Laura Lopicollo","owners":["Estefania"],"mrr":"1000","risk":"High","issue":"2/12 - hasn't paid","next":"Might be cancelled by Finance after 3rd attempt","status":"Churned"},{"id":"x1msq9vst3","client":"Hydro Bioscience","owners":["Estefania"],"mrr":"1000","risk":"Medium","issue":"15/3 - 5 auto renewals","next":"cancel before Aug 13","status":"Churned"},{"id":"x1mshw9rdz","client":"4B plastics","owners":["Roberto"],"mrr":"1450","risk":"Medium","issue":"3/6 - early term","next":"cancel before aug 24","status":"Churned"},{"id":"x5ms9bv5s3","client":"Tibbo","owners":["Estefania"],"mrr":"1400","risk":"High","issue":"3/3 early term","next":"cancel before Aug 7","status":"Churned"},{"id":"r8","client":"Atica Global","owners":["María"],"mrr":"750","risk":"High","issue":"They requested non renewal after their 3month term 2/3","next":"Last payment July 15 - will cancel in August","status":"Churned"},{"id":"x3ms9brm24","client":"Zenova","owners":["Estefania"],"mrr":"1250","risk":"High","issue":"4/6 - non renewal","next":"threaten to dispute, agreed not to bill 2 remaining months from auto renewal, we will keep the 4th payme t","status":"Churned"},{"id":"x1mrcbcmkt","client":"Mindflow","owners":["María"],"mrr":"900","risk":"High","issue":"3/3 - early term, but we are delayed by 1 month","next":"We will move July's payment to fulfill 3 months and book the remaining 3 meetings we need for the early term","status":"Churned"},{"id":"x2ms9bpb0j","client":"Evolution Benefits","owners":["Roberto"],"mrr":"1400","risk":"High","issue":"6/6 - non renewal","next":"cancel before Aug 11","status":"Churned"},{"id":"x1msnjk2cs","client":"POS solutions","owners":["Eduardo"],"mrr":"1,000","risk":"High","issue":"4/3 - auto renewal","next":"They auto-renewed / requested cancellation","status":"Churned"},{"id":"x1ms9bm0v4","client":"Instant card","owners":["Roberto"],"mrr":"1250","risk":"High","issue":"3/3 - non renewal","next":"cancel before Aug 6","status":"Churned"},{"id":"x1msj8v4rm","client":"Chemship","owners":["Tania"],"mrr":"1200","risk":"Medium","issue":"8/3 - early term","next":"cancel before Aug 7","status":"Churned"},{"id":"x7ms9c228j","client":"Mimo","owners":["María"],"mrr":"950","risk":"High","issue":"3/3 - non renewal","next":"cancel before aug 10","status":"Churned"}],selfservice:[{"id":"x1mspoh760","client":"plumlending.com","mrr":"150","plan":"cancelled their Premium Monthly plan (x4)","signup":"Aug 5, 2026","status":"Churned"},{"id":"x2mspoh760","client":"landhold.com","mrr":"59","plan":"cancelled their Essentials Yearly plan","signup":"Aug 10, 2026","status":"Churned"},{"id":"x1mt98zhv0","client":"crustdata.co","mrr":"75","plan":"cancelled their Essentials Monthly plan","signup":"Aug 23, 2026","status":"Churned"}],finance:[{"id":"x3mspoht88","client":"Vegan Vitality","mrr":"1200","months":"3","note":"MIA - not paid","status":"Churned by finance"},{"id":"x11msppdu4l","client":"Beantastic","mrr":"913","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x3mt999yr9","client":"LMS","mrr":"1450","months":"0","note":"disputed - auto cancelled","status":"Churned by finance"},{"id":"x4mspot0u5","client":"Billingual productions","mrr":"1250","months":"4","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x5mspovydj","client":"Transparency Studio","mrr":"750","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x6mspoy6mr","client":"McClintock Tax","mrr":"1000","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x7mspp0or8","client":"Tampa Roots","mrr":"1450","months":"3","note":"confirm by aug 14 if they can cancel it","status":"Finance will churn"},{"id":"x2mt996vdk","client":"JLH","mrr":"1400","months":"1","note":"2/3 - NON RENEWAL, needs to pay 1 more","status":"Finance will churn"}],failed:[{"id":"fp1","email":"hardammansandhu@sba-dnc.com","account":"","amount":"5000","cstatus":"Cannot cancel until invoices are paid","status":"UNPAID"},{"id":"fp2","email":"info@medimindsolutions.com","account":"","amount":"3750","cstatus":"Still owes payments; following up","status":"UNPAID"},{"id":"fp3","email":"johnholder@jlhconsulting.tv","account":"","amount":"3003","cstatus":"Still owes 1 payment; following up","status":"UNPAID"},{"id":"fp4","email":"aamir@puroxklean.com","account":"","amount":"3000","cstatus":"Waiting for payment; invoices sent","status":"INVOICE SENT"},{"id":"fp5","email":"mike@arkhsolutions.com","account":"","amount":"2900","cstatus":"Active; following up on payment","status":"UNPAID"},{"id":"fp6","email":"charlie@vendguys.com","account":"","amount":"2500","cstatus":"Waiting for payment; active","status":"UNPAID"},{"id":"fp7","email":"erling@gogreenwastewater.com","account":"","amount":"2083","cstatus":"Active; following up on payment","status":"UNPAID"},{"id":"fp8","email":"eramzy13@gmail.com","account":"","amount":"2000","cstatus":"Client disputed","status":"BLOCKED"},{"id":"fp9","email":"mbian898@yahoo.com","account":"","amount":"1500","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp10","email":"kagi.9uwq6@passmail.net","account":"","amount":"1500","cstatus":"Campaign paused; Aug 25 invoice still owed","status":"UNPAID"},{"id":"fp11","email":"ashlee.wang@yahoo.com","account":"","amount":"1500","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp12","email":"andrewl@washingtonatmsllc.com","account":"","amount":"1500","cstatus":"All invoices paid; should be reviewed/removed from AR","status":"PAID"},{"id":"fp13","email":"rbess@dayonesolutions.io","account":"","amount":"1450","cstatus":"Will pay; meeting next week","status":"UNPAID"},{"id":"fp14","email":"admin@mpds.io","account":"","amount":"1450","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp15","email":"samuel@sanneconsultancy.com","account":"","amount":"1400","cstatus":"Campaign paused; 2 invoices owed","status":"UNPAID"},{"id":"fp16","email":"accounting@highstreetinsurance.com","account":"","amount":"1350","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp17","email":"gnathan1481@proton.me","account":"","amount":"1000","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp18","email":"g.bruh@drtemt.at","account":"","amount":"1000","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp19","email":"contact.orderq@gmail.com","account":"","amount":"1000","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp20","email":"info@elitemidwiferyservices.org","account":"","amount":"800","cstatus":"Active; payment moved to the 15th","status":"UNPAID"},{"id":"fp21","email":"jennyrehema0@gmail.com","account":"","amount":"538","cstatus":"Reviewing pending invoice","status":"UNPAID"},{"id":"fp22","email":"tim.williams@panteratech.net","account":"","amount":"100","cstatus":"Keep; resuming late September","status":"UNPAID"},{"id":"fp23","email":"michael_bourgon@hotmail.com","account":"","amount":"100","cstatus":"Keep; resuming late September","status":"UNPAID"},{"id":"fp24","email":"flores.jo@paagsa.com","account":"","amount":"100","cstatus":"Keep; resuming late September","status":"UNPAID"}]};}
 
   let state=defaults();
   function normalize(s){
     if(!s||!s.projects)return null;
     for(const t of TIERS){if(!Array.isArray(s.projects[t]))s.projects[t]=[];
-      s.projects[t].forEach(c=>{if(!Array.isArray(c.owners))c.owners=['Me'];if(!Array.isArray(c.subs))c.subs=[];});}
+      s.projects[t].forEach(c=>{if(!Array.isArray(c.owners))c.owners=['Me'];if(!Array.isArray(c.subs))c.subs=[];
+        c.status=mapHealth(c.status);
+        c.subs.forEach(x=>{if(typeof x.owner==='undefined')x.owner='';if(typeof x.due==='undefined')x.due='';});if(typeof c.due==='undefined')c.due='';});}
     if(Array.isArray(s.retention))s.retention.forEach(r=>{
       if(!Array.isArray(r.owners))r.owners=[];if(!r.mrr)r.mrr='';
       if(r.status==='Watching')r.status='At risk';if(r.status==='Working')r.status='Working on it';});
@@ -435,8 +593,20 @@
     if(!Array.isArray(s.finance))s.finance=[];
     s.finance.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.months)r.months='';if(!r.status)r.status='Finance will churn';});
     if(!Array.isArray(s.failed))s.failed=[];
-    s.failed.forEach(r=>{if(!r.client)r.client='';if(!r.attempt)r.attempt='';});
+    s.failed.forEach(r=>{if(!r.email)r.email='';if(!r.account)r.account='';if(!r.amount)r.amount='';if(!r.cstatus)r.cstatus='';if(!r.status)r.status='UNPAID';});
+    if(!Array.isArray(s.people)||!s.people.length)s.people=PEOPLE.slice();
     return s;
+  }
+  // One-time migration: if the shared sheet has no failed-payments yet, load the
+  // built-in starter list so they appear. Clicking "Sync for team" then saves
+  // them to the sheet permanently, and this won't run again on this browser.
+  function seedFailedIfEmpty(){
+    try{
+      if((!state.failed||!state.failed.length)&&!localStorage.getItem('piq_failed_seeded_v1')){
+        state.failed=defaults().failed;
+        localStorage.setItem('piq_failed_seeded_v1','1');
+      }
+    }catch(e){}
   }
   function changed(){renderAll();persist();}
 
@@ -460,86 +630,380 @@
       arr.forEach(o=>{const c=document.createElement('span');c.className='ochip';c.appendChild(document.createTextNode(o));
         const x=document.createElement('button');x.className='ox';x.innerHTML='&times;';
         x.addEventListener('click',()=>{arr.splice(arr.indexOf(o),1);draw();onchange();});c.appendChild(x);wrap.appendChild(c);});
-      const avail=PEOPLE.filter(p=>!arr.includes(p));
-      if(avail.length){const sel=document.createElement('select');sel.className='oadd';
-        const def=document.createElement('option');def.value='';def.textContent='+ owner';sel.appendChild(def);
-        avail.forEach(p=>{const op=document.createElement('option');op.value=p;op.textContent=p;sel.appendChild(op);});
-        sel.addEventListener('change',()=>{if(sel.value){arr.push(sel.value);draw();onchange();}});wrap.appendChild(sel);}
+      const avail=getPeople().filter(p=>!arr.includes(p));
+      const sel=document.createElement('select');sel.className='oadd';
+      const def=document.createElement('option');def.value='';def.textContent='+ owner';sel.appendChild(def);
+      avail.forEach(p=>{const op=document.createElement('option');op.value=p;op.textContent=p;sel.appendChild(op);});
+      const nw=document.createElement('option');nw.value='__new__';nw.textContent='+ new person…';sel.appendChild(nw);
+      sel.addEventListener('change',()=>{
+        if(sel.value==='__new__'){
+          const nm=(prompt('New team member name:')||'').trim();
+          if(nm){addPerson(nm);if(!arr.some(a=>a.toLowerCase()===nm.toLowerCase()))arr.push(nm);draw();onchange();}
+          else{sel.value='';}
+        }else if(sel.value){arr.push(sel.value);draw();onchange();}
+      });
+      wrap.appendChild(sel);
     }
     draw();return wrap;
   }
 
-  const META={p0:{tag:'P0',sub:'Non-negotiable · keeps the business running'},p1:{tag:'P1',sub:'Growth · active pilots'},p2:{tag:'P2',sub:'Explore later'},pdone:{tag:'Done',sub:'Completed projects'}};
-  const boardEl=document.getElementById('board');let focusId=null;
+  const ME='Me';
+  // Projects: you are ALWAYS the principal owner; everyone else is a removable co-owner.
+  // ── People: fixed color + smart initials (so same-letter names don't clash) ──
+  const PERSON_COLOR={'Me':'#7F77DD','You':'#7F77DD','Estefania':'#E8621A','Roberto':'#378ADD','Eduardo':'#2D9E2D','María':'#D4A017','Maria':'#D4A017','Andres':'#00C2E0','Andrés':'#00C2E0','Mike':'#DB2777','Tania':'#9333EA','Usman':'#0EA5E9','Paulo':'#F97316'};
+  const COLOR_POOL=['#0EA5E9','#F97316','#10B981','#8B5CF6','#EC4899','#F59E0B','#14B8A6','#6366F1','#EF4444','#84CC16','#DB2777','#2D9E2D'];
+  function personColor(name){
+    if(name===ME||name==='You')return PERSON_COLOR['Me'];
+    if(PERSON_COLOR[name])return PERSON_COLOR[name];
+    let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;
+    return COLOR_POOL[h%COLOR_POOL.length];
+  }
+  function initialsFor(name){
+    if(name===ME||name==='You')return 'You';
+    const t=(name||'').trim();const first=(t[0]||'?').toUpperCase();
+    const clash=getPeople().some(p=>p!==name&&p!==ME&&((p||'').trim()[0]||'').toUpperCase()===first);
+    return clash?(first+(t[1]||'').toLowerCase()):first;
+  }
+  function avatarEl(name,cls){
+    const a=document.createElement('span');a.className='av'+(cls?(' '+cls):'');
+    a.textContent=initialsFor(name);a.title=(name===ME?'You · principal owner':name);
+    a.style.background=personColor(name);return a;
+  }
+
+  // ── Health status (pill) + migration from the old 9 statuses ──
+  const HSTATUS=['Not started','On track','At risk','Blocked','Done','Cancelled'];
+  const HCLASS={'Not started':'h-none','On track':'h-ok','At risk':'h-risk','Blocked':'h-block','Done':'h-done','Cancelled':'h-cancel'};
+  function mapHealth(old){
+    const m={'Not started':'Not started','In progress':'On track','Ongoing':'On track','Monitoring':'On track','Maintenance':'On track','Needs update':'At risk','Needs approval':'Blocked','Blocked':'Blocked','Done':'Done','Cancelled':'Cancelled','On track':'On track','At risk':'At risk'};
+    return m[old]||'On track';
+  }
+  function touch(c){c.updatedAt=Date.now();}
+  function relTime(ts){if(!ts)return '';var d=Date.now()-ts,day=86400000;
+    if(d<60000)return 'updated just now';
+    if(d<3600000)return 'updated '+Math.floor(d/60000)+'m ago';
+    if(d<day)return 'updated '+Math.floor(d/3600000)+'h ago';
+    if(d<day*30)return 'updated '+Math.floor(d/day)+'d ago';
+    return 'updated '+Math.floor(d/(day*30))+'mo ago';}
+  function healthPill(c){
+    const sel=document.createElement('select');
+    HSTATUS.forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;if(o===c.status)op.selected=true;sel.appendChild(op);});
+    function paint(){sel.className='hpill '+(HCLASS[c.status]||'h-ok');}
+    paint();
+    sel.addEventListener('change',()=>{c.status=sel.value;touch(c);persist();renderBoard();});
+    return sel;
+  }
+
+  // ── Owner avatars for an initiative (You principal + removable delegates) ──
+  function ownerAvatars(c){
+    const wrap=document.createElement('div');wrap.className='avs';
+    function draw(){
+      wrap.innerHTML='';
+      wrap.appendChild(avatarEl(ME,'you'));
+      (c.owners||[]).filter(o=>o!==ME).forEach(o=>{
+        const h=document.createElement('span');h.className='av-h';
+        h.appendChild(avatarEl(o));
+        const x=document.createElement('button');x.className='av-x';x.innerHTML='&times;';x.title='Remove '+o;
+        x.addEventListener('click',ev=>{ev.stopPropagation();const i=c.owners.indexOf(o);if(i>-1)c.owners.splice(i,1);touch(c);persist();draw();});
+        h.appendChild(x);wrap.appendChild(h);
+      });
+      const ah=document.createElement('span');ah.className='av-h';
+      const add=document.createElement('span');add.className='av add';add.textContent='+';add.title='Delegate to…';
+      const sel=document.createElement('select');sel.className='av-sel';
+      sel.appendChild(new Option('',''));
+      getPeople().filter(p=>p!==ME&&!(c.owners||[]).includes(p)).forEach(p=>sel.appendChild(new Option(p,p)));
+      sel.appendChild(new Option('+ new person…','__new__'));
+      sel.addEventListener('change',()=>{
+        if(!c.owners)c.owners=['Me'];
+        if(sel.value==='__new__'){const nm=(prompt('New team member name:')||'').trim();if(nm){addPerson(nm);if(!c.owners.some(a=>a.toLowerCase()===nm.toLowerCase()))c.owners.push(nm);touch(c);persist();draw();}else sel.value='';}
+        else if(sel.value){c.owners.push(sel.value);touch(c);persist();draw();}
+      });
+      ah.appendChild(add);ah.appendChild(sel);wrap.appendChild(ah);
+    }
+    draw();return wrap;
+  }
+
+  // ── Per-step owner (small avatar you can assign) ──
+  function stepOwner(s,c){
+    const h=document.createElement('span');h.className='av-h step-owner';
+    function draw(){
+      h.innerHTML='';
+      if(s.owner){const a=avatarEl(s.owner,'sm');h.appendChild(a);}
+      else{const a=document.createElement('span');a.className='av sm add';a.textContent='+';a.title='Assign step';h.appendChild(a);}
+      const sel=document.createElement('select');sel.className='av-sel';
+      sel.appendChild(new Option(s.owner?'(unassign)':'',''));
+      getPeople().forEach(p=>{const op=new Option(p===ME?'You':p,p);if(p===s.owner)op.selected=true;sel.appendChild(op);});
+      sel.appendChild(new Option('+ new person…','__new__'));
+      sel.addEventListener('change',()=>{
+        if(sel.value==='__new__'){const nm=(prompt('New team member name:')||'').trim();if(nm){addPerson(nm);s.owner=nm;touch(c);persist();draw();}else sel.value=(s.owner||'');}
+        else{s.owner=sel.value||'';touch(c);persist();draw();}
+      });
+      h.appendChild(sel);
+    }
+    draw();return h;
+  }
+
+  // ── Sections ──
+  const SECTIONS=[
+    {tier:'p0',tag:'Critical',sub:'keeps the business running',cls:'sec-crit'},
+    {tier:'p1',tag:'Growth',sub:'active bets',cls:'sec-grow'},
+    {tier:'p2',tag:'Later',sub:'exploring',cls:'sec-later'}
+  ];
+  const boardEl=document.getElementById('board');let focusId=null;const secOpen=new Set();
 
   function renderBoard(){
     boardEl.innerHTML='';
-    TIERS.forEach((t,ti)=>{
-      const col=document.createElement('div');col.className='tier '+(t==='pdone'?'tdone':'t'+ti);
-      const head=document.createElement('div');head.className='tier-head';
-      const lbl=document.createElement('div');lbl.className='tier-label';
-      const tag=document.createElement('span');tag.className='tier-tag';tag.textContent=META[t].tag;
-      const sub=document.createElement('span');sub.className='tier-sub';sub.textContent=META[t].sub;
-      lbl.appendChild(tag);lbl.appendChild(sub);
-      const cnt=document.createElement('span');cnt.className='tier-count';cnt.textContent=state.projects[t].length;
-      head.appendChild(lbl);head.appendChild(cnt);col.appendChild(head);
-      const cards=document.createElement('div');cards.className='cards';cards.dataset.tier=t;
-      state.projects[t].forEach(c=>cards.appendChild(buildCard(c)));
-      cards.addEventListener('dragover',e=>{e.preventDefault();cards.classList.add('over');});
-      cards.addEventListener('dragleave',()=>cards.classList.remove('over'));
-      cards.addEventListener('drop',e=>{e.preventDefault();cards.classList.remove('over');dropProject(e,t);});
-      col.appendChild(cards);
-      const add=document.createElement('button');add.className='addbtn';add.textContent='+ add item';add.addEventListener('click',()=>addProject(t));
-      col.appendChild(add);boardEl.appendChild(col);
+    SECTIONS.forEach(sc=>{
+      const cards=(state.projects[sc.tier]||[]).filter(c=>c.status!=='Cancelled');
+      boardEl.appendChild(buildSection(sc,cards,sc.tier,false));
     });
+    const shipped=(state.projects.pdone||[]).filter(c=>c.status!=='Cancelled');
+    boardEl.appendChild(buildSection({tier:'pdone',tag:'Shipped',sub:'',cls:'sec-ship'},shipped,'pdone',true));
+    const cancelled=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(c.status==='Cancelled')cancelled.push([t,c]);}));
+    boardEl.appendChild(buildCancelled(cancelled));
     if(focusId){const el=boardEl.querySelector('[data-id="'+focusId+'"] .ctext');if(el){el.focus();const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);}focusId=null;}
+    renderProjSummary();renderRoster();
+    if(projMode==='dashboard')renderDashboard();
   }
-  function buildCard(c){
-    const card=document.createElement('div');card.className='pcard';card.draggable=true;card.dataset.id=c.id;
+
+  function secStats(cards){let steps=0,done=0;cards.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});return{steps,done,pct:steps?Math.round(done/steps*100):0};}
+
+  function buildSection(sc,cards,tier,collapsible){
+    const sec=document.createElement('div');sec.className='psection '+sc.cls;
+    const head=document.createElement('div');head.className='sec-head';
+    const open=!collapsible||secOpen.has(tier);
+    if(collapsible){
+      const chev=document.createElement('button');chev.className='sec-chev';chev.textContent=open?'▾ hide':'▸ show';
+      chev.addEventListener('click',()=>{if(secOpen.has(tier))secOpen.delete(tier);else secOpen.add(tier);renderBoard();});
+      var chevRef=chev;
+    }
+    const tag=document.createElement('span');tag.className='sec-tag';tag.textContent=sc.tag;
+    const nm=document.createElement('span');nm.className='sec-name';if(sc.sub)nm.innerHTML='<span>'+sc.sub+'</span>';
+    head.appendChild(tag);head.appendChild(nm);
+    const st=secStats(cards);
+    const meta=document.createElement('div');meta.className='sec-meta';
+    const lbl=document.createElement('span');lbl.textContent=cards.length+' '+(cards.length===1?'initiative':'initiatives')+(st.steps?(' · '+st.pct+'%'):'');
+    meta.appendChild(lbl);
+    if(st.steps){const bar=document.createElement('div');bar.className='bar sec-bar';const bf=document.createElement('span');bf.style.width=st.pct+'%';bar.appendChild(bf);meta.appendChild(bar);}
+    if(collapsible)meta.appendChild(chevRef);
+    head.appendChild(meta);sec.appendChild(head);
+    if(open){
+      const body=document.createElement('div');body.className='sec-body';
+      const cc=document.createElement('div');cc.className='cards';cc.dataset.tier=tier;
+      if(!cards.length){const e=document.createElement('div');e.className='sec-empty';e.textContent='Nothing here yet.';cc.appendChild(e);}
+      cards.forEach(c=>cc.appendChild(buildCard(c)));
+      cc.addEventListener('dragover',e=>{e.preventDefault();cc.classList.add('over');});
+      cc.addEventListener('dragleave',()=>cc.classList.remove('over'));
+      cc.addEventListener('drop',e=>{e.preventDefault();cc.classList.remove('over');dropProject(e,tier);});
+      body.appendChild(cc);
+      const add=document.createElement('button');add.className='addbtn';add.textContent='+ add initiative';add.addEventListener('click',()=>addProject(tier));
+      body.appendChild(add);sec.appendChild(body);
+    }
+    return sec;
+  }
+
+  function buildCancelled(list){
+    if(!list.length)return document.createComment('none');
+    const sec=document.createElement('div');sec.className='psection sec-cancel';
+    const open=secOpen.has('__cancel__');
+    const head=document.createElement('div');head.className='sec-head';
+    const tag=document.createElement('span');tag.className='sec-tag';tag.textContent='Cancelled';
+    head.appendChild(tag);
+    const meta=document.createElement('div');meta.className='sec-meta';
+    const lbl=document.createElement('span');lbl.textContent=list.length+' archived';meta.appendChild(lbl);
+    const chev=document.createElement('button');chev.className='sec-chev';chev.textContent=open?'▾ hide':'▸ show';
+    chev.addEventListener('click',()=>{if(open)secOpen.delete('__cancel__');else secOpen.add('__cancel__');renderBoard();});
+    meta.appendChild(chev);head.appendChild(meta);sec.appendChild(head);
+    if(open){
+      const body=document.createElement('div');body.className='sec-body';
+      const cc=document.createElement('div');cc.className='cards';
+      list.forEach(pair=>cc.appendChild(buildCard(pair[1],{noDrag:true})));
+      body.appendChild(cc);sec.appendChild(body);
+    }
+    return sec;
+  }
+
+  function renderRoster(){
+    const el=document.getElementById('rosterBar');if(!el)return;
+    el.innerHTML='<span class="roster-label">Team</span>';
+    getPeople().forEach(p=>{
+      const chip=document.createElement('span');chip.className='ochip roster-chip';
+      const dot=document.createElement('span');dot.className='ochip-dot';dot.style.background=personColor(p);chip.appendChild(dot);
+      chip.appendChild(document.createTextNode(p===ME?'You':p));
+      if(p!==ME){
+        const x=document.createElement('button');x.className='ox';x.innerHTML='&times;';x.title='Remove from roster';
+        x.addEventListener('click',()=>{if(confirm('Remove '+p+' from the team roster?\n(Existing assignments on cards stay as-is.)')){removePerson(p);renderRoster();}});
+        chip.appendChild(x);
+      }
+      el.appendChild(chip);
+    });
+    const add=document.createElement('button');add.className='roster-add';add.textContent='+ add person';
+    add.addEventListener('click',()=>{const nm=(prompt('New team member name:')||'').trim();if(nm){addPerson(nm);renderRoster();renderBoard();}});
+    el.appendChild(add);
+  }
+
+  let projMode='board';
+  function setProjMode(m){
+    projMode=m;
+    document.querySelectorAll('.proj-viewswitch button').forEach(b=>b.classList.toggle('active',b.dataset.pv===m));
+    const board=document.getElementById('board'),dash=document.getElementById('projDashboard'),sum=document.getElementById('projSummary');
+    const dashMode=m==='dashboard';
+    board.hidden=dashMode;dash.hidden=!dashMode;if(sum)sum.style.display=dashMode?'none':'';
+    if(dashMode)renderDashboard();
+  }
+  function donutSVG(data,total){
+    const NS='http://www.w3.org/2000/svg',r=54,cx=70,cy=70,C=2*Math.PI*r;
+    const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 140 140');svg.setAttribute('class','donut');
+    const track=document.createElementNS(NS,'circle');track.setAttribute('cx',cx);track.setAttribute('cy',cy);track.setAttribute('r',r);track.setAttribute('fill','none');track.setAttribute('stroke','var(--panel-2)');track.setAttribute('stroke-width','16');svg.appendChild(track);
+    let off=0;
+    data.forEach(d=>{if(!d.value)return;const seg=C*d.value/(total||1);
+      const c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill','none');
+      c.setAttribute('stroke',d.color);c.setAttribute('stroke-width','16');c.setAttribute('stroke-dasharray',seg+' '+(C-seg));
+      c.setAttribute('stroke-dashoffset',-off);c.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+      const t=document.createElementNS(NS,'title');t.textContent=d.label+': '+d.value;c.appendChild(t);
+      svg.appendChild(c);off+=seg;});
+    const num=document.createElementNS(NS,'text');num.setAttribute('x',cx);num.setAttribute('y',cy-2);num.setAttribute('text-anchor','middle');num.setAttribute('class','donut-num');num.textContent=total;svg.appendChild(num);
+    const lab=document.createElementNS(NS,'text');lab.setAttribute('x',cx);lab.setAttribute('y',cy+16);lab.setAttribute('text-anchor','middle');lab.setAttribute('class','donut-lab');lab.textContent='initiatives';svg.appendChild(lab);
+    return svg;
+  }
+  function renderDashboard(){
+    const el=document.getElementById('projDashboard');if(!el)return;
+    const all=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>all.push(c)));
+    const active=all.filter(c=>c.status!=='Cancelled');
+    const byStatus={'Not started':0,'On track':0,'At risk':0,'Blocked':0,'Done':0};
+    active.forEach(c=>{if(byStatus[c.status]!=null)byStatus[c.status]++;});
+    const SC={'Not started':'#94A3B8','On track':'#16A34A','At risk':'#D97706','Blocked':'#DC2626','Done':'#059669'};
+    const donutData=Object.keys(byStatus).map(k=>({label:k,value:byStatus[k],color:SC[k]}));
+    let steps=0,done=0;active.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});
+    const pct=steps?Math.round(done/steps*100):0;
+    const atrisk=byStatus['At risk'],blocked=byStatus['Blocked'];
+    // owner workload (co-owners incl You)
+    const load={};active.forEach(c=>{(c.owners&&c.owners.length?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
+    const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
+
+    el.innerHTML='';
+    // KPI row
+    const kpis=document.createElement('div');kpis.className='dash-kpis';
+    [['Live initiatives',active.length,'var(--brand)'],['Complete',pct+'%','var(--teal)'],['At risk',atrisk,'var(--amber)'],['Blocked',blocked,'var(--fire)']].forEach(k=>{
+      const t=document.createElement('div');t.className='kpi';t.innerHTML='<div class="kpi-num" style="color:'+k[2]+'">'+k[1]+'</div><div class="kpi-lab">'+k[0]+'</div>';kpis.appendChild(t);});
+    el.appendChild(kpis);
+    // two panels: donut + workload
+    const grid=document.createElement('div');grid.className='dash-grid';
+    const p1=document.createElement('div');p1.className='dash-panel';
+    p1.innerHTML='<div class="dash-h">By status</div>';
+    const dwrap=document.createElement('div');dwrap.className='donut-wrap';
+    dwrap.appendChild(donutSVG(donutData,active.length));
+    const leg=document.createElement('div');leg.className='donut-legend';
+    donutData.forEach(d=>{const row=document.createElement('div');row.className='leg-row';row.innerHTML='<span class="leg-dot" style="background:'+d.color+'"></span><span class="leg-lab">'+d.label+'</span><span class="leg-val">'+d.value+'</span>';leg.appendChild(row);});
+    dwrap.appendChild(leg);p1.appendChild(dwrap);grid.appendChild(p1);
+
+    const p2=document.createElement('div');p2.className='dash-panel';
+    p2.innerHTML='<div class="dash-h">Workload by person</div>';
+    const wl=document.createElement('div');wl.className='workload';
+    owners.forEach(o=>{
+      const row=document.createElement('div');row.className='wl-row';
+      row.innerHTML='<span class="wl-name">'+(o===ME?'You':o)+'</span>'
+        +'<span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span>'
+        +'<span class="wl-val">'+load[o]+'</span>';
+      wl.appendChild(row);
+    });
+    if(!owners.length){wl.innerHTML='<div class="sec-empty">No initiatives yet.</div>';}
+    p2.appendChild(wl);grid.appendChild(p2);
+    el.appendChild(grid);
+  }
+  function renderProjSummary(){
+    const el=document.getElementById('projSummary');if(!el)return;
+    const active=[];['p0','p1','p2'].forEach(t=>(state.projects[t]||[]).forEach(c=>{if(c.status!=='Cancelled')active.push(c);}));
+    let steps=0,done=0;active.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});
+    const pct=steps?Math.round(done/steps*100):0;
+    const cnt=t=>(state.projects[t]||[]).filter(c=>c.status!=='Cancelled').length;
+    let cancelled=0;TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(c.status==='Cancelled')cancelled++;}));
+    el.innerHTML=`
+      <div class="proj-stat"><div class="proj-stat-num">${active.length}</div><div class="proj-stat-label">live initiatives</div></div>
+      <div class="proj-stat"><div class="proj-stat-num">${done}/${steps}</div><div class="proj-stat-label">steps done</div></div>
+      <div class="proj-progress-wrap">
+        <div class="proj-progress-top"><span>Overall progress</span><span><b>${pct}%</b></span></div>
+        <div class="pprog"><div class="pprog-fill" style="width:${pct}%"></div></div>
+        <div class="proj-tier-counts"><span><b>${cnt('p0')}</b> Critical</span> &nbsp;·&nbsp; <span><b>${cnt('p1')}</b> Growth</span> &nbsp;·&nbsp; <span><b>${cnt('p2')}</b> Later</span> &nbsp;·&nbsp; <span><b>${cnt('pdone')}</b> Shipped</span>${cancelled?' &nbsp;·&nbsp; <span><b>'+cancelled+'</b> Cancelled</span>':''}</div>
+      </div>`;
+  }
+
+  // ── Optional due date (projects + steps) ──
+  const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function fmtDue(iso){if(!iso)return '';const p=iso.split('-');const y=+p[0],m=+p[1],d=+p[2];return (MON[m-1]||'')+' '+d+(y!==new Date().getFullYear()?(" '"+String(y).slice(2)):'');}
+  function dueState(iso,done){if(!iso)return '';if(done)return 'due-done';const t=new Date();t.setHours(0,0,0,0);const dt=new Date(iso+'T00:00:00');const diff=Math.round((dt-t)/86400000);if(diff<0)return 'due-over';if(diff<=3)return 'due-soon';return 'due-ok';}
+  function dueChip(obj,onchange,done){
+    const wrap=document.createElement('span');wrap.className='due-h';
+    function draw(){
+      wrap.innerHTML='';
+      const chip=document.createElement('span');
+      if(obj.due){chip.className='duechip '+dueState(obj.due,done);chip.textContent='📅 '+fmtDue(obj.due);}
+      else{chip.className='duechip due-add';chip.textContent='＋ date';}
+      const inp=document.createElement('input');inp.type='date';inp.className='due-input';if(obj.due)inp.value=obj.due;
+      inp.addEventListener('change',()=>{obj.due=inp.value||'';onchange();draw();});
+      chip.addEventListener('click',ev=>{ev.stopPropagation();try{inp.showPicker();}catch(e){inp.click();}});
+      wrap.appendChild(chip);wrap.appendChild(inp);
+      if(obj.due){const x=document.createElement('button');x.className='due-x';x.innerHTML='&times;';x.title='Clear date';x.addEventListener('click',ev=>{ev.stopPropagation();obj.due='';onchange();draw();});wrap.appendChild(x);}
+    }
+    draw();return wrap;
+  }
+
+  function buildCard(c,opts){
+    opts=opts||{};
+    const card=document.createElement('div');card.className='pcard';card.dataset.id=c.id;if(!opts.noDrag)card.draggable=true;
     const handle=document.createElement('span');handle.className='handle';handle.innerHTML='&#10303;';
-    const body=document.createElement('div');body.className='pbody';
-    const tx=editable(c.text,v=>{if(!v)removeProject(c.id);else if(v!==c.text){c.text=v;persist();}},'ctext');
-    tx.addEventListener('focus',()=>card.draggable=false);tx.addEventListener('blur',()=>card.draggable=true);
-    const meta=document.createElement('div');meta.className='meta';
-    meta.appendChild(ownerControl(c.owners,persist));
-    meta.appendChild(mkSelect(c.status,PSTATUS,v=>{c.status=v;persist();}));
-    body.appendChild(tx);body.appendChild(meta);
-    const tog=document.createElement('button');tog.className='subtoggle';
-    const done=c.subs.filter(s=>s.done).length;
-    tog.textContent=(expanded.has(c.id)?'▾':'▸')+' '+(c.subs.length?c.subs.length+' steps ('+done+' done)':'add steps');
-    tog.addEventListener('click',()=>{if(expanded.has(c.id))expanded.delete(c.id);else expanded.add(c.id);renderBoard();});
-    body.appendChild(tog);
+    const prow=document.createElement('div');prow.className='prow';
+    const main=document.createElement('div');main.className='pmain';
+    const tx=editable(c.text,v=>{if(!v)removeProject(c.id);else if(v!==c.text){c.text=v;touch(c);persist();}},'ctext');
+    tx.addEventListener('focus',()=>card.draggable=false);tx.addEventListener('blur',()=>{if(!opts.noDrag)card.draggable=true;});
+    const total=(c.subs||[]).length,ndone=(c.subs||[]).filter(s=>s.done).length;
+    const line=document.createElement('div');line.className='stepline';
+    const mini=document.createElement('span');mini.className='mini';const mf=document.createElement('span');mf.style.width=total?Math.round(ndone/total*100)+'%':'0%';mini.appendChild(mf);
+    const lt=document.createElement('span');lt.textContent=total?(ndone+' / '+total+' steps'):'add steps';
+    line.appendChild(mini);line.appendChild(lt);
+    line.addEventListener('click',()=>{if(expanded.has(c.id))expanded.delete(c.id);else expanded.add(c.id);renderBoard();});
+    main.appendChild(tx);main.appendChild(line);
+    const side=document.createElement('div');side.className='pside';
+    side.appendChild(ownerAvatars(c));
+    side.appendChild(healthPill(c));
+    side.appendChild(dueChip(c,()=>{touch(c);persist();renderBoard();},c.status==='Done'));
+    const up=document.createElement('span');up.className='updated';up.textContent=relTime(c.updatedAt);side.appendChild(up);
+    const del=document.createElement('button');del.className='del';del.innerHTML='&times;';del.title='Remove';del.addEventListener('click',()=>removeProject(c.id));
+    prow.appendChild(handle);prow.appendChild(main);prow.appendChild(side);prow.appendChild(del);
+    card.appendChild(prow);
     if(expanded.has(c.id)){
       const wrap=document.createElement('div');wrap.className='subs';
-      c.subs.forEach(s=>{
+      (c.subs||[]).forEach(s=>{
         const row=document.createElement('div');row.className='sub'+(s.done?' done':'');
         const cb=document.createElement('input');cb.type='checkbox';cb.checked=s.done;
-        cb.addEventListener('change',()=>{s.done=cb.checked;row.classList.toggle('done',s.done);persist();const d=c.subs.filter(x=>x.done).length;tog.textContent='▾ '+c.subs.length+' steps ('+d+' done)';});
-        const st=editable(s.text,v=>{if(!v){c.subs=c.subs.filter(x=>x.id!==s.id);renderBoard();persist();}else{s.text=v;persist();}},'stext');
-        const dl=document.createElement('button');dl.className='del';dl.innerHTML='&times;';dl.addEventListener('click',()=>{c.subs=c.subs.filter(x=>x.id!==s.id);renderBoard();persist();});
-        row.appendChild(cb);row.appendChild(st);row.appendChild(dl);wrap.appendChild(row);
+        cb.addEventListener('change',()=>{s.done=cb.checked;touch(c);persist();renderBoard();});
+        const stx=editable(s.text,v=>{if(!v){c.subs=c.subs.filter(x=>x.id!==s.id);touch(c);renderBoard();persist();}else{s.text=v;touch(c);persist();}},'stext');
+        const own=stepOwner(s,c);
+        const sdue=dueChip(s,()=>{touch(c);persist();renderBoard();},s.done);
+        const dl=document.createElement('button');dl.className='del';dl.innerHTML='&times;';dl.addEventListener('click',()=>{c.subs=c.subs.filter(x=>x.id!==s.id);touch(c);renderBoard();persist();});
+        row.appendChild(cb);row.appendChild(stx);row.appendChild(own);row.appendChild(sdue);row.appendChild(dl);wrap.appendChild(row);
       });
-      const addS=document.createElement('button');addS.className='subadd';addS.textContent='+ step';
-      addS.addEventListener('click',()=>{const ns={id:uid(),text:'',done:false};c.subs.push(ns);renderBoard();persist();
-        const el=boardEl.querySelector('[data-id="'+c.id+'"] .subs .sub:last-child .stext');if(el)el.focus();});
-      wrap.appendChild(addS);body.appendChild(wrap);
+      const add=document.createElement('div');add.className='addstep';
+      const p=document.createElement('span');p.className='ap';p.textContent='＋';
+      const inp=document.createElement('input');inp.placeholder='add a step…';
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()){if(!c.subs)c.subs=[];c.subs.push({id:uid(),text:inp.value.trim(),done:false,owner:'',due:''});touch(c);persist();renderBoard();setTimeout(()=>{const el=boardEl.querySelector('[data-id="'+c.id+'"] .addstep input');if(el)el.focus();},0);}});
+      add.appendChild(p);add.appendChild(inp);wrap.appendChild(add);
+      card.appendChild(wrap);
     }
-    const del=document.createElement('button');del.className='del';del.innerHTML='&times;';del.title='Remove';del.addEventListener('click',()=>removeProject(c.id));
-    card.appendChild(handle);card.appendChild(body);card.appendChild(del);
-    card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',c.id);e.dataTransfer.effectAllowed='move';card.classList.add('dragging');});
-    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+    if(!opts.noDrag){
+      card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',c.id);e.dataTransfer.effectAllowed='move';card.classList.add('dragging');});
+      card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+    }
     return card;
   }
   function removeProject(id){for(const t of TIERS){const i=state.projects[t].findIndex(x=>x.id===id);if(i>-1){state.projects[t].splice(i,1);break;}}changed();}
-  function addProject(t){const c={id:uid(),text:'',owners:['Me'],status:'Not started',subs:[]};state.projects[t].push(c);focusId=c.id;changed();}
+  function addProject(t){const c={id:uid(),text:'',owners:['Me'],status:'Not started',subs:[],updatedAt:Date.now(),due:''};state.projects[t].push(c);focusId=c.id;changed();}
   function dropProject(e,target){
     const id=e.dataTransfer.getData('text');if(!id)return;let moved=null;
     for(const t of TIERS){const i=state.projects[t].findIndex(x=>x.id===id);if(i>-1){moved=state.projects[t].splice(i,1)[0];break;}}
-    if(!moved)return;const over=e.target.closest('.pcard');let idx=state.projects[target].length;
+    if(!moved)return;touch(moved);const over=e.target.closest('.pcard');let idx=state.projects[target].length;
     if(over&&over.dataset.id!==id){const oi=state.projects[target].findIndex(x=>x.id===over.dataset.id);if(oi>-1)idx=oi;}
     state.projects[target].splice(idx,0,moved);changed();
   }
-
   function mrr(rows){return rows.reduce((a,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return a+(isNaN(n)?0:n);},0);}
   function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
 
@@ -549,13 +1013,15 @@
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
+    const fp=state.failed||[];
+    const fpOwed=fp.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID').reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     el.innerHTML=`
       <div class="ret-stat danger"><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${(state.failed||[]).length}</div><div class="ret-stat-mrr">from Slack</div><div class="ret-stat-sub">payment alerts · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fp.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">tap to view</div></div>
       <div class="ret-total-row">
         <div class="ret-total-item"><b>${r.length+ss.length+fin.length}</b> clients tracked</div>
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or confirmed leaving</div>
@@ -572,8 +1038,33 @@
   }
 
   let dragSrcId=null;
+  function fmtK(n){return n>=1000?('$'+(Math.round(n/100)/10)+'K'):('$'+Math.round(n));}
+  function renderChurnByAM(){
+    const el=document.getElementById('churnByAM');if(!el)return;
+    const r=state.retention||[];const byAM={};
+    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn')return;
+      const m=parseFloat(String(c.mrr||'').replace(/[^0-9.]/g,''))||0;
+      (c.owners&&c.owners.length?c.owners:['Unassigned']).forEach(o=>{
+        if(!byAM[o])byAM[o]={ch:0,wc:0,cc:0,wcc:0};
+        if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}else{byAM[o].wc+=m;byAM[o].wcc++;}});
+    });
+    const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc)-(byAM[a].ch+byAM[a].wc));
+    if(!ams.length){el.style.display='none';el.innerHTML='';return;}
+    el.style.display='';
+    const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc));
+    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span></span></div><div class="cam-rows">';
+    ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc,totc=d.cc+d.wcc;
+      h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span>'
+        +'<span class="cam-track">'
+        +'<span class="cam-seg" style="width:'+Math.round(d.ch/max*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' clients"></span>'
+        +'<span class="cam-seg" style="width:'+Math.round(d.wc/max*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' clients"></span>'
+        +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+'</span></div>';
+    });
+    h+='</div>';el.innerHTML=h;
+  }
   function renderRetention(){
     renderRetentionSummary();
+    renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
     const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'Issue'},{key:'next',label:'Next step'},{key:'status',label:'Status',type:'select',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
@@ -624,11 +1115,19 @@
   }
   document.getElementById('addFinance').addEventListener('click',()=>{state.finance.push({id:uid(),client:'',mrr:'',months:'',note:'',status:'Finance will churn'});changed();});
 
-  // ── FAILED PAYMENTS list (pulled from Slack, shown in the click-through panel) ──
+  // ── FAILED PAYMENTS / accounts-receivable tracker (manual now, Stripe later) ──
+  const FP_STATUS=['UNPAID','WILL PAY - INVOICE SENT','INVOICE SENT','PAID','WIRE TRANSFER-PAID','BLOCKED'];
   function renderFailed(){
-    const cols=[{key:'client',label:'Client'},{key:'attempt',label:'Attempt #',cls:'mrr-cell'},{key:'am',label:'AM'},{key:'ad',label:'AD'},{key:'date',label:'Date'}];
-    renderGenericTable('failedTable','failed',cols,renderRetentionSummary,'No failed payments pulled yet. Use "Pull failed payments (Slack)".');
+    const cols=[
+      {key:'email',label:'Payment email'},
+      {key:'account',label:'Account name'},
+      {key:'amount',label:'Amount',cls:'mrr-cell'},
+      {key:'cstatus',label:'Current status'},
+      {key:'status',label:'Status',type:'select',opts:FP_STATUS}
+    ];
+    renderGenericTable('failedTable','failed',cols,renderRetentionSummary,'No failed payments yet. Add one with the button above.');
   }
+  document.getElementById('addFailed').addEventListener('click',()=>{state.failed.push({id:uid(),email:'',account:'',amount:'',cstatus:'',status:'UNPAID'});changed();});
 
   // ── GENERIC TABLE RENDERER (drag-sortable, editable) ──
   let genDragId=null;
@@ -752,21 +1251,44 @@
     const cb='sl_'+Date.now();let done=false;
     window[cb]=function(res){
       done=true;delete window[cb];const s=document.getElementById(cb);if(s)s.remove();
-      btn.disabled=false;btn.textContent='⟳ Pull failed payments (Slack)';
-      if(!res||!res.ok){alert('Slack pull failed: '+(res&&res.error?res.error:'unknown'));return;}
+      btn.disabled=false;btn.textContent='⟳ Pull failed payments';
+      if(!res||!res.ok){alert('Pull failed: '+(res&&res.error?res.error:'unknown'));return;}
       if(!Array.isArray(state.failed))state.failed=[];
-      const seen={};
-      state.failed.forEach(f=>{seen[(f.client||'').trim().toLowerCase()+'|'+(f.attempt||'')]=f;});
-      let added=0,updated=0;
-      (res.items||[]).forEach(it=>{
-        const k=(it.client||'').trim().toLowerCase()+'|'+(it.attempt||'');
-        if(seen[k]){seen[k].date=it.date;seen[k].am=it.am;seen[k].ad=it.ad;seen[k].note=it.text;updated++;}
-        else{const row={id:uid(),client:it.client,attempt:it.attempt,am:it.am,ad:it.ad,date:it.date,note:it.text};state.failed.push(row);seen[k]=row;added++;}
+      if(!Array.isArray(state.finance))state.finance=[];
+      const low=x=>(x||'').trim().toLowerCase();
+      // process lower attempts first so an escalation (1→2) moves the row cleanly
+      const items=(res.items||[]).slice().sort((a,b)=>((parseInt(a.attempt)||0)-(parseInt(b.attempt)||0)));
+      let addedFP=0,addedFin=0,updated=0,skipped=0;
+      items.forEach(it=>{
+        const acct=(it.client||'').trim();const k=low(acct);if(!k)return;
+        const att=parseInt(it.attempt)||0;
+        // ACTIVE only: skip accounts already fully churned
+        const dead=(state.retention||[]).some(r=>low(r.client)===k&&r.status==='Churned')
+                 ||(state.finance||[]).some(f=>low(f.client)===k&&f.status==='Churned by finance');
+        if(dead){skipped++;return;}
+        const dt=it.date?(' · '+it.date):'';
+        if(att>=2){
+          // 2FP / 3FP → Unpaid clients · finance cancellations
+          const fi=state.failed.findIndex(f=>low(f.account)===k);if(fi>-1)state.failed.splice(fi,1); // pull out of Failed payments if it escalated
+          const ord=att+(att===2?'nd':att===3?'rd':'th');
+          const fin=state.finance.find(f=>low(f.client)===k);
+          if(fin){fin.months=String(att);fin.note=ord+' failed payment'+dt;if(fin.status!=='Churned by finance')fin.status='Finance will churn';updated++;}
+          else{state.finance.push({id:uid(),client:acct,mrr:'',months:String(att),note:ord+' failed payment'+dt,status:'Finance will churn'});addedFin++;}
+        }else{
+          // 1FP → Failed payments, labelled "1st Failed Payment"
+          const cst='1st Failed Payment'+dt;
+          const ex=state.failed.find(f=>low(f.account)===k);
+          if(ex){ex.cstatus=cst;updated++;}
+          else{state.failed.push({id:uid(),email:'',account:acct,amount:'',cstatus:cst,status:'UNPAID'});addedFP++;}
+        }
       });
       changed();
-      alert('Slack — '+(res.count||0)+' failed-payment alerts where you\'re tagged.\n'+added+' new\n'+updated+' updated');
+      alert('Failed payments — '+(res.count||0)+' alerts (active only).\n'
+           +addedFP+' new 1st-FP → Failed payments\n'
+           +addedFin+' new 2nd/3rd-FP → Unpaid clients\n'
+           +updated+' updated · '+skipped+' skipped (already churned)');
     };
-    setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull failed payments (Slack)';alert('Slack pull timed out.');}},60000);
+    setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull failed payments';alert('Pull timed out.');}},60000);
     const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=slack&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
   }
   document.getElementById('pullSlack').addEventListener('click',pullSlack);
@@ -776,7 +1298,7 @@
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
     document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
-    Object.entries({projects:'tab-projects',retention:'tab-retention',plan:'tab-plan',bundles:'tab-bundles'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
+    Object.entries({retention:'tab-retention',projects:'tab-projects'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
     window.scrollTo({top:0});
   });
   document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='piq-hub-backup.json';a.click();URL.revokeObjectURL(a.href);});
@@ -804,7 +1326,7 @@
       done=true; delete window[cbName];
       const s=document.getElementById(cbName); if(s)s.remove();
       if(res&&res.ok&&res.data){
-        state=normalize(res.data)||state;
+        state=normalize(res.data)||state; seedFailedIfEmpty();
         persist(); // cache the shared version locally too
       } else {
         const saved=normalize(loadSaved());
