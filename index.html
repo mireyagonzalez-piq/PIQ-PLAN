@@ -557,7 +557,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function removePerson(name){const p=getPeople();const i=p.indexOf(name);if(i>-1){p.splice(i,1);persist();}}
   const PSTATUS=['Not started','In progress','Needs approval','Needs update','Ongoing','Monitoring','Maintenance','Blocked','Done'];
   const RISK=['High','Medium','Low'];
-  const RSTATUS=['At risk','Working on it','Will churn','Churned','Saved'];
+  const RSTATUS=['At risk','Working on it','Will churn','Payment delay - will reflect as churn','Churned','Saved'];
   const SSSTATUS=['Active','At risk','Churned'];
   const FINSTATUS=['Finance will churn','Pending - not cancelled yet','Churned by finance'];
   const COLOR={'Blocked':'var(--fire)','High':'var(--fire)','Churned':'var(--fire)','Churned by finance':'var(--fire)','Needs approval':'var(--fire)','Will churn':'var(--fire)','Finance will churn':'var(--fire)','In progress':'var(--amber)','Medium':'var(--amber)','Working on it':'var(--amber)','Needs update':'var(--amber)','At risk':'var(--amber)','Done':'var(--teal)','Low':'var(--teal)','Saved':'var(--teal)','Active':'var(--teal)','Ongoing':'var(--violet)','Monitoring':'var(--violet)','Maintenance':'var(--slate)','Not started':'var(--slate)','PAID':'var(--teal)','WIRE TRANSFER-PAID':'var(--teal)','UNPAID':'var(--fire)','BLOCKED':'var(--fire)','INVOICE SENT':'var(--amber)','WILL PAY - INVOICE SENT':'var(--amber)','Pending - not cancelled yet':'var(--amber)'};
@@ -1095,8 +1095,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function mrr(rows){return rows.reduce((a,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return a+(isNaN(n)?0:n);},0);}
   function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
 
-  function statDot(v){return (v==='Churned'||v==='Will churn')?'var(--fire)':(v==='At risk'||v==='Working on it')?'var(--amber)':v==='Saved'?'var(--teal)':'var(--slate)';}
-  function statCls(v){return v==='Churned'?'st-churn':v==='Will churn'?'st-will':v==='At risk'?'st-risk':v==='Working on it'?'st-work':v==='Saved'?'st-saved':'st-work';}
+  function statDot(v){return (v==='Churned'||v==='Will churn'||v==='Payment delay - will reflect as churn')?'var(--fire)':(v==='At risk'||v==='Working on it')?'var(--amber)':v==='Saved'?'var(--teal)':'var(--slate)';}
+  function statCls(v){return v==='Churned'?'st-churn':(v==='Will churn'||v==='Payment delay - will reflect as churn')?'st-will':v==='At risk'?'st-risk':v==='Working on it'?'st-work':v==='Saved'?'st-saved':'st-work';}
   function statusPill(value,opts,onchange){
     const wrap=document.createElement('span');wrap.className='statpill';
     const btn=document.createElement('button');
@@ -1106,9 +1106,22 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     opts.forEach(o=>{const b=document.createElement('button');b.innerHTML='<span class="d" style="background:'+statDot(o)+'"></span>'+o;
       b.addEventListener('click',ev=>{ev.stopPropagation();paint(o);menu.classList.remove('open');onchange(o);});menu.appendChild(b);});
     btn.addEventListener('mousedown',e=>e.stopPropagation());
-    btn.addEventListener('click',ev=>{ev.stopPropagation();document.querySelectorAll('.statmenu.open').forEach(m=>{if(m!==menu)m.classList.remove('open');});menu.classList.toggle('open');});
+    btn.addEventListener('click',ev=>{
+      ev.stopPropagation();
+      document.querySelectorAll('.statmenu.open').forEach(m=>{if(m!==menu){m.classList.remove('open');m.style.top='';m.style.left='';}});
+      menu.classList.toggle('open');
+      if(menu.classList.contains('open')){
+        const r=btn.getBoundingClientRect();
+        menu.style.position='fixed';
+        const mh=menu.offsetHeight||190;
+        const below=window.innerHeight-r.bottom;
+        if(below<mh+10){menu.style.top=Math.max(8,r.top-mh-6)+'px';}else{menu.style.top=(r.bottom+6)+'px';}
+        menu.style.left=Math.max(8,r.right-170)+'px';
+      } else {menu.style.top='';menu.style.left='';}
+    });
     wrap.appendChild(btn);wrap.appendChild(menu);return wrap;
   }
+  window.addEventListener('scroll',()=>document.querySelectorAll('.statmenu.open').forEach(m=>{m.classList.remove('open');m.style.top='';m.style.left='';}),true);
   if(!window._statClose){window._statClose=1;document.addEventListener('click',()=>document.querySelectorAll('.statmenu.open').forEach(m=>m.classList.remove('open')));}
 
   function renderRetentionSummary(){
@@ -1117,17 +1130,17 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const ic=p=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
     const chip=(dot,html)=>`<div class="ret-total-item">${dot?`<span class="cdot" style="background:${dot}"></span>`:''}${html}</div>`;
     const r=state.retention;
-    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay - will reflect as churn');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
-    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin.filter(x=>x.status==='Finance will churn'));
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin.filter(x=>x.status==='Finance will churn'));
     const fp=state.failed||[];
     const fpOpen=fp.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRows=fp.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
     const fpPaidCount=fpPaidRows.length;
     const fpPaidAmt=fpPaidRows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     const fpOwed=fpOpen.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
-    const exposure=mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
+    const exposure=mrr(ch)+mrr(wc)+mrr(pd)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
     el.innerHTML=`
       <div class="ret-stat danger"><div class="kpi-ic ic-fire">${ic(I.down)}</div><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="kpi-ic ic-fire">${ic(I.leave)}</div><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
@@ -1137,7 +1150,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">${fpPaidCount>0?fpPaidCount+' paid · '+fmt(fpPaidAmt)+' recovered — tap to view':'tap to view'}</div></div>
       <div class="ret-total-row">
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
-        ${chip('var(--fire)','<b>'+(ch.length+wc.length)+'</b> churned or confirmed leaving')}
+        ${chip('var(--fire)','<b>'+(ch.length+wc.length+pd.length)+'</b> churned or confirmed leaving')}
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${exposure>0?chip('var(--fire)','<b>'+fmt(exposure)+'</b> total MRR exposure'):''}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving'):''}
@@ -1155,21 +1168,24 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function renderChurnByAM(){
     const el=document.getElementById('churnByAM');if(!el)return;
     const r=state.retention||[];const byAM={};
-    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn')return;
+    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn'&&st!=='Payment delay - will reflect as churn')return;
       const m=parseFloat(String(c.mrr||'').replace(/[^0-9.]/g,''))||0;
       (c.owners&&c.owners.length?c.owners:['Unassigned']).forEach(o=>{
-        if(!byAM[o])byAM[o]={ch:0,wc:0,cc:0,wcc:0};
-        if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}else{byAM[o].wc+=m;byAM[o].wcc++;}});
+        if(!byAM[o])byAM[o]={ch:0,wc:0,pd:0,cc:0,wcc:0,pdc:0};
+        if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}
+        else if(st==='Payment delay - will reflect as churn'){byAM[o].pd+=m;byAM[o].pdc++;}
+        else{byAM[o].wc+=m;byAM[o].wcc++;}});
     });
-    const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc)-(byAM[a].ch+byAM[a].wc));
+    const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc+byAM[b].pd)-(byAM[a].ch+byAM[a].wc+byAM[a].pd));
     if(!ams.length){el.style.display='none';el.innerHTML='';return;}
     el.style.display='';
-    const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc));
-    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span></span></div><div class="cam-rows">';
-    ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc,totc=d.cc+d.wcc;
+    const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc+byAM[a].pd));
+    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span><span><i style="background:#F59E0B"></i>Payment delay</span></span></div><div class="cam-rows">';
+    ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span>'
         +'<span class="cam-track">'
         +'<span class="cam-seg" style="width:'+Math.round(d.ch/max*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' clients"></span>'
+        +'<span class="cam-seg" style="width:'+Math.round(d.pd/max*100)+'%;background:#F59E0B" title="Payment delay (will reflect as churn): '+fmtK(d.pd)+' · '+d.pdc+' clients"></span>'
         +'<span class="cam-seg" style="width:'+Math.round(d.wc/max*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' clients"></span>'
         +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+'</span></div>';
     });
@@ -1177,7 +1193,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
   // ── TABLE SORTING (click a header: first click ascends, again toggles desc) ──
   const tblSorts={};   // key: state array name, value: {col, dir}
-  const STATUS_ORDER={'At risk':0,'Working on it':1,'Will churn':2,'Churned':3,'Saved':4,'Active':0,'Finance will churn':0,'Pending - not cancelled yet':1,'Churned by finance':2,'UNPAID':0,'WILL PAY - INVOICE SENT':1,'INVOICE SENT':2,'PAID':3,'WIRE TRANSFER-PAID':4,'BLOCKED':5};
+  const STATUS_ORDER={'At risk':0,'Working on it':1,'Will churn':2,'Payment delay - will reflect as churn':3,'Churned':4,'Saved':5,'Active':0,'Finance will churn':0,'Pending - not cancelled yet':1,'Churned by finance':2,'UNPAID':0,'WILL PAY - INVOICE SENT':1,'INVOICE SENT':2,'PAID':3,'WIRE TRANSFER-PAID':4,'BLOCKED':5};
   const num=v=>parseFloat(String(v||'').replace(/[^0-9.]/g,''))||0;
   function sortRows(arr,cols,col,dir){
     const c=cols.find(x=>x.key===col);if(!c)return arr;
