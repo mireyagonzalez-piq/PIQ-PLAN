@@ -1123,6 +1123,9 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const leavingMRR=churnedMRR+mrr(wc)+mrr(fin.filter(x=>x.status==='Finance will churn'));
     const fp=state.failed||[];
     const fpOpen=fp.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
+    const fpPaidRows=fp.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
+    const fpPaidCount=fpPaidRows.length;
+    const fpPaidAmt=fpPaidRows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     const fpOwed=fpOpen.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     const exposure=mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
     el.innerHTML=`
@@ -1131,7 +1134,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">${fpPaidCount>0?fpPaidCount+' paid · '+fmt(fpPaidAmt)+' recovered — tap to view':'tap to view'}</div></div>
       <div class="ret-total-row">
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
         ${chip('var(--fire)','<b>'+(ch.length+wc.length)+'</b> churned or confirmed leaving')}
@@ -1268,7 +1271,9 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       {key:'cstatus',label:'Current status'},
       {key:'status',label:'Status',type:'select',opts:FP_STATUS}
     ];
-    renderGenericTable('failedTable','failed',cols,renderRetentionSummary,'No failed payments yet. Add one with the button above.');
+    const failedOpen=state.failed.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
+    state._failedShown=failedOpen; // render from open rows only
+    renderGenericTable('failedTable','_failedShown',cols,renderRetentionSummary,'No unpaid failed payments. All caught up.');
   }
   document.getElementById('addFailed').addEventListener('click',()=>{state.failed.push({id:uid(),email:'',account:'',amount:'',cstatus:'',status:'UNPAID'});changed();});
 
