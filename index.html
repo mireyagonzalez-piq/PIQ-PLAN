@@ -443,8 +443,6 @@
     <div class="churn-am dash-panel" id="churnByAM" style="margin-bottom:14px"></div>
     <div style="display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap">
       <button class="addbtn" id="addRetention" style="max-width:200px">+ add client</button>
-      <button id="pullChartmogul" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull this month churn</button>
-      <button id="pullSlack" style="font-size:12px;font-weight:500;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:8px 14px;cursor:pointer;font-family:inherit">⟳ Pull failed payments</button>
     </div>
     <div id="retentionTable"></div>
 
@@ -1277,7 +1275,6 @@
     setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull this month churn';alert('ChartMogul pull timed out.');}},60000);
     const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=chartmogul&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
   }
-  document.getElementById('pullChartmogul').addEventListener('click',pullChartmogul);
 
   // ── PULL FAILED PAYMENTS FROM SLACK (via Apps Script proxy) ──
   // Only messages where Mireya is tagged + mention a failed payment.
@@ -1330,7 +1327,6 @@
     setTimeout(()=>{if(!done&&window[cb]){delete window[cb];btn.disabled=false;btn.textContent='⟳ Pull failed payments';alert('Pull timed out.');}},60000);
     const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=slack&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
   }
-  document.getElementById('pullSlack').addEventListener('click',pullSlack);
 
   function renderAll(){renderBoard();renderRetention();renderSelfservice();renderFinance();renderFailed();}
 
