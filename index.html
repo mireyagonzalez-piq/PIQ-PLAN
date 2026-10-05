@@ -1028,7 +1028,6 @@
         <div class="ret-total-item" style="color:var(--fire)"><b>${ch.length+wc.length}</b> churned or confirmed leaving</div>
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))}</b> total MRR exposure</div>`:''}
-        ${churnedMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(churnedMRR)}</b> total MRR churned</div>`:''}
         ${leavingMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(leavingMRR)}</b> total MRR churned or leaving</div>`:''}
       </div>`;
   }
