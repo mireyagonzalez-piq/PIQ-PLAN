@@ -1013,6 +1013,7 @@
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin.filter(x=>x.status==='Finance will churn'));
     const fp=state.failed||[];
     const fpOwed=fp.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID').reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     el.innerHTML=`
@@ -1028,6 +1029,7 @@
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))}</b> total MRR exposure</div>`:''}
         ${churnedMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(churnedMRR)}</b> total MRR churned</div>`:''}
+        ${leavingMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(leavingMRR)}</b> total MRR churned or leaving</div>`:''}
       </div>`;
   }
   function togglePanel(id){
@@ -1062,6 +1064,37 @@
     });
     h+='</div>';el.innerHTML=h;
   }
+  // ── TABLE SORTING (click a header: first click ascends, again toggles desc) ──
+  const tblSorts={};   // key: state array name, value: {col, dir}
+  const STATUS_ORDER={'At risk':0,'Working on it':1,'Will churn':2,'Churned':3,'Saved':4,'Active':0,'Finance will churn':0,'Pending - not cancelled yet':1,'Churned by finance':2,'UNPAID':0,'WILL PAY - INVOICE SENT':1,'INVOICE SENT':2,'PAID':3,'WIRE TRANSFER-PAID':4,'BLOCKED':5};
+  const num=v=>parseFloat(String(v||'').replace(/[^0-9.]/g,''))||0;
+  function sortRows(arr,cols,col,dir){
+    const c=cols.find(x=>x.key===col);if(!c)return arr;
+    const val=r=>{
+      if(col==='owners')return (r.owners&&r.owners[0])||'';
+      if(c.type==='select')return STATUS_ORDER[r[col]]!=null?STATUS_ORDER[r[col]]:r[col];
+      if(c.cls==='mrr-cell'||col==='mrr'||col==='amount'||col==='months')return num(r[col]);
+      return String(r[col]||'').toLowerCase();
+    };
+    return arr.slice().sort((a,b)=>{const x=val(a),y=val(b);
+      if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
+      return String(x).localeCompare(String(y))*dir;});
+  }
+  function sortableHeads(cols,key,htr){
+    const s=tblSorts[key]||{};
+    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;
+      if(!['issue','next','note','cstatus'].includes(col.key)){ // long free-text cols stay unsortable
+        th.className='sortable'+(s.col===col.key?' active':'');
+        th.innerHTML=col.label+'<span class="arrow">'+(s.col===col.key?(s.dir===1?'▲':'▼'):'↕')+'</span>';
+        th.addEventListener('click',()=>{
+          const cur=tblSorts[key];
+          if(cur&&cur.col===col.key)tblSorts[key]={col:col.key,dir:-cur.dir};
+          else tblSorts[key]={col:col.key,dir:1};
+          renderAll();
+        });
+      }
+      htr.appendChild(th);});
+  }
   function renderRetention(){
     renderRetentionSummary();
     renderChurnByAM();
@@ -1072,10 +1105,11 @@
     const table=document.createElement('table');table.className='tbl';
     const thead=document.createElement('thead');const htr=document.createElement('tr');
     const dth=document.createElement('th');dth.className='drag-th';htr.appendChild(dth);
-    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});
+    sortableHeads(cols,'retention',htr);
     htr.appendChild(document.createElement('th'));thead.appendChild(htr);table.appendChild(thead);
     const tb=document.createElement('tbody');
-    state.retention.forEach(row=>{
+    const srt=tblSorts.retention?sortRows(state.retention,cols,tblSorts.retention.col,tblSorts.retention.dir):state.retention;
+    srt.forEach(row=>{
       const tr=document.createElement('tr');tr.dataset.id=row.id;tr.draggable=false;
       const htd=document.createElement('td');htd.className='drag-td';
       const h=document.createElement('span');h.className='row-handle';h.innerHTML='&#10303;';
@@ -1139,10 +1173,11 @@
     const table=document.createElement('table');table.className='tbl';
     const thead=document.createElement('thead');const htr=document.createElement('tr');
     const dth=document.createElement('th');dth.className='drag-th';htr.appendChild(dth);
-    cols.forEach(col=>{const th=document.createElement('th');th.textContent=col.label;htr.appendChild(th);});
+    sortableHeads(cols,key,htr);
     htr.appendChild(document.createElement('th'));thead.appendChild(htr);table.appendChild(thead);
     const tb=document.createElement('tbody');
-    arr.forEach(row=>{
+    const srt=tblSorts[key]?sortRows(arr,cols,tblSorts[key].col,tblSorts[key].dir):arr;
+    srt.forEach(row=>{
       const tr=document.createElement('tr');tr.dataset.id=row.id;tr.draggable=false;
       const htd=document.createElement('td');htd.className='drag-td';
       const h=document.createElement('span');h.className='row-handle';h.innerHTML='&#10303;';
@@ -1351,3 +1386,8 @@
 </script>
 </body>
 </html>
+  .tbl th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  .tbl th.sortable:hover{color:var(--text)}
+  .tbl th.sortable .arrow{font-size:9px;opacity:.45;margin-left:3px}
+  .tbl th.sortable.active{color:var(--brand)}
+  .tbl th.sortable.active .arrow{opacity:1}

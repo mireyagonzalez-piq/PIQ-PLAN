@@ -98,6 +98,11 @@
   .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden}
   .tbl{width:100%;border-collapse:collapse;font-size:13px}
   .tbl th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+  .tbl th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  .tbl th.sortable:hover{color:var(--text)}
+  .tbl th.sortable .arrow{font-size:9px;opacity:.45;margin-left:3px}
+  .tbl th.sortable.active{color:var(--brand)}
+  .tbl th.sortable.active .arrow{opacity:1}
   .tbl td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle;line-height:1.4}
   .tbl tbody tr:last-child td{border-bottom:none}
   .tbl tbody tr:hover td{background:var(--panel-2)}
@@ -354,6 +359,41 @@
     renderFailed();
   }
 
+  // ── TABLE SORTING (click a header: first click ascends, again toggles desc) ──
+  const tblSorts={};
+  const STATUS_ORDER={'At risk':0,'Working on it':1,'Will churn':2,'Churned':3,'Saved':4,'Active':0,'Finance will churn':0,'Pending - not cancelled yet':1,'Churned by finance':2,'UNPAID':0,'WILL PAY - INVOICE SENT':1,'INVOICE SENT':2,'PAID':3,'WIRE TRANSFER-PAID':4,'BLOCKED':5};
+  const RISK_ORDER={'High':0,'Medium':1,'Low':2};
+  const numV=v=>parseFloat(String(v||'').replace(/[^0-9.]/g,''))||0;
+  function sortViewRows(rows,col,dir){
+    const val=r=>{
+      if(col==='owner')return (r.owners&&r.owners[0])||'';
+      if(col==='risk')return RISK_ORDER[r.risk]!=null?RISK_ORDER[r.risk]:r.risk||'';
+      if(col==='status')return STATUS_ORDER[r.status]!=null?STATUS_ORDER[r.status]:r.status||'';
+      if(col==='mrr'||col==='amount')return numV(r[col]);
+      return String(r[col]||'').toLowerCase();
+    };
+    return rows.slice().sort((a,b)=>{const x=val(a),y=val(b);
+      if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
+      return String(x).localeCompare(String(y))*dir;});
+  }
+  function viewTh(label,col,sortKey){
+    const s=tblSorts[sortKey]||{};
+    const act=s.col===col;
+    return '<th class="sortable'+(act?' active':'')+'" data-sortcol="'+col+'" data-sortkey="'+sortKey+'">'+label+'<span class="arrow">'+(act?(s.dir===1?'▲':'▼'):'↕')+'</span></th>';
+  }
+  function bindViewSort(containerId,rerenderFn){
+    const c=document.getElementById(containerId);if(!c)return;
+    c.querySelectorAll('th.sortable').forEach(th=>{
+      th.addEventListener('click',()=>{
+        const key=th.dataset.sortkey,col=th.dataset.sortcol;
+        const cur=tblSorts[key];
+        if(cur&&cur.col===col)tblSorts[key]={col:col,dir:-cur.dir};
+        else tblSorts[key]={col:col,dir:1};
+        rerenderFn();
+      });
+    });
+  }
+
   function hchipV(status){
     const s=mapHealth(status);const c=document.createElement('span');c.className='hpill '+(HCLASS[s]||'h-ok');c.textContent=s;return c;
   }
@@ -520,6 +560,7 @@
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin.filter(x=>x.status==='Finance will churn'));
     const fpV=state.failed||[];
     const fpOwedView=fmt(fpV.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID').reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0));
     document.getElementById('retSummary').innerHTML=`
@@ -535,13 +576,15 @@
         <div class="ret-total-item" style="color:var(--amber)"><b>${ar.length+wo.length}</b> still in play</div>
         ${(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:600"><b>${fmt(mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin))}</b> total MRR exposure</div>`:''}
         ${churnedMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(churnedMRR)}</b> total MRR churned</div>`:''}
+        ${leavingMRR>0?`<div class="ret-total-item" style="color:var(--fire);font-weight:700"><b>${fmt(leavingMRR)}</b> total MRR churned or leaving</div>`:''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr><th>Client</th><th>Owner</th><th>MRR</th><th>Risk</th><th>Issue</th><th>Next step</th><th>Status</th></tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th>Issue</th><th>Next step</th>'+viewTh('Status','status','retention')+'</tr></thead>';
     const tb=document.createElement('tbody');
-    r.forEach(row=>{
+    const srt=(tblSorts.retention&&tblSorts.retention.col)?sortViewRows(r,tblSorts.retention.col,tblSorts.retention.dir):r;
+    srt.forEach(row=>{
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
@@ -554,7 +597,7 @@
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
-    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('retView',renderRetention);
   }
 
   function togglePanel(id){
@@ -571,9 +614,10 @@
     if(!r.length){rv.innerHTML='<div class="loading">No self-service accounts.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr><th>Client</th><th>MRR</th><th>Plan</th><th>Churn date</th><th>Status</th></tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','selfservice')+viewTh('MRR','mrr','selfservice')+'<th>Plan</th><th>Churn date</th>'+viewTh('Status','status','selfservice')+'</tr></thead>';
     const tb=document.createElement('tbody');
-    r.forEach(row=>{
+    const srtS=(tblSorts.selfservice&&tblSorts.selfservice.col)?sortViewRows(r,tblSorts.selfservice.col,tblSorts.selfservice.dir):r;
+    srtS.forEach(row=>{
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
@@ -584,7 +628,7 @@
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
-    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('ssView',renderSelfservice);
   }
 
   function renderFinance(){
@@ -594,9 +638,10 @@
     if(!r.length){rv.innerHTML='<div class="loading">No finance-churn accounts.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr><th>Client</th><th>MRR</th><th>Months unpaid</th><th>Note</th><th>Status</th></tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','finance')+viewTh('MRR','mrr','finance')+'<th>Months unpaid</th><th>Note</th>'+viewTh('Status','status','finance')+'</tr></thead>';
     const tb=document.createElement('tbody');
-    r.forEach(row=>{
+    const srtF=(tblSorts.finance&&tblSorts.finance.col)?sortViewRows(r,tblSorts.finance.col,tblSorts.finance.dir):r;
+    srtF.forEach(row=>{
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
@@ -607,7 +652,7 @@
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
-    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('finView',renderFinance);
   }
 
   function renderFailed(){
@@ -616,9 +661,10 @@
     if(!r.length){rv.innerHTML='<div class="loading">No failed payments yet.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr><th>Payment email</th><th>Account</th><th>Amount</th><th>Current status</th><th>Status</th></tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Payment email','email','failed')+'<th>Account</th>'+viewTh('Amount','amount','failed')+'<th>Current status</th>'+viewTh('Status','status','failed')+'</tr></thead>';
     const tb=document.createElement('tbody');
-    r.forEach(row=>{
+    const srtD=(tblSorts.failed&&tblSorts.failed.col)?sortViewRows(r,tblSorts.failed.col,tblSorts.failed.dir):r;
+    srtD.forEach(row=>{
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
@@ -629,7 +675,7 @@
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
-    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);
+    tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('fpView',renderFailed);
   }
 
   document.getElementById('tabs').addEventListener('click',e=>{
