@@ -1139,7 +1139,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const ss=state.selfservice||[], fin=state.finance||[];
     const lre=r.filter(x=>x.lre);
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
-    const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin);
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin);
     const fp=state.failed||[];
     const fpOpen=fp.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRows=fp.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
