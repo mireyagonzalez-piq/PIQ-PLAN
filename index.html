@@ -1278,13 +1278,14 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const [y,m,dd]=iso.split('-').map(Number);
     const dt=new Date(y,m-1,dd);
     const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return '<span title="Take action before this date so the client is not charged (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 take action before '+lbl+'</span>';
+    const act=row.actionLabel||'cancel before';
+    return '<span title="Take action before this date so the client is not charged (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 '+act+' '+lbl+'</span>';
   }
   function renderRetention(){
     renderRetentionSummary();
     renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Cancel before',type:'cancelDate'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
