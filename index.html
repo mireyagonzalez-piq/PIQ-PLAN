@@ -544,11 +544,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     <div id="fpPanel" class="card-panel" hidden>
       <div class="card-panel-head"><h2 class="subsection-title">Failed payments</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
       <button class="addbtn" id="addFailed" style="margin-bottom:12px;max-width:220px">+ add failed payment</button>
-      <div id="failedTable"></div>
-    </div>
-    <div id="paidPanel" class="card-panel" hidden>
-      <div class="card-panel-head"><h2 class="subsection-title">Recovered · payments won back</h2><button class="panel-close" onclick="document.getElementById('paidPanel').hidden=true">✕ close</button></div>
       <div id="paidBreakdown"></div>
+      <div id="failedTable"></div>
     </div>
   </section>
 
@@ -1153,8 +1150,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePaidPanel()"><div class="kpi-ic ic-teal">${ic(I.check)}</div><div class="ret-stat-label">Recovered MRR</div><div class="ret-stat-num">${fpPaidCount}</div><div class="ret-stat-mrr">${fmt(fpPaidAmt)} recovered</div><div class="ret-stat-sub">payments won back · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">${fpPaidCount>0?'<span style="color:var(--teal);font-weight:700">+</span> '+fpPaidCount+' paid · '+fmt(fpPaidAmt)+' recovered — tap to view':'tap to view'}</div></div>
       <div class="ret-total-row">
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
@@ -1163,17 +1159,16 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
   function togglePanel(id){
     const p=document.getElementById(id);if(!p)return;
-    ['ssPanel','finPanel','fpPanel','paidPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
+    ['ssPanel','finPanel','fpPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
     p.hidden=!p.hidden;
-    if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
+    if(!p.hidden){if(id==='fpPanel')renderPaidBreakdown();p.scrollIntoView({behavior:'smooth',block:'start'});}
   }
-  function togglePaidPanel(){togglePanel('paidPanel');renderPaidBreakdown();}
   function renderPaidBreakdown(){
     const el=document.getElementById('paidBreakdown');if(!el)return;
     const rows=window._fpPaidRows||[];
     if(!rows.length){el.innerHTML='<div class="empty">Nothing recovered yet.</div>';return;}
     const tot=rows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
-    el.innerHTML='<div style="padding:10px 16px 4px;font-size:12.5px;color:var(--muted)"><b style="color:var(--teal)">'+rows.length+' payments recovered · '+fmt(tot)+'</b></div>'
+    el.innerHTML='<div style="padding:10px 16px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)">Recovered · '+rows.length+' payments · <span style="color:var(--teal);font-weight:700">'+fmt(tot)+'</span></div>'
       +'<div class="tbl-wrap" style="margin:8px 16px 16px"><table class="tbl"><thead><tr><th>Payment email</th><th>Amount</th><th>How it was recovered</th></tr></thead><tbody>'
       +rows.map(x=>'<tr><td data-label="Payment email"><strong>'+(x.email||'—')+'</strong></td>'
         +'<td data-label="Amount"><span class="mrr-val">'+(x.amount?'$'+Number(String(x.amount).replace(/[^0-9.]/g,'')).toLocaleString():'—')+'</span></td>'
