@@ -1232,6 +1232,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       return String(r[col]||'').toLowerCase();
     };
     return arr.slice().sort((a,b)=>{const x=val(a),y=val(b);
+      const ex=(col==='cancelBefore')?(!a[col]||!b[col]):false;
+      if(ex){const av=!a[col],bv=!b[col];return av===bv?0:(av?1:-1);} // blanks always last, any direction
       if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
       return String(x).localeCompare(String(y))*dir;});
   }

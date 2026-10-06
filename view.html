@@ -442,9 +442,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       if(col==='risk')return RISK_ORDER[r.risk]!=null?RISK_ORDER[r.risk]:r.risk||'';
       if(col==='status')return STATUS_ORDER[r.status]!=null?STATUS_ORDER[r.status]:r.status||'';
       if(col==='mrr'||col==='amount')return numV(r[col]);
+      if(col==='cancelBefore')return r.cancelBefore?new Date(r.cancelBefore+'T00:00:00').getTime():0;
       return String(r[col]||'').toLowerCase();
     };
     return rows.slice().sort((a,b)=>{const x=val(a),y=val(b);
+      if(col==='cancelBefore'&&(!a.cancelBefore||!b.cancelBefore)){const av=!a.cancelBefore,bv=!b.cancelBefore;return av===bv?0:(av?1:-1);} // blanks always last
       if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
       return String(x).localeCompare(String(y))*dir;});
   }
