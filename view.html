@@ -15,6 +15,7 @@
   .brand-text{font-weight:700;font-size:14px;letter-spacing:-.02em}
   .brand-text span{color:var(--faint);font-weight:600}
   .ro-badge{font-size:11px;font-weight:600;background:var(--amber-dim);color:var(--amber);border-radius:5px;padding:3px 9px;border:1px solid rgba(217,119,6,.2)}
+  .lre-star{color:#F59E0B;font-size:12px;margin-right:5px}
   .tabs{display:flex;gap:2px;flex-wrap:wrap;padding:3px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
   .tabs button{font-size:12px;font-weight:500;background:none;border:none;color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;transition:color .15s,background .15s;font-family:inherit}
   .tabs button.active{color:var(--text);background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.1)}
@@ -671,7 +672,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
-        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="Client"><strong>${row.lre?'<span class="lre-star" title="Last retention effort in progress">★</span>':''}${row.client||'—'}</strong></td>
         <td data-label="Owner">${(row.owners||[]).map(o=>`<span style="font-size:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-right:3px;color:var(--muted)">${o}</span>`).join('')}</td>
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
@@ -740,7 +741,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
-        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
+        <td data-label="Client"><strong>${row.lre?'<span class="lre-star" title="Last retention effort in progress">★</span>':''}${row.client||'—'}</strong></td>
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Months unpaid" style="color:var(--muted)">${row.months||'—'}</td>
         <td data-label="Note" style="max-width:240px;color:var(--muted)">${row.note||'—'}</td>
