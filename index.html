@@ -1155,6 +1155,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
+        ${fpPaidAmt>0?chip('var(--teal)','<b>+'+fmt(fpPaidAmt)+'</b> recovered payments MRR'):''}
       </div>`;
   }
   function togglePanel(id){

@@ -657,6 +657,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
+        ${fpPaidAmtV>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
