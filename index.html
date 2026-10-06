@@ -94,6 +94,7 @@
   .handle{cursor:grab;color:var(--faint);font-size:12px;padding:3px 2px;user-select:none}
   .pbody{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
   .ctext{outline:none;line-height:1.4;cursor:text;font-size:13px;word-break:break-word;color:var(--text)}
+  .int-badge{font-size:9px;font-weight:800;letter-spacing:.5px;color:#B45309;background:#FEF3C7;border:1px solid #FDE68A;border-radius:4px;padding:1px 6px;align-self:flex-start}
   .ctext:focus{box-shadow:inset 0 -1px 0 var(--faint)}
   .meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
   select{font-size:11px;font-weight:500;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 6px;cursor:pointer;max-width:100%;transition:border-color .15s;font-family:inherit}
@@ -1050,6 +1051,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const main=document.createElement('div');main.className='pmain';
     const tx=editable(c.text,v=>{if(!v)removeProject(c.id);else if(v!==c.text){c.text=v;touch(c);persist();}},'ctext');
     tx.addEventListener('focus',()=>card.draggable=false);tx.addEventListener('blur',()=>{if(!opts.noDrag)card.draggable=true;});
+    if(c.internal){const ib=document.createElement('span');ib.className='int-badge';ib.textContent='INTERNAL';ib.title='Hidden from the team view (view.html)';main.appendChild(ib);}
     const total=(c.subs||[]).length,ndone=(c.subs||[]).filter(s=>s.done).length;
     const line=document.createElement('div');line.className='stepline';
     const mini=document.createElement('span');mini.className='mini';const mf=document.createElement('span');mf.style.width=total?Math.round(ndone/total*100)+'%':'0%';mini.appendChild(mf);

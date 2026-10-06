@@ -554,7 +554,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
   function renderDashboardV(){
     const el=document.getElementById('projDashboardV');if(!el||!state.projects)return;
-    const all=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>all.push(c)));
+    const all=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(!c.internal)all.push(c);}));
     const active=all.filter(c=>mapHealth(c.status)!=='Cancelled');
     const bs={'Not started':0,'On track':0,'At risk':0,'Blocked':0,'Done':0};active.forEach(c=>{const h=mapHealth(c.status);if(bs[h]!=null)bs[h]++;});
     const SC={'Not started':'#94A3B8','On track':'#16A34A','At risk':'#D97706','Blocked':'#DC2626','Done':'#059669'};
@@ -582,8 +582,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function renderBoard(){
     const el=document.getElementById('boardView');el.innerHTML='';
     if(!state.projects){el.innerHTML='<div class="loading">No project data.</div>';return;}
-    SECTIONS.forEach(sc=>{const cards=(state.projects[sc.tier]||[]).filter(c=>mapHealth(c.status)!=='Cancelled');el.appendChild(sectionV(sc,cards,sc.tier,false));});
-    const shipped=(state.projects.pdone||[]).filter(c=>mapHealth(c.status)!=='Cancelled');
+    SECTIONS.forEach(sc=>{const cards=(state.projects[sc.tier]||[]).filter(c=>mapHealth(c.status)!=='Cancelled'&&!c.internal);el.appendChild(sectionV(sc,cards,sc.tier,false));});
+    const shipped=(state.projects.pdone||[]).filter(c=>mapHealth(c.status)!=='Cancelled'&&!c.internal);
     el.appendChild(sectionV({tier:'pdone',tag:'Shipped',sub:'',cls:'sec-ship'},shipped,'pdone',true));
     const cancelled=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(mapHealth(c.status)==='Cancelled')cancelled.push(c);}));
     if(cancelled.length){el.appendChild(sectionV({tier:'__cancel__',tag:'Cancelled',sub:'',cls:'sec-cancel'},cancelled,'__cancel__',true));}
