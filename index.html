@@ -1159,7 +1159,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.length)+' clients (incl. finance churn)'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.filter(x=>x.status==='Churned by finance').length)+' clients ('+((ch.length+wc.length)+(fin.filter(x=>x.status==='Churned by finance').length))+' confirmed + '+fin.filter(x=>x.status!=='Churned by finance').length+' finance)'):''}
         ${(function(){var seen={};fpPaidRows.forEach(function(x){if(x.am)seen[x.am]=1;});var names=Object.keys(seen);
           return fpPaidAmt>0?chip('var(--teal)','<b>+'+fmt(fpPaidAmt)+'</b> recovered payments MRR · '+fpPaidCount+' client'+(fpPaidCount===1?'':'s')):'';})()}${lre.length?'<div class="ret-total-item"><span style="color:#B8860B;font-size:14px;line-height:1">&#9733;</span> <b>'+lre.length+'</b> hail Mary retention · '+fmt(mrr(lre))+' MRR</div>':''}
       </div>`;
