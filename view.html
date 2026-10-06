@@ -327,15 +327,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <h1>What's moving, who's on it, what's stuck.</h1>
       <p class="head-sub">Delegated and tracked — updated live.</p>
     </div>
-    <div class="proj-viewswitch">
-      <button data-pv="board" class="active" onclick="setProjModeV('board')">▦ Board</button>
-      <button data-pv="pulse" class="pv-pulse" onclick="setProjModeV('pulse')">⚡ Pulse</button>
-      <button data-pv="dashboard" onclick="setProjModeV('dashboard')">◔ Dashboard</button>
-    </div>
     <div class="proj-summary" id="projSummaryView"></div>
+    <div id="projPulseV"></div>
+    <div id="projDashboardV"></div>
     <div id="boardView"><div class="loading">Loading…</div></div>
-    <div id="projPulseV" hidden></div>
-    <div id="projDashboardV" hidden></div>
   </section>
 
   <section id="tab-retention">
@@ -536,15 +531,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     return sec;
   }
   let projModeV='board';
-  function setProjModeV(m){
-    projModeV=m;
-    document.querySelectorAll('.proj-viewswitch button').forEach(b=>b.classList.toggle('active',b.dataset.pv===m));
-    const board=document.getElementById('boardView'),dash=document.getElementById('projDashboardV'),sum=document.getElementById('projSummaryView'),pulse=document.getElementById('projPulseV');
-    const nb=m!=='board';
-    board.hidden=nb;dash.hidden=m!=='dashboard';pulse.hidden=m!=='pulse';
-    if(sum)sum.style.display=nb?'none':'';
-    if(m==='dashboard')renderDashboardV();if(m==='pulse')renderPulseV();
-  }
+  function setProjModeV(m){renderBoard();}
+  // renderBoard() below already renders all three stacked sections.
   function donutSVGV(data,total){
     const NS='http://www.w3.org/2000/svg',r=54,cx=70,cy=70,C=2*Math.PI*r;
     const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 140 140');svg.setAttribute('class','donut');
@@ -691,7 +679,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     el.appendChild(sectionV({tier:'pdone',tag:'Shipped',sub:'',cls:'sec-ship'},shipped,'pdone',true));
     const cancelled=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(mapHealth(c.status)==='Cancelled')cancelled.push(c);}));
     if(cancelled.length){el.appendChild(sectionV({tier:'__cancel__',tag:'Cancelled',sub:'',cls:'sec-cancel'},cancelled,'__cancel__',true));}
-    renderProjSummaryView();
+    renderProjSummaryView();renderPulseV();renderDashboardV();
     if(projModeV==="dashboard")renderDashboardV();
   }
   function renderProjSummaryView(){

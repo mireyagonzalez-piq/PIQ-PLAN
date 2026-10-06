@@ -261,6 +261,21 @@
   /* ===== Projects review board v2 ===== */
   .psection{--e:var(--line-2);--ed:var(--panel-2);background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--e);border-radius:14px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
   .sec-crit{--e:var(--fire);--ed:rgba(220,38,38,.10)}
+  /* ── Project page: section headers with juice ── */
+  .psection{border-left-width:4px}
+  .sec-head{padding:2px 0 10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .sec-tag{font-size:12px;padding:4px 12px;border-radius:8px;box-shadow:0 1px 2px rgba(16,24,40,.08)}
+  .sec-name span{font-size:12.5px}
+  .pcard{border-radius:12px;transition:border-color .15s,box-shadow .15s,transform .15s}
+  .pcard:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,24,40,.10)}
+  .pmain .ctext{font-weight:600}
+  .mini{height:5px;border-radius:3px}
+  .stepline{font-size:10.5px;color:var(--muted)}
+  .sec-meta .bar{height:5px;border-radius:3px}
+  /* ring row on cards? keep board clean */
+  /* divider between stacked views */
+  #projPulse,#projDashboard{margin-top:6px}
+  #projDashboard{padding-top:4px}
   .sec-grow{--e:var(--brand);--ed:var(--brand-dim)}
   .sec-later{--e:var(--slate);--ed:rgba(100,116,139,.12)}
   .sec-ship{--e:var(--teal);--ed:rgba(22,163,74,.12)}
@@ -555,15 +570,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       </div>
     </div>
     <div class="roster-bar" id="rosterBar"></div>
-    <div class="proj-viewswitch">
-      <button data-pv="board" class="active" onclick="setProjMode('board')">▦ Board</button>
-      <button data-pv="pulse" class="pv-pulse" onclick="setProjMode('pulse')">⚡ Pulse</button>
-      <button data-pv="dashboard" onclick="setProjMode('dashboard')">◔ Dashboard</button>
-    </div>
     <div class="proj-summary" id="projSummary"></div>
+    <div id="projPulse"></div>
+    <div id="projDashboard"></div>
     <div class="board" id="board"></div>
-    <div id="projPulse" hidden></div>
-    <div id="projDashboard" hidden></div>
   </section>
 
   <section id="tab-retention">
@@ -898,7 +908,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     boardEl.appendChild(buildCancelled(cancelled));
     if(focusId){const el=boardEl.querySelector('[data-id="'+focusId+'"] .ctext');if(el){el.focus();const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);}focusId=null;}
     renderProjSummary();renderRoster();
-    if(projMode==='dashboard')renderDashboard();
+    renderPulse();renderDashboard();
   }
 
   function secStats(cards){let steps=0,done=0;cards.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});return{steps,done,pct:steps?Math.round(done/steps*100):0};}
@@ -978,14 +988,9 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
 
   let projMode='board';
-  function setProjMode(m){
-    projMode=m;
-    document.querySelectorAll('.proj-viewswitch button').forEach(b=>b.classList.toggle('active',b.dataset.pv===m));
-    const board=document.getElementById('board'),dash=document.getElementById('projDashboard'),sum=document.getElementById('projSummary'),pulse=document.getElementById('projPulse');
-    const nonBoard=m!=='board';
-    board.hidden=nonBoard;dash.hidden=m!=='dashboard';pulse.hidden=m!=='pulse';
-    if(sum)sum.style.display=nonBoard?'none':'';
-    if(m==='dashboard')renderDashboard();if(m==='pulse')renderPulse();
+  function setProjMode(m){renderProjectsPage();}
+  function renderProjectsPage(){
+    renderBoard();renderPulse();renderDashboard();
   }
   function donutSVG(data,total){
     const NS='http://www.w3.org/2000/svg',r=54,cx=70,cy=70,C=2*Math.PI*r;
