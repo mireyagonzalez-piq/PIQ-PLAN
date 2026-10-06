@@ -362,6 +362,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   const TIERS=['p0','p1','p2','pdone'];
   const SECTIONS=[{tier:'p0',tag:'Critical',sub:'keeps the business running',cls:'sec-crit'},{tier:'p1',tag:'Growth',sub:'active bets',cls:'sec-grow'},{tier:'p2',tag:'Later',sub:'exploring',cls:'sec-later'}];
   const ME='Me';
+  const ALIASES={'Me':'Mireya','You':'Mireya','Romy':'Mireya','Luma':'Mireya','Patch':'Mireya','Scout':'Mireya'};
+  function dispName(n){return ALIASES[n]||n;}
   const PERSON_COLOR={'Me':'#7F77DD','You':'#7F77DD','Estefania':'#E8621A','Roberto':'#378ADD','Eduardo':'#2D9E2D','María':'#D4A017','Maria':'#D4A017','Andres':'#00C2E0','Andrés':'#00C2E0','Mike':'#DB2777','Tania':'#9333EA','Usman':'#0EA5E9','Paulo':'#F97316'};
   const COLOR_POOL=['#0EA5E9','#F97316','#10B981','#8B5CF6','#EC4899','#F59E0B','#14B8A6','#6366F1','#EF4444','#84CC16','#DB2777','#2D9E2D'];
   function rosterV(){return (state.people&&state.people.length)?state.people:['Me','Estefania','Roberto','Eduardo','María','Andres','Mike','Tania'];}
@@ -567,7 +569,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     dw.appendChild(leg);p1.appendChild(dw);grid.appendChild(p1);
     const p2=document.createElement('div');p2.className='dash-panel';p2.innerHTML='<div class="dash-h">Workload by person</div>';
     const wl=document.createElement('div');wl.className='workload';
-    owners.forEach(o=>{const row=document.createElement('div');row.className='wl-row';row.innerHTML='<span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span>';wl.appendChild(row);});
+    owners.forEach(o=>{const row=document.createElement('div');row.className='wl-row';row.innerHTML='<span class="wl-name">'+dispName(o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span>';wl.appendChild(row);});
     if(!owners.length)wl.innerHTML='<div class="sec-empty">No initiatives yet.</div>';
     p2.appendChild(wl);grid.appendChild(p2);el.appendChild(grid);
   }
@@ -606,7 +608,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       days[ts].forEach(it=>{
         const row=document.createElement('div');row.className='pulse-item';
         const[tag]=PTAG[it.tag]||PTAG.note;
-        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span>'
+        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+dispName(it.who)+'</span>'
           +'<span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span>'
           +'<span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span>';
         day.appendChild(row);
@@ -644,7 +646,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const h=mapHealth(c.status);
       const ringCol=h==='At risk'?'#D97706':h==='Blocked'?'#DC2626':h==='Done'?'#10B981':h==='Not started'?'#94A3B8':tcol;
       const card=document.createElement('div');card.className='ringcard';
-      const av=((c.owners||[]).length?c.owners:['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(o===ME?'Y':o.slice(0,1).toUpperCase())+'</span>').join('');
+      const av=((c.owners||[]).length?c.owners:['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(dispName(o)[0])+'</span>').join('');
       card.innerHTML='<div class="rc-top"><div class="rc-name">'+c.text.replace(/</g,'&lt;')+'</div>'
         +'<span class="rc-tier" style="color:'+tcol+';background:'+tcol+'18">'+(TIER_META[t]||[])[0]+'</span></div>'
         +'<div class="rc-ring"></div>'
@@ -661,13 +663,13 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
     const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
     const wl=document.createElement('div');wl.className='workload';
-    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
+    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+dispName(o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
     p2.appendChild(wl);grid.appendChild(p2);
     const p3=document.createElement('div');p3.className='dash-panel';
     p3.innerHTML='<div class="dash-h">Last pulse</div>';
     const pl=pulseAllV().slice(0,8);
     pl.forEach(it=>{const[tag]=PTAG[it.tag]||PTAG.note;
-      p3.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
+      p3.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+dispName(it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
     grid.appendChild(p3);
     el.appendChild(grid);
   }

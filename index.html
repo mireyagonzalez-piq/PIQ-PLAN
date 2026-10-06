@@ -794,25 +794,27 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
 
   const ME='Me';
+  const ALIASES={'Me':'Mireya','You':'Mireya','Romy':'Mireya','Luma':'Mireya','Patch':'Mireya','Scout':'Mireya'};
+  function dispName(n){return ALIASES[n]||n;}
   // Projects: you are ALWAYS the principal owner; everyone else is a removable co-owner.
   // ── People: fixed color + smart initials (so same-letter names don't clash) ──
   const PERSON_COLOR={'Me':'#7F77DD','You':'#7F77DD','Estefania':'#E8621A','Roberto':'#378ADD','Eduardo':'#2D9E2D','María':'#D4A017','Maria':'#D4A017','Andres':'#00C2E0','Andrés':'#00C2E0','Mike':'#DB2777','Tania':'#9333EA','Usman':'#0EA5E9','Paulo':'#F97316'};
   const COLOR_POOL=['#0EA5E9','#F97316','#10B981','#8B5CF6','#EC4899','#F59E0B','#14B8A6','#6366F1','#EF4444','#84CC16','#DB2777','#2D9E2D'];
   function personColor(name){
-    if(name===ME||name==='You')return PERSON_COLOR['Me'];
+    if(ALIASES[name])return PERSON_COLOR['Me'];
     if(PERSON_COLOR[name])return PERSON_COLOR[name];
     let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;
     return COLOR_POOL[h%COLOR_POOL.length];
   }
   function initialsFor(name){
-    if(name===ME||name==='You')return 'You';
+    if(ALIASES[name])return 'M';
     const t=(name||'').trim();const first=(t[0]||'?').toUpperCase();
     const clash=getPeople().some(p=>p!==name&&p!==ME&&((p||'').trim()[0]||'').toUpperCase()===first);
     return clash?(first+(t[1]||'').toLowerCase()):first;
   }
   function avatarEl(name,cls){
     const a=document.createElement('span');a.className='av'+(cls?(' '+cls):'');
-    a.textContent=initialsFor(name);a.title=(name===ME?'You · principal owner':name);
+    a.textContent=initialsFor(name);a.title=(name===ME?'Mireya · principal owner':name);
     a.style.background=personColor(name);return a;
   }
 
@@ -877,7 +879,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       else{const a=document.createElement('span');a.className='av sm add';a.textContent='+';a.title='Assign step';h.appendChild(a);}
       const sel=document.createElement('select');sel.className='av-sel';
       sel.appendChild(new Option(s.owner?'(unassign)':'',''));
-      getPeople().forEach(p=>{const op=new Option(p===ME?'You':p,p);if(p===s.owner)op.selected=true;sel.appendChild(op);});
+      getPeople().forEach(p=>{const op=new Option(dispName(p),p);if(p===s.owner)op.selected=true;sel.appendChild(op);});
       sel.appendChild(new Option('+ new person…','__new__'));
       sel.addEventListener('change',()=>{
         if(sel.value==='__new__'){const nm=(prompt('New team member name:')||'').trim();if(nm){addPerson(nm);s.owner=nm;touch(c);persist();draw();}else sel.value=(s.owner||'');}
@@ -974,7 +976,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     getPeople().forEach(p=>{
       const chip=document.createElement('span');chip.className='ochip roster-chip';
       const dot=document.createElement('span');dot.className='ochip-dot';dot.style.background=personColor(p);chip.appendChild(dot);
-      chip.appendChild(document.createTextNode(p===ME?'You':p));
+      chip.appendChild(document.createTextNode(dispName(p)));
       if(p!==ME){
         const x=document.createElement('button');x.className='ox';x.innerHTML='&times;';x.title='Remove from roster';
         x.addEventListener('click',()=>{if(confirm('Remove '+p+' from the team roster?\n(Existing assignments on cards stay as-is.)')){removePerson(p);renderRoster();}});
@@ -1044,7 +1046,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const wl=document.createElement('div');wl.className='workload';
     owners.forEach(o=>{
       const row=document.createElement('div');row.className='wl-row';
-      row.innerHTML='<span class="wl-name">'+(o===ME?'You':o)+'</span>'
+      row.innerHTML='<span class="wl-name">'+dispName(o)+'</span>'
         +'<span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span>'
         +'<span class="wl-val">'+load[o]+'</span>';
       wl.appendChild(row);
@@ -1096,7 +1098,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const el=document.getElementById('projPulse');if(!el)return;
     const items=pulseAll();el.innerHTML='';el.className='pulse-wrap';
     const hdr=document.createElement('div');
-    hdr.innerHTML='<div class="head" style="margin-bottom:10px"><div class="eyebrow">Pulse · what moved</div><h1 style="font-size:20px">The daily log.</h1><p class="head-sub">What Mireya, Romy, Luma and Patch did today — newest first. Agents post here every morning and night.</p></div>';
+    hdr.innerHTML='<div class="head" style="margin-bottom:10px"><div class="eyebrow">Pulse · what moved</div><h1 style="font-size:20px">The daily log.</h1><p class="head-sub">What Mireya did today — newest first. Romy, Luma and Patch are Mireya&#39;s agents; they post here every morning and night.</p></div>';
     el.appendChild(hdr);
     const add=document.createElement('div');add.className='pulse-addrow';
     const whoSel='<select id="pulseWho">'+getPeople().map(p=>'<option'+(p===ME?' selected':'')+'>'+p+'</option>').join('')+'</select>';
@@ -1116,7 +1118,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       days[ts].forEach(it=>{
         const row=document.createElement('div');row.className='pulse-item';
         const[tag,col]=PTAG[it.tag]||PTAG.note;
-        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span>'
+        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+dispName(it.who)+'</span>'
           +'<span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span>'
           +'<span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span>';
         day.appendChild(row);
@@ -1168,7 +1170,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const[,tcol]=TIER_META[t]||TIER_META.p2;
       const ringCol=c.status==='At risk'?'#D97706':c.status==='Blocked'?'#DC2626':c.status==='Done'?'#10B981':c.status==='Not started'?'#94A3B8':tcol;
       const card=document.createElement('div');card.className='ringcard'+(c.internal?' rc-internal':'');
-      const av=(c.owners||['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(o===ME?'Y':o.slice(0,1).toUpperCase())+'</span>').join('');
+      const av=(c.owners||['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(dispName(o)[0])+'</span>').join('');
       card.innerHTML='<div class="rc-top"><div class="rc-name">'+c.text.replace(/</g,'&lt;')+'</div>'
         +(c.internal?'<span class="rc-int">INT</span>':'')
         +'<span class="rc-tier" style="color:'+tcol+';background:'+tcol+'18">'+(TIER_META[t]||[])[0]+'</span></div>'
@@ -1187,14 +1189,14 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
     const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
     const wl=document.createElement('div');wl.className='workload';
-    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
+    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+dispName(o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
     p2.appendChild(wl);grid.appendChild(p2);
     const p3=document.createElement('div');p3.className='dash-panel';
     p3.innerHTML='<div class="dash-h">Last pulse</div>';
     const pl=pulseAll().slice(0,8);
     const plwrap=document.createElement('div');
     pl.forEach(it=>{const[tag]=PTAG[it.tag]||PTAG.note;
-      plwrap.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
+      plwrap.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+dispName(it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
     p3.appendChild(plwrap);grid.appendChild(p3);
     el.appendChild(grid);
   }
