@@ -633,7 +633,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay - will reflect as churn');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
-    const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin.filter(x=>x.status==='Finance will churn'));
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin);
     const fpV=state.failed||[];
     const fpOpenV=fpV.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRowsV=fpV.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
@@ -657,8 +657,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
-        ${fin.length>0?chip('var(--fire)','<b>'+fin.length+'</b> finance cancellations · '+fmt(mrr(fin))+' MRR unpaid'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length+fin.length)+' clients (incl. finance churn)'):''}
         ${fpPaidAmtV>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
