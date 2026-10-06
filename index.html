@@ -1251,7 +1251,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     renderRetentionSummary();
     renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'Issue'},{key:'next',label:'Next step'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';

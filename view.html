@@ -674,7 +674,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th>Issue</th><th>Next step</th>'+viewTh('Status','status','retention')+'</tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th># Payments</th><th>Reason</th>'+viewTh('Status','status','retention')+'</tr></thead>';
     const tb=document.createElement('tbody');
     const srt=(tblSorts.retention&&tblSorts.retention.col)?sortViewRows(r,tblSorts.retention.col,tblSorts.retention.dir):r;
     srt.forEach(row=>{
