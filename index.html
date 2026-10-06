@@ -1278,7 +1278,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const [y,m,dd]=iso.split('-').map(Number);
     const dt=new Date(y,m-1,dd);
     const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return '<span title="Cancel before this date (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 cancel before '+lbl+'</span>';
+    return '<span title="Take action before this date so the client is not charged (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 take action before '+lbl+'</span>';
   }
   function renderRetention(){
     renderRetentionSummary();
