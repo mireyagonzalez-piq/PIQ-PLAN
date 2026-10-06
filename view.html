@@ -657,7 +657,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
-        ${fin.length>0?chip('var(--rose)','<b>'+fin.length+'</b> finance cancellations · '+fmt(mrr(fin))+' MRR unpaid'):''}
+        ${fin.length>0?chip('var(--fire)','<b>'+fin.length+'</b> finance cancellations · '+fmt(mrr(fin))+' MRR unpaid'):''}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
         ${fpPaidAmtV>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
       </div>`;
