@@ -163,6 +163,8 @@
   .ret-total-row{grid-column:1/-1;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
   .ret-total-item{font-size:12.5px;color:var(--muted)}
   .lre-star{color:#F59E0B;font-size:12px;margin-right:5px;vertical-align:1px}
+  .lre-btn{background:none;border:none;font-size:15px;color:#4B5563;cursor:pointer;opacity:.35;transition:opacity .15s}
+  .lre-btn.on{color:#F59E0B;opacity:1;text-shadow:0 0 6px rgba(245,158,11,.35)}
   .ret-total-item b{color:var(--text);font-weight:700}
   @media(max-width:700px){.ret-summary{grid-template-columns:1fr 1fr}}
   /* plan */
@@ -1229,11 +1231,13 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       if(c.type==='select')return STATUS_ORDER[r[col]]!=null?STATUS_ORDER[r[col]]:r[col];
       if(c.cls==='mrr-cell'||col==='mrr'||col==='amount'||col==='months')return num(r[col]);
       if(col==='cancelBefore')return r[col]?new Date(r[col]+'T00:00:00').getTime():0;
+      if(col==='lre')return r[col]?-1:1;
       return String(r[col]||'').toLowerCase();
     };
     return arr.slice().sort((a,b)=>{const x=val(a),y=val(b);
       const ex=(col==='cancelBefore')?(!a[col]||!b[col]):false;
       if(ex){const av=!a[col],bv=!b[col];return av===bv?0:(av?1:-1);} // blanks always last, any direction
+      if(col==='lre')return (typeof x==='number'&&typeof y==='number')?(x-y):0; // stars always on top, both directions
       if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
       return String(x).localeCompare(String(y))*dir;});
   }
@@ -1289,7 +1293,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     renderRetentionSummary();
     renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'lre',label:'★'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
@@ -1316,8 +1320,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
           inp.addEventListener('mousedown',e=>e.stopPropagation());
           wrap.appendChild(inp);td.appendChild(wrap);}
         else if(col.type==='statuspill'){const wrap=document.createElement('span');wrap.style.display='inline-flex';wrap.style.alignItems='center';wrap.style.gap='6px';wrap.appendChild(statusPill(row[col.key],col.opts,v=>{row[col.key]=v;persist();renderRetentionSummary();renderChurnByAM();}));
-          if(row.lre){const st=document.createElement('span');st.className='lre-star';st.textContent='★';st.title='LAST RETENTION EFFORT';wrap.appendChild(st);}
           td.appendChild(wrap);}
+        else if(col.key==='lre'){const b=document.createElement('button');b.className='lre-btn'+(row.lre?' on':'');b.innerHTML='★';b.title='LAST RETENTION EFFORT';
+          b.addEventListener('mousedown',e=>e.stopPropagation());
+          b.addEventListener('click',()=>{row.lre=!row.lre;persist();renderAll();});
+          td.appendChild(b);}
         else if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});td.appendChild(inp);}
         else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));

@@ -443,10 +443,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       if(col==='status')return STATUS_ORDER[r.status]!=null?STATUS_ORDER[r.status]:r.status||'';
       if(col==='mrr'||col==='amount')return numV(r[col]);
       if(col==='cancelBefore')return r.cancelBefore?new Date(r.cancelBefore+'T00:00:00').getTime():0;
+      if(col==='lre')return r.lre?-1:1;
       return String(r[col]||'').toLowerCase();
     };
     return rows.slice().sort((a,b)=>{const x=val(a),y=val(b);
       if(col==='cancelBefore'&&(!a.cancelBefore||!b.cancelBefore)){const av=!a.cancelBefore,bv=!b.cancelBefore;return av===bv?0:(av?1:-1);} // blanks always last
+      if(col==='lre')return (typeof x==='number'&&typeof y==='number')?(x-y):0; // stars always on top, both directions
       if(typeof x==='number'&&typeof y==='number')return (x-y)*dir;
       return String(x).localeCompare(String(y))*dir;});
   }
@@ -711,7 +713,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th># Payments</th><th>Reason</th>'+viewTh('Take action before','cancelBefore','retention')+viewTh('Status','status','retention')+'</tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th># Payments</th><th>Reason</th>'+viewTh('Take action before','cancelBefore','retention')+viewTh('★','lre','retention')+viewTh('Status','status','retention')+'</tr></thead>';
     const tb=document.createElement('tbody');
     const srt=(tblSorts.retention&&tblSorts.retention.col)?sortViewRows(r,tblSorts.retention.col,tblSorts.retention.dir):r;
     srt.forEach(row=>{
@@ -725,7 +727,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
         <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
         <td data-label="Cancel before"><span style="font-size:11px;color:var(--muted);white-space:nowrap">${row.cancelBefore?new Date(row.cancelBefore+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</span></td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
+        <td data-label="★"><span style="color:#F59E0B;font-size:14px">${row.lre?'★':''}</span></td>
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('retView',renderRetention);
