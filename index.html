@@ -1260,10 +1260,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       htd.appendChild(h);tr.appendChild(htd);
       cols.forEach(col=>{
         const td=document.createElement('td');td.setAttribute('data-label',col.label);
-        if(col.key==='client'){const cell=editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell');
-          if(row.lre){const st=document.createElement('span');st.className='lre-star';st.textContent='★';st.title='Last retention effort in progress';cell.prepend(st);}td.appendChild(cell);}
+        if(col.key==='client')td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
         else if(col.type==='owners')td.appendChild(ownerControl(row[col.key]||[],persist));
-        else if(col.type==='statuspill')td.appendChild(statusPill(row[col.key],col.opts,v=>{row[col.key]=v;persist();renderRetentionSummary();renderChurnByAM();}));
+        else if(col.type==='statuspill'){const wrap=document.createElement('span');wrap.style.display='inline-flex';wrap.style.alignItems='center';wrap.style.gap='6px';wrap.appendChild(statusPill(row[col.key],col.opts,v=>{row[col.key]=v;persist();renderRetentionSummary();renderChurnByAM();}));
+          if(row.lre){const st=document.createElement('span');st.className='lre-star';st.textContent='★';st.title='LAST RETENTION EFFORT';wrap.appendChild(st);}td.appendChild(wrap);}
         else if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});td.appendChild(inp);}
         else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));

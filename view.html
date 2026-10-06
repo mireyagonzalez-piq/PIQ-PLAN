@@ -672,13 +672,13 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
-        <td data-label="Client"><strong>${row.lre?'<span class="lre-star" title="Last retention effort in progress">★</span>':''}${row.client||'—'}</strong></td>
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
         <td data-label="Owner">${(row.owners||[]).map(o=>`<span style="font-size:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-right:3px;color:var(--muted)">${o}</span>`).join('')}</td>
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
         <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
         <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('retView',renderRetention);
@@ -721,7 +721,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Plan" style="color:var(--muted)">${row.plan||'—'}</td>
         <td data-label="Churn date" style="color:var(--muted)">${row.signup||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('ssView',renderSelfservice);
@@ -741,11 +741,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       const tr=document.createElement('tr');
       const statusClass='s-'+(row.status||'').replace(/\s+/g,'-');
       tr.innerHTML=`
-        <td data-label="Client"><strong>${row.lre?'<span class="lre-star" title="Last retention effort in progress">★</span>':''}${row.client||'—'}</strong></td>
+        <td data-label="Client"><strong>${row.client||'—'}</strong></td>
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Months unpaid" style="color:var(--muted)">${row.months||'—'}</td>
         <td data-label="Note" style="max-width:240px;color:var(--muted)">${row.note||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('finView',renderFinance);
@@ -769,7 +769,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="Account" style="color:var(--muted)">${row.account||'—'}</td>
         <td data-label="Amount"><span class="mrr-val">${row.amount?'$'+Number(String(row.amount).replace(/[^0-9.]/g,'')).toLocaleString():'—'}</span></td>
         <td data-label="Current status" style="max-width:260px;color:var(--muted)">${row.cstatus||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('fpView',renderFailed);
