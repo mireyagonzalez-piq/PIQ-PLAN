@@ -671,6 +671,38 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         ${(function(){var seen={};fpPaidRowsV.forEach(function(x){if(x.am)seen[x.am]=1;});var names=Object.keys(seen);
           return fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR · '+fpPaidCountV+' client'+(fpPaidCountV===1?'':'s')):'';})()}${lre.length?'<div class="ret-total-item"><span style="color:#B8860B;font-size:14px;line-height:1">&#9733;</span> <b>'+lre.length+'</b> hail Mary retention · '+fmt(mrr(lre))+' MRR</div>':''}
       </div>`;
+  const MONTHS={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,sept:8,oct:9,nov:10,dec:11};
+  function parseCancelDate(txt){
+    if(!txt)return null;
+    const m=txt.match(/cancel\s+(?:before|on|by|in)\s+([A-Za-z]{3,9})\.?\s+(\d{1,2})/i);
+    if(!m)return null;
+    const mo=MONTHS[m[1].toLowerCase().slice(0,4).replace('sept','sep')];if(mo===undefined)return null;
+    const d=new Date();const day=Number(m[2]);
+    let yr=d.getFullYear();
+    let dt=new Date(yr,mo,day);
+    if(dt<d)dt=new Date(yr+1,mo,day);
+    return dt.toISOString().slice(0,10);
+  }
+  function minus2BizDays(iso){
+    if(!iso)return null;
+    const [y,m,dd]=iso.split('-').map(Number);const d=new Date(y,m-1,dd);
+    let n=0;
+    while(n<2){d.setDate(d.getDate()-1);if(d.getDay()!==0&&d.getDay()!==6)n++;}
+    return d.toISOString().slice(0,10);
+  }
+  function cancelBeforeDate(row){
+    if(row.cancelBefore)return row.cancelBefore;
+    const st=row.status||'';
+    if(st!=='Will churn'&&st!=='Finance will churn'&&st!=='Payment delay - will reflect as churn')return null;
+    return parseCancelDate((row.next||'')+' '+(row.issue||''));
+  }
+  function cancelChip(row){
+    const iso=cancelBeforeDate(row);if(!iso)return '';
+    const [y,m,dd]=iso.split('-').map(Number);
+    const dt=new Date(y,m-1,dd);
+    const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return '<span title="Cancel before this date (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 cancel before '+lbl+'</span>';
+  }
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
@@ -687,7 +719,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
         <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
         <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}${cancelChip(row)}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('retView',renderRetention);
