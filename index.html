@@ -338,6 +338,45 @@
   .proj-viewswitch{display:inline-flex;gap:2px;padding:3px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;margin-bottom:16px}
   .proj-viewswitch button{font-size:12.5px;font-weight:500;background:none;border:none;color:var(--muted);border-radius:7px;padding:6px 14px;cursor:pointer;font-family:inherit}
   .proj-viewswitch button.active{color:var(--brand);background:#fff;box-shadow:0 1px 3px rgba(16,24,40,.12);font-weight:600}
+  .proj-viewswitch button.pv-pulse{color:var(--amber)}
+  .proj-viewswitch button.pv-pulse.active{color:#fff;background:linear-gradient(135deg,var(--amber),var(--fire));font-weight:700}
+  /* ── PULSE (daily log) ── */
+  .pulse-wrap{max-width:860px}
+  .pulse-day{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .pulse-dayhead{display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(90deg,rgba(127,119,221,.08),transparent);border-bottom:1px solid var(--line)}
+  .pulse-date{font-weight:800;font-size:14px;color:var(--text)}
+  .pulse-rel{font-size:11.5px;color:var(--muted);font-weight:600}
+  .pulse-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--brand);background:rgba(127,119,221,.12);border-radius:20px;padding:2px 10px}
+  .pulse-item{display:flex;gap:10px;padding:9px 16px;border-bottom:1px dashed var(--line);align-items:flex-start}
+  .pulse-item:last-child{border-bottom:none}
+  .pulse-who{min-width:74px;display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;flex-shrink:0}
+  .pulse-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .pulse-txt{font-size:13px;line-height:1.45;color:var(--text);flex:1;word-break:break-word}
+  .pulse-tag{font-size:9.5px;font-weight:800;letter-spacing:.4px;border-radius:4px;padding:1px 6px;flex-shrink:0;margin-left:2px}
+  .pt-done{color:#065F46;background:#D1FAE5}.pt-move{color:#92400E;background:#FEF3C7}.pt-block{color:#991B1B;background:#FEE2E2}.pt-note{color:#1E40AF;background:#DBEAFE}
+  .pulse-addrow{display:flex;gap:8px;margin:10px 0 4px}
+  .pulse-addrow select,.pulse-addrow input{font-family:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff;color:var(--text)}
+  .pulse-addrow input.pulse-what{flex:1}
+  .pulse-addrow button{font-size:12.5px;font-weight:700;border:none;border-radius:8px;padding:7px 16px;background:var(--brand);color:#fff;cursor:pointer;font-family:inherit}
+  /* ── DASHBOARD v2 (project rings) ── */
+  .rings{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .ringcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);position:relative;transition:transform .15s,box-shadow .15s}
+  .ringcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(16,24,40,.12)}
+  .ringcard.rc-internal{border-left:3px solid #F59E0B}
+  .rc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+  .rc-name{font-size:13.5px;font-weight:700;line-height:1.35;flex:1;color:var(--text)}
+  .rc-int{font-size:8.5px;font-weight:800;letter-spacing:.5px;color:#B45309;background:#FEF3C7;border:1px solid #FDE68A;border-radius:4px;padding:1px 5px;flex-shrink:0}
+  .rc-tier{font-size:9px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:4px;padding:2px 6px;flex-shrink:0}
+  .rc-ring{display:flex;align-items:center;gap:12px;margin:6px 0 10px}
+  .rc-num{font-size:19px;font-weight:800}
+  .rc-sub{font-size:10.5px;color:var(--muted);font-weight:600}
+  .rc-own{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+  .rc-av{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800}
+  .rc-foot{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--muted);font-weight:600}
+  .rc-statusdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+  .dash3{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:900px){.dash3{grid-template-columns:1fr}}
+  .wl-big .wl-name{font-size:12.5px;font-weight:700}
   .dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
   .kpi{background:linear-gradient(180deg,#fff,#fbfcfe);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
   .kpi-num{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em}
@@ -518,10 +557,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     <div class="roster-bar" id="rosterBar"></div>
     <div class="proj-viewswitch">
       <button data-pv="board" class="active" onclick="setProjMode('board')">▦ Board</button>
+      <button data-pv="pulse" class="pv-pulse" onclick="setProjMode('pulse')">⚡ Pulse</button>
       <button data-pv="dashboard" onclick="setProjMode('dashboard')">◔ Dashboard</button>
     </div>
     <div class="proj-summary" id="projSummary"></div>
     <div class="board" id="board"></div>
+    <div id="projPulse" hidden></div>
     <div id="projDashboard" hidden></div>
   </section>
 
@@ -940,10 +981,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function setProjMode(m){
     projMode=m;
     document.querySelectorAll('.proj-viewswitch button').forEach(b=>b.classList.toggle('active',b.dataset.pv===m));
-    const board=document.getElementById('board'),dash=document.getElementById('projDashboard'),sum=document.getElementById('projSummary');
-    const dashMode=m==='dashboard';
-    board.hidden=dashMode;dash.hidden=!dashMode;if(sum)sum.style.display=dashMode?'none':'';
-    if(dashMode)renderDashboard();
+    const board=document.getElementById('board'),dash=document.getElementById('projDashboard'),sum=document.getElementById('projSummary'),pulse=document.getElementById('projPulse');
+    const nonBoard=m!=='board';
+    board.hidden=nonBoard;dash.hidden=m!=='dashboard';pulse.hidden=m!=='pulse';
+    if(sum)sum.style.display=nonBoard?'none':'';
+    if(m==='dashboard')renderDashboard();if(m==='pulse')renderPulse();
   }
   function donutSVG(data,total){
     const NS='http://www.w3.org/2000/svg',r=54,cx=70,cy=70,C=2*Math.PI*r;
@@ -1023,6 +1065,134 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       </div>`;
   }
 
+  // ── PULSE: daily activity log ──
+  const PULSE_SEED=[
+    {ts:'2026-10-05',who:'Patch',tag:'done',txt:'Audit of PIQ attribution finished — 4 undercount mechanisms documented (Nylas webhook-only, 3-way match, auto-followup data loss, spam filter).'},
+    {ts:'2026-10-05',who:'Luma',tag:'move',txt:'ClickUp→Planhat reactivated: deadline Oct 24, AMs migrating since Oct 1. "Cancelled" on the board was wrong.'},
+    {ts:'2026-10-05',who:'Me',tag:'done',txt:'Board restructured with Luma + Patch: Chatwoot hub build renamed, agent building unblocked, 4 new projects added.'},
+    {ts:'2026-10-04',who:'Me',tag:'done',txt:'Churn deep dive delivered — 178 PIQ cancels, $213K MRR analyzed.'},
+    {ts:'2026-10-03',who:'Patch',tag:'note',txt:'piq-focused-inbox branch: spam detector + bulk-delete backend landed, tests green.'},
+    {ts:'2026-10-02',who:'Me',tag:'move',txt:'Calendar events created for cancel-before dates (10 Banana events, payment protection).'}
+  ];
+  function pulseAll(){
+    if(!state.pulse)state.pulse=PULSE_SEED.map((p,i)=>({id:'pl'+Date.now()+i,...p}));
+    return state.pulse.slice().sort((a,b)=>b.ts.localeCompare(a.ts)||((b.at||0)-(a.at||0)));
+  }
+  const PTAG={done:['done','#10B981'],move:['move','#F59E0B'],block:['block','#DC2626'],note:['note','#3B82F6']};
+  function pulseDayLabel(ts){
+    const d=new Date(ts+'T12:00:00'),today=new Date();today.setHours(0,0,0,0);
+    const diff=Math.round((d-today)/86400000);
+    const wd=d.toLocaleDateString('en-US',{weekday:'long'});
+    if(diff===0)return[wd,'today'];
+    if(diff===-1)return[wd,'yesterday'];
+    return[wd,d.toLocaleDateString('en-US',{month:'short',day:'numeric'})];
+  }
+  function renderPulse(){
+    const el=document.getElementById('projPulse');if(!el)return;
+    const items=pulseAll();el.innerHTML='';el.className='pulse-wrap';
+    const hdr=document.createElement('div');
+    hdr.innerHTML='<div class="head" style="margin-bottom:10px"><div class="eyebrow">Pulse · what moved</div><h1 style="font-size:20px">The daily log.</h1><p class="head-sub">What Mireya, Romy, Luma and Patch did today — newest first. Agents post here every morning and night.</p></div>';
+    el.appendChild(hdr);
+    const add=document.createElement('div');add.className='pulse-addrow';
+    const whoSel='<select id="pulseWho">'+getPeople().map(p=>'<option'+(p===ME?' selected':'')+'>'+p+'</option>').join('')+'</select>';
+    const tagSel='<select id="pulseTag"><option value="done">✓ done</option><option value="move">→ moved</option><option value="block">⚠ blocked</option><option value="note">✎ note</option></select>';
+    add.innerHTML=whoSel+tagSel+'<input class="pulse-what" id="pulseTxt" placeholder="What happened today? (⏎ to log)"><button type="button" onclick="addPulseEntry()">Log it</button>';
+    el.appendChild(add);
+    const input=document.getElementById('pulseTxt');
+    input.addEventListener('keydown',e=>{if(e.key==='Enter')addPulseEntry();});
+    // group by day
+    const days={};items.forEach(it=>{(days[it.ts]=days[it.ts]||[]).push(it);});
+    Object.keys(days).sort((a,b)=>b.localeCompare(a)).forEach(ts=>{
+      const day=document.createElement('div');day.className='pulse-day';
+      const[wd,rel]=pulseDayLabel(ts);
+      const dh=document.createElement('div');dh.className='pulse-dayhead';
+      dh.innerHTML='<span class="pulse-date">'+wd+'</span><span class="pulse-rel">'+rel+' · '+new Date(ts+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</span><span class="pulse-count">'+days[ts].length+' updates</span>';
+      day.appendChild(dh);
+      days[ts].forEach(it=>{
+        const row=document.createElement('div');row.className='pulse-item';
+        const[tag,col]=PTAG[it.tag]||PTAG.note;
+        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span>'
+          +'<span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span>'
+          +'<span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span>';
+        day.appendChild(row);
+      });
+      el.appendChild(day);
+    });
+  }
+  function addPulseEntry(){
+    const txt=document.getElementById('pulseTxt').value.trim();
+    if(!txt)return;
+    const who=document.getElementById('pulseWho').value,tag=document.getElementById('pulseTag').value;
+    state.pulse=state.pulse||[];
+    state.pulse.push({id:'pl'+Date.now(),ts:new Date().toISOString().slice(0,10),who,tag,txt,at:Date.now()});
+    persist();renderPulse();
+  }
+  // ── DASHBOARD v2: ring per project ──
+  function ringSVG(pct,color,size){
+    const NS='http://www.w3.org/2000/svg',r=26,C=2*Math.PI*r;
+    const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 60 60');svg.setAttribute('width',size||52);svg.setAttribute('height',size||52);
+    svg.innerHTML='<circle cx="30" cy="30" r="'+r+'" fill="none" stroke="var(--panel-2)" stroke-width="6"/>'
+      +'<circle cx="30" cy="30" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(C*pct/100)+' '+C+'" stroke-dashoffset="'+C/4+'" transform="rotate(0 30 30)"/>'
+      +'<text x="30" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="var(--text)">'+pct+'%</text>';
+    return svg;
+  }
+  const TIER_META={p0:['Critical','#DC2626'],p1:['Growth','#7F77DD'],p2:['Later','#94A3B8'],pdone:['Shipped','#10B981']};
+  function renderDashboard(){
+    const el=document.getElementById('projDashboard');if(!el)return;
+    const all=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>all.push(c)));
+    const active=all.filter(c=>c.status!=='Cancelled');
+    el.innerHTML='';
+    // headline strip
+    let steps=0,done=0;active.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});
+    const pct=steps?Math.round(done/steps*100):0;
+    const atrisk=active.filter(c=>c.status==='At risk').length,blocked=active.filter(c=>c.status==='Blocked').length;
+    const strip=document.createElement('div');strip.className='dash-kpis';
+    [['Live',active.length,'var(--brand)'],['Overall done',pct+'%','var(--teal)'],['At risk',atrisk,'var(--amber)'],['Blocked',blocked,'var(--fire)']].forEach(k=>{
+      strip.innerHTML+='<div class="kpi"><div class="kpi-num" style="color:'+k[2]+'">'+k[1]+'</div><div class="kpi-lab">'+k[0]+'</div></div>';});
+    el.appendChild(strip);
+    // rings
+    const rings=document.createElement('div');rings.className='rings';
+    active.slice().sort((a,b)=>{
+      const ta=TIER_META[(state.projects.p0||[]).includes(a)?'p0':((state.projects.p1||[]).includes(a)?'p1':'p2')]?0:0;
+      return 0;}).forEach(()=>{});
+    const ordered=[];
+    TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(c.status!=='Cancelled')ordered.push([t,c]);}));
+    ordered.forEach(([t,c])=>{
+      const tot=(c.subs||[]).length,dn=(c.subs||[]).filter(s=>s.done).length;
+      const p=tot?Math.round(dn/tot*100):0;
+      const[,tcol]=TIER_META[t]||TIER_META.p2;
+      const ringCol=c.status==='At risk'?'#D97706':c.status==='Blocked'?'#DC2626':c.status==='Done'?'#10B981':c.status==='Not started'?'#94A3B8':tcol;
+      const card=document.createElement('div');card.className='ringcard'+(c.internal?' rc-internal':'');
+      const av=(c.owners||['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(o===ME?'Y':o.slice(0,1).toUpperCase())+'</span>').join('');
+      card.innerHTML='<div class="rc-top"><div class="rc-name">'+c.text.replace(/</g,'&lt;')+'</div>'
+        +(c.internal?'<span class="rc-int">INT</span>':'')
+        +'<span class="rc-tier" style="color:'+tcol+';background:'+tcol+'18">'+(TIER_META[t]||[])[0]+'</span></div>'
+        +'<div class="rc-ring"></div>'
+        +'<div class="rc-own">'+av+'</div>'
+        +'<div class="rc-foot"><span><span class="rc-statusdot" style="background:'+ringCol+'"></span>'+(dn+'/'+tot||'0/0')+' steps'+(c.due?' · 📅 '+c.due.slice(5):'')+'</span><span>'+(c.status||'')+'</span></div>';
+      card.querySelector('.rc-ring').appendChild(ringSVG(p,ringCol));
+      rings.appendChild(card);
+    });
+    if(!ordered.length)rings.innerHTML='<div class="sec-empty">No live initiatives.</div>';
+    el.appendChild(rings);
+    // workload panel
+    const grid=document.createElement('div');grid.className='dash3';
+    const p2=document.createElement('div');p2.className='dash-panel wl-big';
+    p2.innerHTML='<div class="dash-h">Workload by person</div>';
+    const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
+    const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
+    const wl=document.createElement('div');wl.className='workload';
+    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
+    p2.appendChild(wl);grid.appendChild(p2);
+    const p3=document.createElement('div');p3.className='dash-panel';
+    p3.innerHTML='<div class="dash-h">Last pulse</div>';
+    const pl=pulseAll().slice(0,8);
+    const plwrap=document.createElement('div');
+    pl.forEach(it=>{const[tag]=PTAG[it.tag]||PTAG.note;
+      plwrap.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
+    p3.appendChild(plwrap);grid.appendChild(p3);
+    el.appendChild(grid);
+  }
   // ── Optional due date (projects + steps) ──
   const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function fmtDue(iso){if(!iso)return '';const p=iso.split('-');const y=+p[0],m=+p[1],d=+p[2];return (MON[m-1]||'')+' '+d+(y!==new Date().getFullYear()?(" '"+String(y).slice(2)):'');}

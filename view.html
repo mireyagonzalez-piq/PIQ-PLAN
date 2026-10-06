@@ -329,10 +329,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     </div>
     <div class="proj-viewswitch">
       <button data-pv="board" class="active" onclick="setProjModeV('board')">▦ Board</button>
+      <button data-pv="pulse" class="pv-pulse" onclick="setProjModeV('pulse')">⚡ Pulse</button>
       <button data-pv="dashboard" onclick="setProjModeV('dashboard')">◔ Dashboard</button>
     </div>
     <div class="proj-summary" id="projSummaryView"></div>
     <div id="boardView"><div class="loading">Loading…</div></div>
+    <div id="projPulseV" hidden></div>
     <div id="projDashboardV" hidden></div>
   </section>
 
@@ -537,9 +539,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function setProjModeV(m){
     projModeV=m;
     document.querySelectorAll('.proj-viewswitch button').forEach(b=>b.classList.toggle('active',b.dataset.pv===m));
-    const board=document.getElementById('boardView'),dash=document.getElementById('projDashboardV'),sum=document.getElementById('projSummaryView');
-    const dm=m==='dashboard';board.hidden=dm;dash.hidden=!dm;if(sum)sum.style.display=dm?'none':'';
-    if(dm)renderDashboardV();
+    const board=document.getElementById('boardView'),dash=document.getElementById('projDashboardV'),sum=document.getElementById('projSummaryView'),pulse=document.getElementById('projPulseV');
+    const nb=m!=='board';
+    board.hidden=nb;dash.hidden=m!=='dashboard';pulse.hidden=m!=='pulse';
+    if(sum)sum.style.display=nb?'none':'';
+    if(m==='dashboard')renderDashboardV();if(m==='pulse')renderPulseV();
   }
   function donutSVGV(data,total){
     const NS='http://www.w3.org/2000/svg',r=54,cx=70,cy=70,C=2*Math.PI*r;
@@ -578,6 +582,106 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     owners.forEach(o=>{const row=document.createElement('div');row.className='wl-row';row.innerHTML='<span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span>';wl.appendChild(row);});
     if(!owners.length)wl.innerHTML='<div class="sec-empty">No initiatives yet.</div>';
     p2.appendChild(wl);grid.appendChild(p2);el.appendChild(grid);
+  }
+  // ── PULSE (team view) ──
+  const PTAG={done:['done','#10B981'],move:['move','#F59E0B'],block:['block','#DC2626'],note:['note','#3B82F6']};
+  function pulseAllV(){
+    const seed=(state.pulse&&state.pulse.length)?state.pulse:[
+      {ts:'2026-10-05',who:'Patch',tag:'note',txt:'piq-focused-inbox branch: spam filtering + bulk actions — detector and bulk-delete backend landed, tests green. Bulk bar + Not-spam UI next, then QA.'},
+      {ts:'2026-10-05',who:'Me',tag:'done',txt:'Board restructure shipped: team view now hides internal projects; Projects got the Pulse log + ring dashboard.'},
+      {ts:'2026-10-04',who:'Me',tag:'done',txt:'Churn deep dive delivered — 178 PIQ cancels, $213K MRR analyzed.'}
+    ];
+    return seed.filter(p=>!p.internal).slice().sort((a,b)=>b.ts.localeCompare(a.ts)||((b.at||0)-(a.at||0)));
+  }
+  function pulseDayLabel(ts){
+    const d=new Date(ts+'T12:00:00'),today=new Date();today.setHours(0,0,0,0);
+    const diff=Math.round((d-today)/86400000);
+    const wd=d.toLocaleDateString('en-US',{weekday:'long'});
+    if(diff===0)return[wd,'today'];
+    if(diff===-1)return[wd,'yesterday'];
+    return[wd,d.toLocaleDateString('en-US',{month:'short',day:'numeric'})];
+  }
+  function renderPulseV(){
+    const el=document.getElementById('projPulseV');if(!el)return;
+    const items=pulseAllV();el.innerHTML='';el.className='pulse-wrap';
+    const hdr=document.createElement('div');
+    hdr.innerHTML='<div class="head" style="margin-bottom:10px"><div class="eyebrow">Pulse · what moved</div><h1 style="font-size:20px">The daily log.</h1><p class="head-sub">What the team shipped, moved or got stuck on — newest first.</p></div>';
+    el.appendChild(hdr);
+    if(!items.length){el.innerHTML+='<div class="sec-empty">No pulse entries yet.</div>';return;}
+    const days={};items.forEach(it=>{(days[it.ts]=days[it.ts]||[]).push(it);});
+    Object.keys(days).sort((a,b)=>b.localeCompare(a)).forEach(ts=>{
+      const day=document.createElement('div');day.className='pulse-day';
+      const[wd,rel]=pulseDayLabel(ts);
+      const dh=document.createElement('div');dh.className='pulse-dayhead';
+      dh.innerHTML='<span class="pulse-date">'+wd+'</span><span class="pulse-rel">'+rel+' · '+new Date(ts+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</span><span class="pulse-count">'+days[ts].length+' updates</span>';
+      day.appendChild(dh);
+      days[ts].forEach(it=>{
+        const row=document.createElement('div');row.className='pulse-item';
+        const[tag]=PTAG[it.tag]||PTAG.note;
+        row.innerHTML='<span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span>'
+          +'<span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span>'
+          +'<span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span>';
+        day.appendChild(row);
+      });
+      el.appendChild(day);
+    });
+  }
+  // ── DASHBOARD v2 (team view): ring per project ──
+  function ringSVG(pct,color,size){
+    const NS='http://www.w3.org/2000/svg',r=26,C=2*Math.PI*r;
+    const svg=document.createElementNS(NS,'svg');svg.setAttribute('viewBox','0 0 60 60');svg.setAttribute('width',size||52);svg.setAttribute('height',size||52);
+    svg.innerHTML='<circle cx="30" cy="30" r="'+r+'" fill="none" stroke="var(--panel-2)" stroke-width="6"/>'
+      +'<circle cx="30" cy="30" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(C*pct/100)+' '+C+'" stroke-dashoffset="'+C/4+'"/>'
+      +'<text x="30" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="var(--text)">'+pct+'%</text>';
+    return svg;
+  }
+  const TIER_META={p0:['Critical','#DC2626'],p1:['Growth','#7F77DD'],p2:['Later','#94A3B8'],pdone:['Shipped','#10B981']};
+  function renderDashboardV(){
+    const el=document.getElementById('projDashboardV');if(!el)return;
+    const ordered=[];
+    TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(mapHealth(c.status)!=='Cancelled'&&!c.internal)ordered.push([t,c]);}));
+    const active=ordered.map(x=>x[1]);
+    el.innerHTML='';
+    let steps=0,done=0;active.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});
+    const pct=steps?Math.round(done/steps*100):0;
+    const strip=document.createElement('div');strip.className='dash-kpis';
+    [['Live',active.length,'var(--brand)'],['Overall done',pct+'%','var(--teal)']].forEach(k=>{
+      strip.innerHTML+='<div class="kpi"><div class="kpi-num" style="color:'+k[2]+'">'+k[1]+'</div><div class="kpi-lab">'+k[0]+'</div></div>';});
+    el.appendChild(strip);
+    const rings=document.createElement('div');rings.className='rings';
+    ordered.forEach(([t,c])=>{
+      const tot=(c.subs||[]).length,dn=(c.subs||[]).filter(s=>s.done).length;
+      const p=tot?Math.round(dn/tot*100):0;
+      const[,tcol]=TIER_META[t]||TIER_META.p2;
+      const h=mapHealth(c.status);
+      const ringCol=h==='At risk'?'#D97706':h==='Blocked'?'#DC2626':h==='Done'?'#10B981':h==='Not started'?'#94A3B8':tcol;
+      const card=document.createElement('div');card.className='ringcard';
+      const av=((c.owners||[]).length?c.owners:['Me']).map(o=>'<span class="rc-av" style="background:'+personColor(o)+'" title="'+o+'">'+(o===ME?'Y':o.slice(0,1).toUpperCase())+'</span>').join('');
+      card.innerHTML='<div class="rc-top"><div class="rc-name">'+c.text.replace(/</g,'&lt;')+'</div>'
+        +'<span class="rc-tier" style="color:'+tcol+';background:'+tcol+'18">'+(TIER_META[t]||[])[0]+'</span></div>'
+        +'<div class="rc-ring"></div>'
+        +'<div class="rc-own">'+av+'</div>'
+        +'<div class="rc-foot"><span><span class="rc-statusdot" style="background:'+ringCol+'"></span>'+(dn+'/'+tot||'0/0')+' steps'+(c.due?' · 📅 '+c.due.slice(5):'')+'</span><span>'+c.status+'</span></div>';
+      card.querySelector('.rc-ring').appendChild(ringSVG(p,ringCol));
+      rings.appendChild(card);
+    });
+    if(!ordered.length)rings.innerHTML='<div class="sec-empty">No live initiatives.</div>';
+    el.appendChild(rings);
+    const grid=document.createElement('div');grid.className='dash3';
+    const p2=document.createElement('div');p2.className='dash-panel wl-big';
+    p2.innerHTML='<div class="dash-h">Workload by person</div>';
+    const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
+    const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
+    const wl=document.createElement('div');wl.className='workload';
+    owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+(o===ME?'You':o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
+    p2.appendChild(wl);grid.appendChild(p2);
+    const p3=document.createElement('div');p3.className='dash-panel';
+    p3.innerHTML='<div class="dash-h">Last pulse</div>';
+    const pl=pulseAllV().slice(0,8);
+    pl.forEach(it=>{const[tag]=PTAG[it.tag]||PTAG.note;
+      p3.innerHTML+='<div class="pulse-item"><span class="pulse-who"><span class="pulse-dot" style="background:'+personColor(it.who)+'"></span>'+(it.who===ME?'You':it.who)+'</span><span class="pulse-txt">'+it.txt.replace(/</g,'&lt;')+'</span><span class="pulse-tag pt-'+tag+'">'+tag.toUpperCase()+'</span></div>';});
+    grid.appendChild(p3);
+    el.appendChild(grid);
   }
   function renderBoard(){
     const el=document.getElementById('boardView');el.innerHTML='';
