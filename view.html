@@ -548,14 +548,14 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   }
   function renderDashboardV(){
     const el=document.getElementById('projDashboardV');if(!el||!state.projects)return;
-    const all=[];TIERS.forEach(t=>(state.projects[t]||[]).forEach(c=>{if(!c.internal)all.push(c);}));
+    const all=[];['p0','p1','p2'].forEach(t=>(state.projects[t]||[]).forEach(c=>{if(!c.internal)all.push(c);}));
     const active=all.filter(c=>mapHealth(c.status)!=='Cancelled');
     const bs={'Not started':0,'On track':0,'At risk':0,'Blocked':0,'Done':0};active.forEach(c=>{const h=mapHealth(c.status);if(bs[h]!=null)bs[h]++;});
     const SC={'Not started':'#94A3B8','On track':'#16A34A','At risk':'#D97706','Blocked':'#DC2626','Done':'#059669'};
     const dd=Object.keys(bs).map(k=>({label:k,value:bs[k],color:SC[k]}));
     let steps=0,done=0;active.forEach(c=>{steps+=(c.subs||[]).length;done+=(c.subs||[]).filter(s=>s.done).length;});
     const pct=steps?Math.round(done/steps*100):0;
-    const load={};active.forEach(c=>(c.owners&&c.owners.length?c.owners:['Me']).forEach(o=>load[o]=(load[o]||0)+1));
+    const load={};active.forEach(c=>(c.owners&&c.owners.length?c.owners:['Me']).forEach(o=>{const k=ALIASES[o]||o;load[k]=(load[k]||0)+1;}));
     const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
     el.innerHTML='';
     const kpis=document.createElement('div');kpis.className='dash-kpis';
@@ -660,7 +660,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const grid=document.createElement('div');grid.className='dash3';
     const p2=document.createElement('div');p2.className='dash-panel wl-big';
     p2.innerHTML='<div class="dash-h">Workload by person</div>';
-    const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{load[o]=(load[o]||0)+1;});});
+    const load={};ordered.forEach(([,c])=>{((c.owners&&c.owners.length)?c.owners:['Me']).forEach(o=>{const k=ALIASES[o]||o;load[k]=(load[k]||0)+1;});});
     const owners=Object.keys(load).sort((a,b)=>load[b]-load[a]);const maxLoad=Math.max(1,...owners.map(o=>load[o]));
     const wl=document.createElement('div');wl.className='workload';
     owners.forEach(o=>{wl.innerHTML+='<div class="wl-row"><span class="wl-name">'+dispName(o)+'</span><span class="wl-track"><span class="wl-fill" style="width:'+Math.round(load[o]/maxLoad*100)+'%;background:'+personColor(o)+'"></span></span><span class="wl-val">'+load[o]+'</span></div>';});
