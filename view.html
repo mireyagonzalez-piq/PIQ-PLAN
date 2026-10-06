@@ -641,8 +641,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay');
     const ss=state.selfservice||[], fin=state.finance||[];
     const lre=r.filter(x=>x.lre);
-    const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
-    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin);
+    const finChurned=fin.filter(x=>x.status==='Churned by finance');
+    const finWill=fin.filter(x=>x.status!=='Churned by finance');
+    const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(finChurned);
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(finWill);
     const fpV=state.failed||[];
     const fpOpenV=fpV.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRowsV=fpV.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
@@ -667,7 +669,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.filter(x=>x.status==='Churned by finance').length)+' clients ('+((ch.length+wc.length)+(fin.filter(x=>x.status==='Churned by finance').length))+' confirmed + '+fin.filter(x=>x.status!=='Churned by finance').length+' finance)'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.length)+' clients ('+(ch.length+wc.length)+' confirmed + '+fin.length+' finance)'):''}
         ${(function(){var seen={};fpPaidRowsV.forEach(function(x){if(x.am)seen[x.am]=1;});var names=Object.keys(seen);
           return fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR · '+fpPaidCountV+' client'+(fpPaidCountV===1?'':'s')):'';})()}${lre.length?'<div class="ret-total-item"><span style="color:#B8860B;font-size:14px;line-height:1">&#9733;</span> <b>'+lre.length+'</b> hail Mary retention · '+fmt(mrr(lre))+' MRR</div>':''}
       </div>`;
