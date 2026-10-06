@@ -109,7 +109,7 @@
   .tbl tbody tr:hover td{background:var(--panel-2)}
   .risk-badge,.status-badge{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px}
   .r-High{background:var(--fire-dim);color:var(--fire)}.r-Medium{background:var(--amber-dim);color:var(--amber)}.r-Low{background:var(--teal-dim);color:var(--teal)}
-  .s-Churned{background:var(--fire-dim);color:var(--fire)}.s-Will-churn{background:rgba(220,38,38,.15);color:var(--fire)}.s-Payment-delay---will-reflect-as-churn{background:rgba(250,204,21,.25);color:#B45309}.s-At-risk{background:var(--amber-dim);color:var(--amber)}.s-Working-on-it{background:var(--violet-dim);color:var(--violet)}.s-Saved{background:var(--teal-dim);color:var(--teal)}.s-Active{background:var(--teal-dim);color:var(--teal)}.s-Finance-will-churn{background:rgba(220,38,38,.15);color:var(--fire)}.s-Churned-by-finance{background:var(--fire-dim);color:var(--fire)}
+  .s-Churned{background:var(--fire-dim);color:var(--fire)}.s-Will-churn{background:rgba(220,38,38,.15);color:var(--fire)}.s-Payment-delay{background:rgba(250,204,21,.25);color:#B45309}.s-At-risk{background:var(--amber-dim);color:var(--amber)}.s-Working-on-it{background:var(--violet-dim);color:var(--violet)}.s-Saved{background:var(--teal-dim);color:var(--teal)}.s-Active{background:var(--teal-dim);color:var(--teal)}.s-Finance-will-churn{background:rgba(220,38,38,.15);color:var(--fire)}.s-Churned-by-finance{background:var(--fire-dim);color:var(--fire)}
   .mrr-val{font-weight:600;color:var(--teal)}
   .loading{text-align:center;padding:60px 20px;color:var(--faint);font-size:14px}
   .error-box{background:#fef2f2;border:1px solid rgba(220,38,38,.3);border-radius:10px;padding:16px 20px;color:var(--fire);font-size:13px;margin-bottom:20px}
@@ -609,12 +609,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function renderChurnByAM(){
     const el=document.getElementById('churnByAM');if(!el)return;
     const r=state.retention||[];const byAM={};
-    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn'&&st!=='Payment delay - will reflect as churn')return;
+    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn'&&st!=='Payment delay')return;
       const m=parseFloat(String(c.mrr||'').replace(/[^0-9.]/g,''))||0;
       (c.owners&&c.owners.length?c.owners:['Unassigned']).forEach(o=>{
         if(!byAM[o])byAM[o]={ch:0,wc:0,pd:0,cc:0,wcc:0,pdc:0};
         if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}
-        else if(st==='Payment delay - will reflect as churn'){byAM[o].pd+=m;byAM[o].pdc++;}
+        else if(st==='Payment delay'){byAM[o].pd+=m;byAM[o].pdc++;}
         else{byAM[o].wc+=m;byAM[o].wcc++;}});});
     
     
@@ -638,7 +638,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     if(!state.retention){return;}
     renderChurnByAM();
     const r=state.retention;
-    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay - will reflect as churn');
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay');
     const ss=state.selfservice||[], fin=state.finance||[];
     const lre=r.filter(x=>x.lre);
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
@@ -693,7 +693,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function cancelBeforeDate(row){
     if(row.cancelBefore)return row.cancelBefore;
     const st=row.status||'';
-    if(st!=='Will churn'&&st!=='Finance will churn'&&st!=='Payment delay - will reflect as churn')return null;
+    if(st!=='Will churn'&&st!=='Finance will churn'&&st!=='Payment delay')return null;
     return parseCancelDate((row.next||'')+' '+(row.issue||''));
   }
   function cancelChip(row){
@@ -706,7 +706,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const tbl=document.createElement('table');tbl.className='tbl';
-    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th># Payments</th><th>Reason</th>'+viewTh('Status','status','retention')+'</tr></thead>';
+    tbl.innerHTML='<thead><tr>'+viewTh('Client','client','retention')+viewTh('Owner','owner','retention')+viewTh('MRR','mrr','retention')+viewTh('Risk','risk','retention')+'<th># Payments</th><th>Reason</th>'+viewTh('Cancel before','cancelBefore','retention')+viewTh('Status','status','retention')+'</tr></thead>';
     const tb=document.createElement('tbody');
     const srt=(tblSorts.retention&&tblSorts.retention.col)?sortViewRows(r,tblSorts.retention.col,tblSorts.retention.dir):r;
     srt.forEach(row=>{
@@ -719,7 +719,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
         <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
         <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
-        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}${cancelChip(row)}</td>`;
+        <td data-label="Cancel before"><span style="font-size:11px;color:var(--muted);white-space:nowrap">${row.cancelBefore?new Date(row.cancelBefore+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</span></td>
+        <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span>${row.lre?'<span class="lre-star" title="LAST RETENTION EFFORT">★</span>':''}</td>`;
       tb.appendChild(tr);
     });
     tbl.appendChild(tb);wrap.appendChild(tbl);rv.appendChild(wrap);bindViewSort('retView',renderRetention);
