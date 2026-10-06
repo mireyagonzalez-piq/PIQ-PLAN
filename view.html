@@ -638,7 +638,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const fpOpenV=fpV.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRowsV=fpV.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
     const fpPaidCountV=fpPaidRowsV.length;
-    const fpPaidAmtV=fmt(fpPaidRowsV.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0));
+    const fpPaidAmtVraw=fpPaidRowsV.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
+    const fpPaidAmtV=fmt(fpPaidAmtVraw);
     window._fpPaidRowsV=fpPaidRowsV;
     const fpOwedView=fmt(fpOpenV.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0));
     const I={down:'<path d="M12 5v14M5 12l7 7 7-7"/>',leave:'<path d="M18 6 6 18M8 6h10v10"/>',warn:'<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',check:'<path d="M20 7 9 18l-5-5"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
@@ -658,7 +659,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length+fin.length)+' clients (incl. finance churn)'):''}
-        ${fpPaidAmtV>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
+        ${fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
