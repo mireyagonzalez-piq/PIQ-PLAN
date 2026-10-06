@@ -216,6 +216,7 @@
   .cam-name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cam-track{height:20px;background:var(--panel-2);border-radius:6px;overflow:hidden;display:flex}
   .cam-seg{height:100%}
+  .cam-seg b{font-size:11px;font-weight:700;color:#111827;display:flex;align-items:center;justify-content:center;height:100%}
   .cam-val{font-size:12px;font-weight:700;text-align:right;color:var(--text);white-space:nowrap}
   @media(max-width:620px){.cam-row{grid-template-columns:96px 1fr 80px}}
   /* ===== Due dates (view) ===== */
@@ -626,11 +627,11 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#FACC15"></i>Payment delay</span><span><i style="background:#D97706"></i>Will churn</span><span><i style="background:#16A34A"></i>Recovered</span></span></div><div class="cam-rows">';
     ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;const denom=totc+((recMap[a]&&recMap[a].recc)||0);
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span><span class="cam-track">'
-        +(d.cc>0?'<span class="cam-seg" style="width:'+Math.round(d.cc/denom*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' client'+(d.cc===1?'':'s')+'">'+(d.cc>1?'<b>'+d.cc+'</b>':'')+'</span>':'')
-        +(d.pdc>0?'<span class="cam-seg" style="width:'+Math.round(d.pdc/denom*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+' client'+(d.pdc===1?'':'s')+'">'+(d.pdc>1?'<b>'+d.pdc+'</b>':'')+'</span>':'')
-        +(d.wcc>0?'<span class="cam-seg" style="width:'+Math.round(d.wcc/denom*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' client'+(d.wcc===1?'':'s')+'">'+(d.wcc>1?'<b>'+d.wcc+'</b>':'')+'</span>':'')
-        +((recMap[a]&&recMap[a].rec>0)?'<span class="cam-seg" style="width:'+Math.round(recMap[a].recc/denom*100)+'%;background:#16A34A" title="Recovered: '+fmtK(recMap[a].rec)+' · '+recMap[a].recc+' client'+(recMap[a].recc===1?'':'s')+'">'+(recMap[a].recc>1?'<b>'+recMap[a].recc+'</b>':'')+'</span>':'')
-        +'</span><span class="cam-val">'+totc+' client'+(totc===1?'':'s')+' · '+fmtK(tot)+((recMap[a]&&recMap[a].rec>0)?' <span style="color:#16A34A;font-weight:700">+'+fmtK(recMap[a].rec)+'</span>':'')+'</span></div>';});
+        +(d.cc>0?'<span class="cam-seg" style="width:'+Math.round(d.cc/denom*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' client'+(d.cc===1?'':'s')+'">'+(d.cc>0?'<b>'+d.cc+'</b>':'')+'</span>':'')
+        +(d.pdc>0?'<span class="cam-seg" style="width:'+Math.round(d.pdc/denom*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+' client'+(d.pdc===1?'':'s')+'">'+(d.pdc>0?'<b>'+d.pdc+'</b>':'')+'</span>':'')
+        +(d.wcc>0?'<span class="cam-seg" style="width:'+Math.round(d.wcc/denom*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' client'+(d.wcc===1?'':'s')+'">'+(d.wcc>0?'<b>'+d.wcc+'</b>':'')+'</span>':'')
+        +((recMap[a]&&recMap[a].rec>0)?'<span class="cam-seg" style="width:'+Math.round(recMap[a].recc/denom*100)+'%;background:#16A34A" title="Recovered: '+fmtK(recMap[a].rec)+' · '+recMap[a].recc+' client'+(recMap[a].recc===1?'':'s')+'">'+(recMap[a].recc>0?'<b>'+recMap[a].recc+'</b>':'')+'</span>':'')
+        +'</span></div>';});
     h+='</div>';el.innerHTML=h;
   }
   function renderRetention(){
@@ -657,7 +658,6 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     document.getElementById('retSummary').innerHTML=`
       <div class="ret-stat danger"><div class="kpi-ic ic-fire">${ic(I.down)}</div><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="kpi-ic ic-fire">${ic(I.leave)}</div><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
-      <div class="ret-stat warn"><div class="kpi-ic ic-gold">${ic(I.star)}</div><div class="ret-stat-label">Hail Mary retention</div><div class="ret-stat-num">${lre.length}</div><div class="ret-stat-mrr">${fmt(mrr(lre))} MRR · last effort</div><div class="ret-stat-sub">Power Hour plays in progress</div></div>
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
@@ -669,7 +669,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
         ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.length)+' clients (incl. finance churn)'):''}
         ${(function(){var seen={};fpPaidRowsV.forEach(function(x){if(x.am)seen[x.am]=1;});var names=Object.keys(seen);
-          return fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR · '+fpPaidCountV+' client'+(fpPaidCountV===1?'':'s')):'';})()}
+          return fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR · '+fpPaidCountV+' client'+(fpPaidCountV===1?'':'s')):'';})()}${lre.length?'<div class="ret-total-item"><span style="color:#B8860B;font-size:14px;line-height:1">&#9733;</span> <b>'+lre.length+'</b> hail Mary retention · '+fmt(mrr(lre))+' MRR</div>':''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
