@@ -614,17 +614,23 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}
         else if(st==='Payment delay - will reflect as churn'){byAM[o].pd+=m;byAM[o].pdc++;}
         else{byAM[o].wc+=m;byAM[o].wcc++;}});});
+    
+    
+
+    const recMap={};(state.failed||[]).forEach(x=>{if(x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID')return;const m=parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0;let am=(x.am||'').replace('Estefanía','Estefania');if(!am)return;recMap[am]=recMap[am]||{rec:0,recc:0};recMap[am].rec+=m;recMap[am].recc++;});
     const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc+byAM[b].pd)-(byAM[a].ch+byAM[a].wc+byAM[a].pd));
     if(!ams.length){el.style.display='none';el.innerHTML='';return;}
     el.style.display='';
     const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc+byAM[a].pd));
-    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#FACC15"></i>Payment delay</span><span><i style="background:#D97706"></i>Will churn</span></span></div><div class="cam-rows">';
+    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#FACC15"></i>Payment delay</span><span><i style="background:#D97706"></i>Will churn</span><span><i style="background:#16A34A"></i>Recovered</span></span></div><div class="cam-rows">';
     ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span><span class="cam-track">'
         +'<span class="cam-seg" style="width:'+Math.round(d.ch/max*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+'"></span>'
         +'<span class="cam-seg" style="width:'+Math.round(d.pd/max*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+'"></span>'
         +'<span class="cam-seg" style="width:'+Math.round(d.wc/max*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+'"></span>'
-        +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+'</span></div>';});
+        +((recMap[a]&&recMap[a].rec>0)?'<span class="cam-seg" style="width:'+Math.round(recMap[a].rec/max*100)+'%;background:#16A34A" title="Recovered: '+fmtK(recMap[a].rec)+' · '+recMap[a].recc+'"></span>':'')
+        +((d.rec||0)>0?'<span class="cam-seg" style="width:'+Math.round(d.rec/max*100)+'%;background:#16A34A" title="Recovered: '+fmtK(d.rec)+' · '+d.recc+'"></span>':'')
+        +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+((recMap[a]&&recMap[a].rec>0)?' <span style="color:#16A34A;font-weight:700">+'+fmtK(recMap[a].rec)+'</span>':'')+'</span></div>';});
     h+='</div>';el.innerHTML=h;
   }
   function renderRetention(){
