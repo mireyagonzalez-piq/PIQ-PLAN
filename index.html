@@ -429,6 +429,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 .st-churn,.st-will{color:var(--fire);background:var(--fire-dim)} .st-churn .d,.st-will .d{background:var(--fire)}
 .st-risk,.st-work{color:var(--amber);background:var(--amber-dim)} .st-risk .d,.st-work .d{background:var(--amber)}
 .st-saved{color:var(--teal);background:var(--teal-dim)} .st-saved .d{background:var(--teal)}
+.st-pdelay{color:#B45309;background:rgba(250,204,21,.22)} .st-pdelay .d{background:#FACC15}
 /* avatars */
 .av{box-shadow:var(--shadow-sm);border-color:#fff}
 /* churn by AM */
@@ -544,6 +545,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="card-panel-head"><h2 class="subsection-title">Failed payments</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
       <button class="addbtn" id="addFailed" style="margin-bottom:12px;max-width:220px">+ add failed payment</button>
       <div id="failedTable"></div>
+    </div>
+    <div id="paidPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Recovered · payments won back</h2><button class="panel-close" onclick="document.getElementById('paidPanel').hidden=true">✕ close</button></div>
+      <div id="paidBreakdown"></div>
     </div>
   </section>
 
@@ -1095,8 +1100,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function mrr(rows){return rows.reduce((a,x)=>{const n=parseFloat((x.mrr||'').replace(/[^0-9.]/g,''));return a+(isNaN(n)?0:n);},0);}
   function fmt(n){return n>0?'$'+n.toLocaleString():'—';}
 
-  function statDot(v){return (v==='Churned'||v==='Will churn'||v==='Payment delay - will reflect as churn')?'var(--fire)':(v==='At risk'||v==='Working on it')?'var(--amber)':v==='Saved'?'var(--teal)':'var(--slate)';}
-  function statCls(v){return v==='Churned'?'st-churn':(v==='Will churn'||v==='Payment delay - will reflect as churn')?'st-will':v==='At risk'?'st-risk':v==='Working on it'?'st-work':v==='Saved'?'st-saved':'st-work';}
+  function statDot(v){return (v==='Churned'||v==='Will churn')?'var(--fire)':v==='Payment delay - will reflect as churn'?'#FACC15':(v==='At risk'||v==='Working on it')?'var(--amber)':v==='Saved'?'var(--teal)':'var(--slate)';}
+  function statCls(v){return v==='Churned'?'st-churn':v==='Payment delay - will reflect as churn'?'st-pdelay':v==='Will churn'?'st-will':v==='At risk'?'st-risk':v==='Working on it'?'st-work':v==='Saved'?'st-saved':'st-work';}
   function statusPill(value,opts,onchange){
     const wrap=document.createElement('span');wrap.className='statpill';
     const btn=document.createElement('button');
@@ -1139,6 +1144,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const fpPaidRows=fp.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
     const fpPaidCount=fpPaidRows.length;
     const fpPaidAmt=fpPaidRows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
+    window._fpPaidRows=fpPaidRows; // for the expandable breakdown
     const fpOwed=fpOpen.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
     const exposure=mrr(ch)+mrr(wc)+mrr(pd)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
     el.innerHTML=`
@@ -1147,20 +1153,32 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">${fpPaidCount>0?fpPaidCount+' paid · '+fmt(fpPaidAmt)+' recovered — tap to view':'tap to view'}</div></div>
+      <div class="ret-stat clickable" onclick="togglePaidPanel()"><div class="kpi-ic ic-teal">${ic(I.check)}</div><div class="ret-stat-label">Recovered MRR</div><div class="ret-stat-num">${fpPaidCount}</div><div class="ret-stat-mrr">${fmt(fpPaidAmt)} recovered</div><div class="ret-stat-sub">payments won back · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpen.length}</div><div class="ret-stat-mrr">${fmt(fpOwed)} owed</div><div class="ret-stat-sub">tap to view</div></div>
       <div class="ret-total-row">
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
-        ${chip('var(--fire)','<b>'+(ch.length+wc.length+pd.length)+'</b> churned or confirmed leaving')}
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
-        ${exposure>0?chip('var(--fire)','<b>'+fmt(exposure)+'</b> total MRR exposure'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
       </div>`;
   }
   function togglePanel(id){
     const p=document.getElementById(id);if(!p)return;
-    ['ssPanel','finPanel','fpPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
+    ['ssPanel','finPanel','fpPanel','paidPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
     p.hidden=!p.hidden;
     if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function togglePaidPanel(){togglePanel('paidPanel');renderPaidBreakdown();}
+  function renderPaidBreakdown(){
+    const el=document.getElementById('paidBreakdown');if(!el)return;
+    const rows=window._fpPaidRows||[];
+    if(!rows.length){el.innerHTML='<div class="empty">Nothing recovered yet.</div>';return;}
+    const tot=rows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
+    el.innerHTML='<div style="padding:10px 16px 4px;font-size:12.5px;color:var(--muted)"><b style="color:var(--teal)">'+rows.length+' payments recovered · '+fmt(tot)+'</b></div>'
+      +'<div class="tbl-wrap" style="margin:8px 16px 16px"><table class="tbl"><thead><tr><th>Payment email</th><th>Amount</th><th>How it was recovered</th></tr></thead><tbody>'
+      +rows.map(x=>'<tr><td data-label="Payment email"><strong>'+(x.email||'—')+'</strong></td>'
+        +'<td data-label="Amount"><span class="mrr-val">'+(x.amount?'$'+Number(String(x.amount).replace(/[^0-9.]/g,'')).toLocaleString():'—')+'</span></td>'
+        +'<td data-label="How it was recovered" style="color:var(--muted);max-width:420px">'+(x.cstatus||'—')+'</td></tr>').join('')
+      +'</tbody></table></div>';
   }
 
   let dragSrcId=null;
@@ -1180,12 +1198,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     if(!ams.length){el.style.display='none';el.innerHTML='';return;}
     el.style.display='';
     const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc+byAM[a].pd));
-    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span><span><i style="background:#F59E0B"></i>Payment delay</span></span></div><div class="cam-rows">';
+    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span><span><i style="background:#FACC15"></i>Payment delay</span></span></div><div class="cam-rows">';
     ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span>'
         +'<span class="cam-track">'
         +'<span class="cam-seg" style="width:'+Math.round(d.ch/max*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' clients"></span>'
-        +'<span class="cam-seg" style="width:'+Math.round(d.pd/max*100)+'%;background:#F59E0B" title="Payment delay (will reflect as churn): '+fmtK(d.pd)+' · '+d.pdc+' clients"></span>'
+        +'<span class="cam-seg" style="width:'+Math.round(d.pd/max*100)+'%;background:#FACC15" title="Payment delay (will reflect as churn): '+fmtK(d.pd)+' · '+d.pdc+' clients"></span>'
         +'<span class="cam-seg" style="width:'+Math.round(d.wc/max*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' clients"></span>'
         +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+'</span></div>';
     });

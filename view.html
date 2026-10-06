@@ -354,6 +354,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <div class="card-panel-head"><h2 class="subsection-title">Failed payments</h2><button class="panel-close" onclick="document.getElementById('fpPanel').hidden=true">✕ close</button></div>
       <div id="fpView"></div>
     </div>
+    <div id="paidPanel" class="card-panel" hidden>
+      <div class="card-panel-head"><h2 class="subsection-title">Recovered · payments won back</h2><button class="panel-close" onclick="document.getElementById('paidPanel').hidden=true">✕ close</button></div>
+      <div id="paidBreakdown"></div>
+    </div>
   </section>
 </main>
 
@@ -605,19 +609,22 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   function renderChurnByAM(){
     const el=document.getElementById('churnByAM');if(!el)return;
     const r=state.retention||[];const byAM={};
-    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn')return;
+    r.forEach(c=>{const st=c.status;if(st!=='Churned'&&st!=='Will churn'&&st!=='Payment delay - will reflect as churn')return;
       const m=parseFloat(String(c.mrr||'').replace(/[^0-9.]/g,''))||0;
       (c.owners&&c.owners.length?c.owners:['Unassigned']).forEach(o=>{
-        if(!byAM[o])byAM[o]={ch:0,wc:0,cc:0,wcc:0};
-        if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}else{byAM[o].wc+=m;byAM[o].wcc++;}});});
-    const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc)-(byAM[a].ch+byAM[a].wc));
+        if(!byAM[o])byAM[o]={ch:0,wc:0,pd:0,cc:0,wcc:0,pdc:0};
+        if(st==='Churned'){byAM[o].ch+=m;byAM[o].cc++;}
+        else if(st==='Payment delay - will reflect as churn'){byAM[o].pd+=m;byAM[o].pdc++;}
+        else{byAM[o].wc+=m;byAM[o].wcc++;}});});
+    const ams=Object.keys(byAM).sort((a,b)=>(byAM[b].ch+byAM[b].wc+byAM[b].pd)-(byAM[a].ch+byAM[a].wc+byAM[a].pd));
     if(!ams.length){el.style.display='none';el.innerHTML='';return;}
     el.style.display='';
-    const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc));
-    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#D97706"></i>Will churn</span></span></div><div class="cam-rows">';
-    ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc,totc=d.cc+d.wcc;
+    const max=Math.max(1,...ams.map(a=>byAM[a].ch+byAM[a].wc+byAM[a].pd));
+    let h='<div class="dash-h">Churn by AM<span class="cam-legend"><span><i style="background:#DC2626"></i>Churned</span><span><i style="background:#FACC15"></i>Payment delay</span><span><i style="background:#D97706"></i>Will churn</span></span></div><div class="cam-rows">';
+    ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span><span class="cam-track">'
         +'<span class="cam-seg" style="width:'+Math.round(d.ch/max*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+'"></span>'
+        +'<span class="cam-seg" style="width:'+Math.round(d.pd/max*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+'"></span>'
         +'<span class="cam-seg" style="width:'+Math.round(d.wc/max*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+'"></span>'
         +'</span><span class="cam-val">'+totc+' · '+fmtK(tot)+'</span></div>';});
     h+='</div>';el.innerHTML=h;
@@ -626,33 +633,34 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     if(!state.retention){return;}
     renderChurnByAM();
     const r=state.retention;
-    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it');
+    const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay - will reflect as churn');
     const ss=state.selfservice||[], fin=state.finance||[];
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
-    const leavingMRR=churnedMRR+mrr(wc)+mrr(fin.filter(x=>x.status==='Finance will churn'));
+    const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin.filter(x=>x.status==='Finance will churn'));
     const fpV=state.failed||[];
     const fpOpenV=fpV.filter(x=>x.status!=='PAID'&&x.status!=='WIRE TRANSFER-PAID');
     const fpPaidRowsV=fpV.filter(x=>x.status==='PAID'||x.status==='WIRE TRANSFER-PAID');
     const fpPaidCountV=fpPaidRowsV.length;
     const fpPaidAmtV=fmt(fpPaidRowsV.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0));
+    window._fpPaidRowsV=fpPaidRowsV;
     const fpOwedView=fmt(fpOpenV.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0));
     const I={down:'<path d="M12 5v14M5 12l7 7 7-7"/>',leave:'<path d="M18 6 6 18M8 6h10v10"/>',warn:'<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',check:'<path d="M20 7 9 18l-5-5"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
     const ic=p=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
     const chip=(dot,html)=>`<div class="ret-total-item">${dot?`<span class="cdot" style="background:${dot}"></span>`:''}${html}</div>`;
-    const exposure=mrr(ch)+mrr(wc)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
+    const exposure=mrr(ch)+mrr(wc)+mrr(pd)+mrr([...ar,...wo])+mrr(ss)+mrr(fin);
     document.getElementById('retSummary').innerHTML=`
       <div class="ret-stat danger"><div class="kpi-ic ic-fire">${ic(I.down)}</div><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="kpi-ic ic-fire">${ic(I.leave)}</div><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
-      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpenV.length}</div><div class="ret-stat-mrr">${fpOwedView} owed</div><div class="ret-stat-sub">${fpPaidCountV>0?fpPaidCountV+' paid · '+fmt(fpPaidAmtV)+' recovered — tap to view':'tap to view'}</div></div>
+      <div class="ret-stat clickable" onclick="togglePaidPanelV()"><div class="kpi-ic ic-teal">${ic(I.check)}</div><div class="ret-stat-label">Recovered MRR</div><div class="ret-stat-num">${fpPaidCountV}</div><div class="ret-stat-mrr">${fpPaidAmtV} recovered</div><div class="ret-stat-sub">payments won back · tap to view</div></div>
+      <div class="ret-stat clickable" onclick="togglePanel('fpPanel')"><div class="kpi-ic ic-amber">${ic(I.clock)}</div><div class="ret-stat-label">Failed payments</div><div class="ret-stat-num">${fpOpenV.length}</div><div class="ret-stat-mrr">${fpOwedView} owed</div><div class="ret-stat-sub">tap to view</div></div>
       <div class="ret-total-row">
         ${chip('','<b>'+(r.length+ss.length+fin.length)+'</b> clients tracked')}
-        ${chip('var(--fire)','<b>'+(ch.length+wc.length)+'</b> churned or leaving')}
+        
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
-        ${exposure>0?chip('var(--fire)','<b>'+fmt(exposure)+'</b> total MRR exposure'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length)+' clients'):''}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
@@ -678,9 +686,22 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 
   function togglePanel(id){
     const p=document.getElementById(id);if(!p)return;
-    ['ssPanel','finPanel','fpPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
+    ['ssPanel','finPanel','fpPanel','paidPanel'].forEach(o=>{if(o!==id){const op=document.getElementById(o);if(op)op.hidden=true;}});
     p.hidden=!p.hidden;
     if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function togglePaidPanelV(){togglePanel('paidPanel');renderPaidBreakdownV();}
+  function renderPaidBreakdownV(){
+    const el=document.getElementById('paidBreakdown');if(!el)return;
+    const rows=window._fpPaidRowsV||[];
+    if(!rows.length){el.innerHTML='<div class="loading">Nothing recovered yet.</div>';return;}
+    const tot=rows.reduce((a,x)=>a+(parseFloat(String(x.amount||'').replace(/[^0-9.]/g,''))||0),0);
+    el.innerHTML='<div style="padding:10px 16px 4px;font-size:12.5px;color:var(--muted)"><b style="color:var(--teal)">'+rows.length+' payments recovered · '+fmt(tot)+'</b></div>'
+      +'<div class="tbl-wrap" style="margin:8px 16px 16px"><table class="tbl"><thead><tr><th>Payment email</th><th>Amount</th><th>How it was recovered</th></tr></thead><tbody>'
+      +rows.map(x=>'<tr><td data-label="Payment email"><strong>'+(x.email||'—')+'</strong></td>'
+        +'<td data-label="Amount"><span class="mrr-val">'+(x.amount?'$'+Number(String(x.amount).replace(/[^0-9.]/g,'')).toLocaleString():'—')+'</span></td>'
+        +'<td data-label="How it was recovered" style="color:var(--muted);max-width:420px">'+(x.cstatus||'—')+'</td></tr>').join('')
+      +'</tbody></table></div>';
   }
 
   function renderSelfservice(){
