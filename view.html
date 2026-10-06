@@ -659,8 +659,9 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         
         ${chip('var(--amber)','<b>'+(ar.length+wo.length)+'</b> still in play')}
         ${pd.length>0?chip('var(--amber)','<b>'+pd.length+'</b> payment delay · '+fmt(mrr(pd))+' MRR (will reflect as churn)'):''}
-        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+pd.length+fin.length)+' clients (incl. finance churn)'):''}
-        ${fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR'):''}
+        ${leavingMRR>0?chip('var(--fire)','<b>'+fmt(leavingMRR)+'</b> total MRR churned or leaving · '+(ch.length+wc.length+fin.length)+' clients (incl. finance churn)'):''}
+        ${(function(){var seen={};fpPaidRowsV.forEach(function(x){if(x.am)seen[x.am]=1;});var names=Object.keys(seen);
+          return fpPaidAmtVraw>0?chip('var(--teal)','<b>+'+fpPaidAmtV+'</b> recovered payments MRR · '+fpPaidCountV+' client'+(fpPaidCountV===1?'':'s')+(names.length?' — '+names.join(', '):'')):'';})()}
       </div>`;
     const rv=document.getElementById('retView');rv.innerHTML='';
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
