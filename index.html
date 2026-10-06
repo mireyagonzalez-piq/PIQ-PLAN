@@ -462,6 +462,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 /* icon tints */
 .ic-fire{color:var(--fire);background:var(--fire-dim)} .ic-amber{color:var(--amber);background:var(--amber-dim)}
 .ic-teal{color:var(--teal);background:var(--teal-dim)} .ic-brand{color:var(--brand);background:var(--brand-dim)}
+.ic-gold{color:#B8860B;background:rgba(255,193,7,.16)}
 .ic-slate{color:var(--slate);background:rgba(107,118,146,.13)} .ic-violet{color:var(--violet);background:var(--violet-dim)}
 .c-fire{color:var(--fire)!important}.c-amber{color:var(--amber)!important}.c-teal{color:var(--teal)!important}.c-brand{color:var(--brand)!important}.c-slate{color:var(--slate)!important}
 </style>
@@ -1130,12 +1131,13 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 
   function renderRetentionSummary(){
     const el=document.getElementById('retSummary');if(!el)return;
-    const I={down:'<path d="M12 5v14M5 12l7 7 7-7"/>',leave:'<path d="M18 6 6 18M8 6h10v10"/>',warn:'<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',check:'<path d="M20 7 9 18l-5-5"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+    const I={down:'<path d="M12 5v14M5 12l7 7 7-7"/>',leave:'<path d="M18 6 6 18M8 6h10v10"/>',warn:'<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',check:'<path d="M20 7 9 18l-5-5"/>',card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',star:'<path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'};
     const ic=p=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
     const chip=(dot,html)=>`<div class="ret-total-item">${dot?`<span class="cdot" style="background:${dot}"></span>`:''}${html}</div>`;
     const r=state.retention;
     const ch=r.filter(x=>x.status==='Churned'),wc=r.filter(x=>x.status==='Will churn'),ar=r.filter(x=>x.status==='At risk'),wo=r.filter(x=>x.status==='Working on it'),pd=r.filter(x=>x.status==='Payment delay - will reflect as churn');
     const ss=state.selfservice||[], fin=state.finance||[];
+    const lre=r.filter(x=>x.lre);
     const churnedMRR=mrr(ch)+mrr(ss.filter(x=>x.status==='Churned'))+mrr(fin.filter(x=>x.status==='Churned by finance'));
     const leavingMRR=churnedMRR+mrr(wc)+mrr(pd)+mrr(fin);
     const fp=state.failed||[];
@@ -1149,6 +1151,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     el.innerHTML=`
       <div class="ret-stat danger"><div class="kpi-ic ic-fire">${ic(I.down)}</div><div class="ret-stat-label">Already churned</div><div class="ret-stat-num">${ch.length}</div><div class="ret-stat-mrr">${fmt(mrr(ch))} MRR lost</div><div class="ret-stat-sub">cancelled, done</div></div>
       <div class="ret-stat danger-soft"><div class="kpi-ic ic-fire">${ic(I.leave)}</div><div class="ret-stat-label">Will churn</div><div class="ret-stat-num">${wc.length}</div><div class="ret-stat-mrr">${fmt(mrr(wc))} MRR leaving</div><div class="ret-stat-sub">confirmed, cancellation pending</div></div>
+      <div class="ret-stat warn"><div class="kpi-ic ic-gold">${ic(I.star)}</div><div class="ret-stat-label">Hail Mary retention</div><div class="ret-stat-num">${lre.length}</div><div class="ret-stat-mrr">${fmt(mrr(lre))} MRR · last effort</div><div class="ret-stat-sub">Power Hour plays in progress</div></div>
       <div class="ret-stat warn"><div class="kpi-ic ic-amber">${ic(I.warn)}</div><div class="ret-stat-label">At risk</div><div class="ret-stat-num">${ar.length+wo.length}</div><div class="ret-stat-mrr">${fmt(mrr([...ar,...wo]))} MRR at risk</div><div class="ret-stat-sub">${ar.length} watching · ${wo.length} being worked</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('ssPanel')"><div class="kpi-ic ic-slate">${ic(I.check)}</div><div class="ret-stat-label">Self-service</div><div class="ret-stat-num">${ss.length}</div><div class="ret-stat-mrr">${fmt(mrr(ss))} MRR</div><div class="ret-stat-sub">not fully-managed · tap to view</div></div>
       <div class="ret-stat clickable" onclick="togglePanel('finPanel')"><div class="kpi-ic ic-fire">${ic(I.card)}</div><div class="ret-stat-label">Unpaid clients</div><div class="ret-stat-num">${fin.length}</div><div class="ret-stat-mrr">${fmt(mrr(fin))} MRR</div><div class="ret-stat-sub">finance cancellations · tap to view</div></div>
