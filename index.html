@@ -1208,10 +1208,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     ams.forEach(a=>{const d=byAM[a];const tot=d.ch+d.wc+d.pd,totc=d.cc+d.wcc+d.pdc;const denom=totc+((recMap[a]&&recMap[a].recc)||0);
       h+='<div class="cam-row"><span class="cam-name" title="'+a+'">'+a+'</span>'
         +'<span class="cam-track">'
-        +(d.cc>0?'<span class="cam-seg" style="width:'+Math.round(d.cc/denom*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' client'+(d.cc===1?'':'s')+'">'+(d.cc>0?'<b>'+d.cc+'</b>':'')+'</span>':'')
-        +(d.pdc>0?'<span class="cam-seg" style="width:'+Math.round(d.pdc/denom*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+' client'+(d.pdc===1?'':'s')+'">'+(d.pdc>0?'<b>'+d.pdc+'</b>':'')+'</span>':'')
-        +(d.wcc>0?'<span class="cam-seg" style="width:'+Math.round(d.wcc/denom*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' client'+(d.wcc===1?'':'s')+'">'+(d.wcc>0?'<b>'+d.wcc+'</b>':'')+'</span>':'')
-        +((recMap[a]&&recMap[a].rec>0)?'<span class="cam-seg" style="width:'+Math.round(recMap[a].recc/denom*100)+'%;background:#16A34A" title="Recovered: '+fmtK(recMap[a].rec)+' · '+recMap[a].recc+' client'+(recMap[a].recc===1?'':'s')+'">'+(recMap[a].recc>0?'<b>'+recMap[a].recc+'</b>':'')+'</span>':'')
+        +(d.cc>0?'<span class="cam-seg" style="width:'+Math.round(d.cc/denom*100)+'%;background:#DC2626" title="Churned: '+fmtK(d.ch)+' · '+d.cc+' client'+(d.cc===1?'':'s')+'">'+(d.cc>0?'<b>-'+fmtK(d.ch)+'</b>':'')+'</span>':'')
+        +(d.pdc>0?'<span class="cam-seg" style="width:'+Math.round(d.pdc/denom*100)+'%;background:#FACC15" title="Payment delay: '+fmtK(d.pd)+' · '+d.pdc+' client'+(d.pdc===1?'':'s')+'">'+(d.pdc>0?'<b>-'+fmtK(d.pd)+'</b>':'')+'</span>':'')
+        +(d.wcc>0?'<span class="cam-seg" style="width:'+Math.round(d.wcc/denom*100)+'%;background:#D97706" title="Will churn: '+fmtK(d.wc)+' · '+d.wcc+' client'+(d.wcc===1?'':'s')+'">'+(d.wcc>0?'<b>-'+fmtK(d.wc)+'</b>':'')+'</span>':'')
+        +((recMap[a]&&recMap[a].rec>0)?'<span class="cam-seg" style="width:'+Math.round(recMap[a].recc/denom*100)+'%;background:#16A34A" title="Recovered: '+fmtK(recMap[a].rec)+' · '+recMap[a].recc+' client'+(recMap[a].recc===1?'':'s')+'">'+(recMap[a].recc>0?'<b>+'+fmtK(recMap[a].rec)+'</b>':'')+'</span>':'')
         +'</span></div>';
     });
     h+='</div>';el.innerHTML=h;
