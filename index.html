@@ -1474,7 +1474,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const dt=new Date(y,m-1,dd);
     const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     const act=row.actionLabel||'cancel before';
-    return '<span title="Take action before this date so the client is not charged (next payment minus 2 business days)" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px">📅 '+act+' '+lbl+'</span>';
+    return '<span class="act-chip" title="Click to edit the action text" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px;cursor:pointer">📅 '+act+' '+lbl+'</span>';
   }
   function renderRetention(){
     renderRetentionSummary();
@@ -1780,3 +1780,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 </script>
 </body>
 </html>
+          const chip=wrap.querySelector('.act-chip');
+          if(chip){chip.addEventListener('click',e=>{e.stopPropagation();
+            const inp2=document.createElement('input');inp2.type='text';inp2.value=row.actionLabel||'cancel before';inp2.style.fontSize='11px';inp2.style.width='140px';
+            chip.replaceWith(inp2);inp2.focus();inp2.select();
+            const save=()=>{row.actionLabel=inp2.value.trim()||'cancel before';persist();renderRetention();};
+            inp2.addEventListener('change',save);inp2.addEventListener('blur',save);
+            inp2.addEventListener('keydown',ev=>{if(ev.key==='Enter'){save();}if(ev.key==='Escape'){inp2.value=row.actionLabel||'';save();}});
+          });}
+    if(Array.isArray(s.retention))s.retention.forEach(r=>{if(typeof r.actionLabel==='undefined')r.actionLabel='';});
