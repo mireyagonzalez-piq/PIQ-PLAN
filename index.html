@@ -734,6 +734,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     if(Array.isArray(s.retention))s.retention.forEach(r=>{
       if(!Array.isArray(r.owners))r.owners=[];if(!r.mrr)r.mrr='';
       if(r.status==='Watching')r.status='At risk';if(r.status==='Working')r.status='Working on it';});
+    s.retention.forEach(r=>{if(typeof r.actionLabel==='undefined')r.actionLabel='';});
     // New forecast sections
     if(!Array.isArray(s.selfservice))s.selfservice=[];
     s.selfservice.forEach(r=>{if(!r.mrr)r.mrr='';if(!r.status)r.status='Active';});
@@ -1777,9 +1778,6 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     document.head.appendChild(sc);
   }
   bootFromSheet();
-</script>
-</body>
-</html>
           const chip=wrap.querySelector('.act-chip');
           if(chip){chip.addEventListener('click',e=>{e.stopPropagation();
             const inp2=document.createElement('input');inp2.type='text';inp2.value=row.actionLabel||'cancel before';inp2.style.fontSize='11px';inp2.style.width='140px';
@@ -1788,4 +1786,6 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
             inp2.addEventListener('change',save);inp2.addEventListener('blur',save);
             inp2.addEventListener('keydown',ev=>{if(ev.key==='Enter'){save();}if(ev.key==='Escape'){inp2.value=row.actionLabel||'';save();}});
           });}
-    if(Array.isArray(s.retention))s.retention.forEach(r=>{if(typeof r.actionLabel==='undefined')r.actionLabel='';});
+</script>
+</body>
+</html>
