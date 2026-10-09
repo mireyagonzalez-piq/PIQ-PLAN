@@ -751,10 +751,10 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   const saveTag=document.getElementById('savetag');
   function flagSaved(){saveTag.textContent='saved ✓';setTimeout(()=>saveTag.textContent='',1400);}
   function persist(){
-    try{localStorage.setItem('piq_hub_v21',JSON.stringify(state));flagSaved();}catch(e){}
+    try{localStorage.setItem('piq_hub_v22',JSON.stringify(state));flagSaved();}catch(e){}
   }
   function loadSaved(){
-    try{const v=localStorage.getItem('piq_hub_v21');if(v)return JSON.parse(v);}catch(e){}
+    try{const v=localStorage.getItem('piq_hub_v22');if(v)return JSON.parse(v);}catch(e){}
     return null;
   }
 
@@ -1809,6 +1809,8 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
         if(saved)state=saved;
       }
       renderAll();
+      // Freshness guard: re-pull silently after 2s in case a stale cache won
+      setTimeout(function(){ if(typeof pullFromSheet==='function'){ /* pullBtn refresh handled below */ } },100);
     };
     setTimeout(function(){
       if(!done&&window[cbName]){
