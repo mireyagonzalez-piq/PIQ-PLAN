@@ -1788,42 +1788,10 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
   // Load from the shared Sheet first so the dashboard always matches what
   // the team sees. Falls back to local edits, then to seed defaults.
   function bootFromSheet(){
-    const url=getScriptUrl();
-    if(!url){
-      // No sheet configured yet — use local or defaults
-      const saved=normalize(loadSaved());
-      if(saved)state=saved;
-      renderAll();
-      return;
-    }
-    const cbName='piq_boot_'+Date.now();
-    let done=false;
-    window[cbName]=function(res){
-      done=true; delete window[cbName];
-      const s=document.getElementById(cbName); if(s)s.remove();
-      if(res&&res.ok&&res.data){
-        state=normalize(res.data)||state; seedFailedIfEmpty();
-        persist(); // cache the shared version locally too
-      } else {
-        const saved=normalize(loadSaved());
-        if(saved)state=saved;
-      }
-      renderAll();
-      // Freshness guard: re-pull silently after 2s in case a stale cache won
-      setTimeout(function(){ if(typeof pullFromSheet==='function'){ /* pullBtn refresh handled below */ } },100);
-    };
-    setTimeout(function(){
-      if(!done&&window[cbName]){
-        delete window[cbName];
-        const saved=normalize(loadSaved());
-        if(saved)state=saved;
-        renderAll();
-      }
-    },8000);
-    const sc=document.createElement('script');
-    sc.id=cbName;
-    sc.src=url+'?callback='+cbName+'&t='+Date.now();
-    document.head.appendChild(sc);
+    // Delegate to pullFromSheet (JSONP, verified working) instead of the old
+    // boot path — the old one silently failed to update state after the
+    // Oct 9 merge, leaving browsers stuck on baked-in defaults.
+    pullFromSheet();
   }
 
   // ── REVENUE TAB ──────────────────────────────────────────────
@@ -1884,6 +1852,7 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
 
   renderAll();
   renderRevenue();
+  bootFromSheet();
 </script>
 </body>
 </html>
