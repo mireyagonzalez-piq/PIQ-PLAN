@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 1,
- "generatedAt": "2026-10-09T02:40:00Z",
+ "generatedAt": "2026-10-09T08:01:08Z",
  "scope": "all",
  "forecast": [
   {
@@ -257,7 +257,7 @@
     "Michael Anderson",
     "Wishpond team"
    ],
-   "note": "WP rows filter by source field or separate dataset \u2014 pending WP team's row list"
+   "note": "team field pending WP client list"
   }
  }
 }
