@@ -531,6 +531,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
   <nav class="tabs" id="tabs">
     <button data-tab="retention" class="active">Retention</button>
     <button data-tab="projects">Projects</button>
+    <button data-tab="revenue">Revenue</button>
   </nav>
   <div class="tools">
     <span id="savetag"></span>
@@ -604,6 +605,43 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <button class="addbtn" id="addFailed" style="margin-bottom:12px;max-width:220px">+ add failed payment</button>
       <div id="paidBreakdown"></div>
       <div id="failedTable"></div>
+    </div>
+  </section>
+
+
+  <section id="tab-revenue" hidden>
+    <div class="head">
+      <div class="eyebrow">Revenue · recovery board</div>
+      <h1>Real PIQ revenue — what to collect, cancel, and decide.</h1>
+      <p class="head-sub">Built Oct 8 night from the Stripe × FM crossref + workbook v14. Deduped against Retention (finance / failed / at-risk lists).</p>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--fire)"></i>Overdue / decision</span>
+        <span><i class="dot" style="background:var(--amber)"></i>Due Fri Oct 9</span>
+        <span><i class="dot" style="background:var(--teal)"></i>Done</span>
+      </div>
+    </div>
+
+    <div class="proj-summary" id="revKpis"></div>
+
+    <div class="card-panel" style="display:block">
+      <div class="card-panel-head"><h2 class="subsection-title">🚨 Collect / resolve now</h2></div>
+      <div id="revNowTable"></div>
+    </div>
+
+    <div class="card-panel" style="display:block">
+      <div class="card-panel-head"><h2 class="subsection-title">⚠️ 13 status conflicts — billing while not active (Pure Manufacturing included)</h2></div>
+      <div id="revConflicts"></div>
+    </div>
+
+    <div class="card-panel" style="display:block">
+      <div class="card-panel-head"><h2 class="subsection-title">📋 Workbook Stripe × AM — final v14 decisions</h2></div>
+      <div id="revWorkbook"></div>
+    </div>
+
+    <div class="card-panel" style="display:block">
+      <div class="card-panel-head"><h2 class="subsection-title">💸 Active but not paying — 45+ days (deduped vs Failed payments)</h2></div>
+      <div id="revNotPaying"></div>
+      <div class="head-sub" style="font-size:11px;margin-top:8px;padding:0 14px 12px;color:var(--faint)">Go Green, MediMind, JLH, Vend Guys live in <b>Failed payments</b> already — not repeated here. Full list of 12 is in the crossref.</div>
     </div>
   </section>
 
@@ -1736,7 +1774,7 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
     document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
-    Object.entries({retention:'tab-retention',projects:'tab-projects'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
+    Object.entries({retention:'tab-retention',projects:'tab-projects',revenue:'tab-revenue'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
     window.scrollTo({top:0});
   });
   document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='piq-hub-backup.json';a.click();URL.revokeObjectURL(a.href);});
@@ -1785,7 +1823,65 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
     sc.src=url+'?callback='+cbName+'&t='+Date.now();
     document.head.appendChild(sc);
   }
-  bootFromSheet();
+
+  // ── REVENUE TAB ──────────────────────────────────────────────
+  const REV_DATA={
+    kpis:{hard:'$2,900',mrr:'$3,172/mo',tf:'~$42K',dec:'20'},
+    now:[
+      {id:'chris',client:'Chris — nw-os',amt:'$1,400',cls:'fire',meta:'Reply owed since Sep 29 · 2nd complaint',what:'Payment dispute unanswered. Lorena + piqfinance never closed the loop.',next:'Send holding reply w/ firm date · resolve Fri Oct 9',who:'Me + finance',pill:'Overdue',pcls:'fire'},
+      {id:'pure',client:'Pure Manufacturing',amt:'$1,500',cls:'fire',meta:'Charged Sep 21 · sheet says CANCELLED',what:'TF pattern: operated cancel, Stripe kept charging. Refund dispute waiting to happen.',next:'Decide with Roberto: valid charge vs refund',who:'Roberto',pill:'Decision',pcls:'fire'},
+      {id:'vendguys',client:'Vend Guys',amt:'TBD',cls:'amber',meta:'3 invoices not authorized · Charlie decides',what:'Rob left it "up to Charlie". Charlie pays only new-customer acquisition.',next:'Follow up with Roberto Fri (reminder set)',who:'Roberto',pill:'Follow up',pcls:'amber'}
+    ],
+    conflicts:[
+      ['SMG Inventory','María'],['Adams Digital','Estefania'],['S.W. Chemilab','Tania'],['Closer Design','Tania'],
+      ['Chorus Consulting','Tania'],['Purox Klean','Tania'],['Vail Valley MEP','Eduardo'],['PharoPLAST','Estefania'],
+      ['Cybertech Space','Roberto'],['QC Doc U','Roberto'],['VorTech','Eduardo'],['Pantera Tech','María'],['Vennley R&D','María']
+    ],
+    workbook:[
+      {id:'cancels',client:'4 → cancellation',meta:'Talent Formula · Perlinger · Veritone · BioRender',amt:'—',dec:'Confirm cancels in workbook',when:'Fri Oct 9'},
+      {id:'aduvo',client:'Aduvo',meta:'stays with María',amt:'—',dec:'Confirm assignment',when:'Fri Oct 9'},
+      {id:'loose',client:'10 loose subs (tab 2)',meta:'Interstrata · Hallett · Nomic · Social-Ability · Jacob · Alva · TLN · VenueReport · Tanury · Theraivax · Lakewhillans',amt:'—',dec:'Assign to an AM or cancel each',when:'Fri Oct 9'},
+      {id:'legacy',client:'Legacy 46 subs',meta:'',amt:'$2,822/mo',dec:'Auto-pilot or mass cancel',when:'Fri Oct 9'},
+      {id:'kathleen',client:'Kathleen — 11 accounts in 90d cancellation',meta:'"Keep both" reply drafted, unsent',amt:'—',dec:'Send reply to Kathleen',when:'DUE Fri — today'},
+      {id:'kprime',client:'K(Prime)',meta:'cus_TKLUISIkn295lQ · last invoice Sep 13',amt:'$350/mo',dec:'Send cancel request to finance — reminder set',when:'Fri Oct 9'},
+      {id:'tf',client:'Talent Formula — CANCELLED ✓',meta:'Was $1,850 AUD/mo as Quantaco · 25 invoices / $46,250 AUD post-promise',amt:'DONE',dec:'Now = recovery: credit-in-lieu ~$42K. Matthew proposal this weekend → follow up Fri',when:'Done'},
+      {id:'vendguys2',client:'Vend Guys (Charlie decision)',meta:'Follow up with Roberto Fri — reminder set',amt:'TBD',dec:'Valid charge vs unauthorized',when:'Fri Oct 9'}
+    ],
+    notpaying:[
+      ['Go Green Wastewater','María','May','Erling agreed to pay 3rd month — e-transfer via Gumáez. In Failed payments too.'],
+      ['JLH Consulting','Eduardo','May','In Failed payments ($3,003).'],
+      ['Vend Guys','Roberto','Jun','In Failed payments ($2,500).'],
+      ['MediMind','Eduardo','Jun','In Failed payments ($3,750).']
+    ]
+  };
+  function renderRevenue(){
+    const k=REV_DATA.kpis;
+    document.getElementById('revKpis').innerHTML=
+      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--fire)">'+k.hard+'</div><div class="proj-stat-label">Hard cash owed</div></div>'+
+      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--amber)">'+k.mrr+'</div><div class="proj-stat-label">MRR billing wrongly</div></div>'+
+      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--violet)">'+k.tf+'</div><div class="proj-stat-label">TF recovery (credit-in-lieu)</div></div>'+
+      '<div class="proj-stat"><div class="proj-stat-num">'+k.dec+'</div><div class="proj-stat-label">Decisions needed</div></div>';
+    const pill=(t,c)=>'<span class="pill" style="background:var(--'+c+'-dim);color:var(--'+c+');font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">'+t+'</span>';
+    const row=(r,i)=>'<tr data-rev="'+r.id+'"><td style="font-size:13px"><b>'+r.client+'</b>'+(r.meta?'<div style="font-size:11px;color:var(--muted)">'+r.meta+'</div>':'')+'</td>'+
+      '<td style="font-weight:700;color:var(--'+r.cls+');white-space:nowrap">'+r.amt+'</td>'+
+      '<td style="font-size:12px;color:var(--muted)">'+r.what+'</td>'+
+      '<td style="font-size:12px">'+r.next+'</td>'+
+      '<td style="font-size:11px;color:var(--muted);white-space:nowrap">'+r.who+'</td>'+
+      '<td>'+pill(r.pill,r.pcls)+'</td>'+
+      '<td><input type="checkbox" class="revchk" data-revchk="'+r.id+'"></td></tr>';
+    document.getElementById('revNowTable').innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><th style="text-align:left;padding:6px 10px">Item</th><th>Amount</th><th style="text-align:left;padding:6px 10px">What\'s wrong</th><th style="text-align:left;padding:6px 10px">Next move</th><th>Owner</th><th>Status</th><th>Done</th></tr>'+REV_DATA.now.map(row).join('')+'</table>';
+    const conf=REV_DATA.conflicts.map(c=>'<tr><td style="font-size:13px;padding:7px 10px"><b>'+c[0]+'</b></td><td style="font-size:12px;color:var(--muted)">'+c[1]+'</td><td style="font-size:12px;color:var(--muted)">Billing while Offboarding/Paused/Retention — valid charge or TF-style defect?</td><td style="width:40px"><input type="checkbox" class="revchk" data-revchk="c-'+c[0].replace(/[^a-z]/gi,'')+'"></td></tr>').join('');
+    document.getElementById('revConflicts').innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><th style="text-align:left;padding:6px 10px">Client</th><th style="text-align:left;padding:6px 10px">Owner</th><th style="text-align:left;padding:6px 10px">Question for the AM</th><th></th></tr>'+conf+'</table>';
+    const wb=REV_DATA.workbook.map(r=>'<tr data-rev="'+r.id+'"><td style="font-size:13px"><b>'+r.client+'</b>'+(r.meta?'<div style="font-size:11px;color:var(--muted)">'+r.meta+'</div>':'')+'</td><td style="font-weight:700;white-space:nowrap;color:var(--amber)">'+r.amt+'</td><td style="font-size:12px">'+r.dec+'</td><td style="font-size:11px;color:var(--muted);white-space:nowrap">'+r.when+'</td><td style="width:40px"><input type="checkbox" class="revchk" data-revchk="'+r.id+'"></td></tr>').join('');
+    document.getElementById('revWorkbook').innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><th style="text-align:left;padding:6px 10px">Item</th><th>Amount</th><th style="text-align:left;padding:6px 10px">Decision</th><th>When</th><th>Done</th></tr>'+wb+'</table>';
+    const np=REV_DATA.notpaying.map(c=>'<tr><td style="font-size:13px;padding:7px 10px"><b>'+c[0]+'</b></td><td style="font-size:12px;color:var(--muted)">'+c[1]+'</td><td style="font-size:12px;color:var(--fire);font-weight:700">'+c[2]+'</td><td style="font-size:12px;color:var(--muted)">'+c[3]+'</td><td style="width:40px"><input type="checkbox" class="revchk" data-revchk="np-'+c[0].replace(/[^a-z]/gi,'')+'"></td></tr>').join('');
+    document.getElementById('revNotPaying').innerHTML='<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><th style="text-align:left;padding:6px 10px">Client</th><th style="text-align:left;padding:6px 10px">Owner</th><th>Since</th><th style="text-align:left;padding:6px 10px">Note</th><th></th></tr>'+np+'</table>';
+    try{const s=JSON.parse(localStorage.getItem('piq_revchk')||'{}');document.querySelectorAll('.revchk').forEach(c=>{if(s[c.dataset.revchk])c.checked=true;});}catch(e){}
+    document.querySelectorAll('.revchk').forEach(c=>c.addEventListener('change',()=>{try{const s=JSON.parse(localStorage.getItem('piq_revchk')||'{}');s[c.dataset.revchk]=c.checked;localStorage.setItem('piq_revchk',JSON.stringify(s));}catch(e){}}));
+  }
+
+  renderAll();
+  renderRevenue();
 </script>
 </body>
 </html>
