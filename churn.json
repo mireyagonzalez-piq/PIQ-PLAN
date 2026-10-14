@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 1,
- "generatedAt": "2026-10-14T08:01:00Z",
+ "generatedAt": "2026-10-14T15:51:48Z",
  "scope": "all",
  "forecast": [
   {
@@ -267,13 +267,46 @@
    "risk": "high",
    "source": "Will churn",
    "note": "we need to cancel before oct 30"
+  },
+  {
+   "client": "MnM Labs",
+   "am": "Eduardo",
+   "changeType": "cancellation",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "",
+   "risk": "high",
+   "source": "Will churn",
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
+  },
+  {
+   "client": "RAS AP Consulting",
+   "am": "Eduardo",
+   "changeType": "cancellation",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "",
+   "risk": "high",
+   "source": "Will churn",
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
+  },
+  {
+   "client": "SIBS Consulting",
+   "am": "Eduardo",
+   "changeType": "cancellation",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "",
+   "risk": "high",
+   "source": "Will churn",
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
   }
  ],
  "summary": {
-  "atRiskClients": 24,
-  "mrrAtRisk": 26900.0,
+  "atRiskClients": 27,
+  "mrrAtRisk": 29900.0,
   "byMonth": {
-   "unknown": 11300.0,
+   "unknown": 14300.0,
    "2026-11": 2500.0,
    "2026-10": 13100.0
   }
