@@ -653,7 +653,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
       <p class="head-sub">Verified against Chatwoot, Gmail, calendars, Google Tasks, Slack, Fireflies and Granola — 4:50 PM UTC, re-swept 8:15 PM UTC after Mireya\u2019s meetings. Mark things off as you handle them — checkboxes remember. 🔴 = you decide (Luma preps everything), 🟢 = Luma does on "go", ⚪ = quick items.</p>
       <div class="legend">
         <span><i class="dot" style="background:var(--fire)"></i>Decision — you</span>
-        <span><i class="dot" style="background:var(--teal)"></i>Luma does on "go"</span>
+        <span><i class="dot" style="background:var(--teal)"></i>Say "go" in chat → Luma does exactly what the row says</span>
         <span><i class="dot" style="background:var(--slate)"></i>Quick / FYI</span>
       </div>
     </div>
@@ -1914,29 +1914,28 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
       {id:'w3',t:'Baumier non-renewal — NEW client, $1,575 CAD/mo',meta:'Ben Grenon\u2019s notice Oct 16 → still UNREAD in your Gmail (Chowdhury fwd) · Wishpond-side (Alex Baranovsky sold it) · client wants receipt acknowledgment',who:'you',next:['Retention play + which AM owns it','Luma: AM-of-record lookup + acknowledgment draft']}
     ],
     luma:[
-      {id:'l1',t:'Oct 13 task backlog — overdue, untouched while you were out',meta:'VendGuys data package · Chris nw-os $1,400 holding line (after piqfinance confirms) · Adrian DPA nudge · Kathleen AR sheet comments (due Oct 9!) · FICA deck to Mike',who:'luma'},
-      {id:'l2',t:'Bravo Building — Power Hour proposal',meta:'Must land before their Oct 27 cancel (payment Oct 29) · cancel call Oct 27, 9 AM PT',who:'luma'},
-      {id:'l3',t:'Retention deck v6 — done, needs the last 3 pieces',meta:'Sep-close refresh · confirm ≤14% target with Mike · per-seat LinkedIn cost (Rory) · save-play owners per AM',who:'luma'},
-      {id:'l4',t:'Dexstand kickoff — Wed Oct 21, 3 PM PT, on your calendar',meta:'AM assignment still pending — Luma recommends + builds the prep page',who:'luma'},
-      {id:'l5',t:'Roberto pings — Craig Jones (LinkedIn proposal sent?) + Mindy (contact info for pause)',meta:'Scheduled Tue AM',who:'luma'},
-      {id:'l6',t:'Lisa Adams mailbox 3535 reconnect',meta:'One Reconnect click in Chatwoot settings (PR #64 allows non-admins)',who:'luma'}
+      {id:'l1',t:'Oct 13 task backlog — go ships all 5 drafts',meta:'ON GO → (1) VendGuys data-package email to Charlie from Roberto\u2019s numbers, (2) Chris nw-os $1,400 holding line — only after I verify with piqfinance nothing is queued to charge, (3) Adrian DPA nudge on the v2 redlines, (4) Kathleen\u2019s AR sheet row comments pasted in, (5) FICA deck handoff note to Mike. All drafts, your one-click send.',who:'luma'},
+      {id:'l2',t:'Bravo Building — go → full Power Hour proposal draft',meta:'Client-ready, landed with buffer before the Oct 27 cancel call (9 AM PT) · you approve; it never sends without you.',who:'luma'},
+      {id:'l3',t:'Retention deck — go → v7 refresh + missing numbers',meta:'I rebuild the Sep-close slide from the live sheet, chase Rory for the per-seat LinkedIn cost, draft the save-play-owner table per AM, hand you a one-line ask for Mike\u2019s ≤14% confirmation.',who:'luma'},
+      {id:'l4',t:'Dexstand kickoff — go → AM recommendation + prep page',meta:'Before Wed 3 PM PT: best-fit AM named with reasoning, one-page client prep (who they are, what was sold, first-30-days plan) dropped on the deal.',who:'luma'},
+      {id:'l5',t:'Roberto pings — go → two Slack DMs sent as you',meta:'One-liners in your voice (Spanish, per your rules): Craig Jones — LinkedIn proposal sent post-meeting? Mindy — need contact info for her pause confirmation. Wording to you first, then I send.',who:'luma'},
+      {id:'l6',t:'Lisa Adams mailbox 3535 — go → I just fix it',meta:'30-second Reconnect in Chatwoot settings, verified working after. No approval needed beyond your go.',who:'luma'}
     ],
     quick:[
       {id:'q0',t:'Charles / MainWall — $1,500 September credit demand',meta:'FROM TODAY\u2019S STRATEGY MEETING · check the Fireflies recording of the Sept call for exact wording BEFORE replying · then credit + Cyberpond/LinkedIn pitch',who:'you'},
       {id:'q0b',t:'Mark\u2019s call — Wed 10:30/11 AM PST + LinkedIn pricing to Mike + PDF to Mark',meta:'FROM TODAY\u2019S STRATEGY MEETING · Mireya sends invite + confirms 11 AM',who:'you'},
       {id:'q0c',t:'Pause-don\u2019t-cancel the remaining October at-risk accounts',meta:'DECIDED TODAY (Ops Strategy) · 1-month no-payment pause still counts as MRR in ChartMogul · applies to the 4 accounts still on churn forecast',who:'you'},
       {id:'q0d',t:'TLP plan MRR refund with Matthew — still open',meta:'FROM OPS STRATEGY',who:'you'},
-      {id:'q0e',t:'This week: Upwork interviews (SDR replacement) · Maisie Reed pilot launches Tue · Raja mailbox health audit · Andres needs active-client list + Chatwoot tools · Cyberpond demo invite from Michael',meta:'FROM OPS STRATEGY + STRATEGY WEEKLY',who:'luma'},
-      {id:'q1',t:'ExportApollo lists ×4 — parked by design',meta:'SRED 2,600 · Zimmz 1,500 · Seidon 3,307 · Highstreet 6,000 — verified in your Gmail. Provenance = you. Keep the SRED one away from Tim.',who:'you'},
+      {id:'q0e',t:'Ops week: interviews + Maisie pilot + Raja audit are yours; two pieces are mine on go',meta:'go → (1) active-client list for Andres\u2019 Panda Planner, pulled and filtered, (2) Chatwoot tools/instances for Andres\u2019 Intercom replacement. Upwork interviews, Maisie launch, Raja meeting are yours — briefs on request.',who:'luma'},
       {id:'q2',t:'SagoviaQ / Asif — runs to Nov 3, receipt answered',meta:'Your only open piece: Nov 1 invoice decision. Note: our receipt message promises sends through Nov 3 vs his cancellation demand — Luma flagged the contradiction for you.',who:'you'},
-      {id:'q3',t:'Planhat OS access opens Oct 22 · CTL Graphics rescheduling (Tania has it)',meta:'FYI, no action',who:'fyi'}
+      {id:'q3',t:'CTL Graphics rescheduling (Tania has it)',meta:'FYI, no action',who:'fyi'}
     ],
     fires:[
-      {id:'f1',t:'Steve Sacks / Satpac — #6458',meta:'Oct 17: "We have a problem…" — agreement dispute + cancellation warning',who:'luma'},
+      {id:'f1',t:'Steve Sacks / Satpac — go → reply draft in #6458',meta:'Oct 17: "We have a problem…" — agreement dispute + cancellation warning. I read the full thread and draft the reply; it waits in Chatwoot for your click.',who:'luma'},
       {id:'f2',t:'Chris Sewell / QSI — #4175',meta:'Oct 16: cancelling effective immediately, expects September refunded — refund = you/Mike, acknowledgment = Luma',who:'you'},
       {id:'f3',t:'Jeff Edwards / ECS Intl — #7306',meta:'"I canceled it last month when I got a charge" — Tania\u2019s thread',who:'fyi'},
       {id:'f4',t:'Raphael Sadiwa — #7145',meta:'$800 charge dispute after cancelling — same class as above',who:'fyi'},
-      {id:'f5',t:'Also open: Crescent #7285 · MnM Labs #6958 · SIBS #6842 · Chris Doubleday #1000 (since Oct 1) · Titan/Raman #6764 (easy: how to see replies) · Isaak Lerner #6783 · James Dickinson #5305 · Chandler Ebeling #3697 (marketing pitch)',meta:'PATTERN FLAG: 4+ of these are "charged after cancelling" — same root cause as MainWall\u2019s lost March cancellation. One process fix beats four apologies — Luma can spec it.',who:'luma'}
+      {id:'f5',t:'Also open: Crescent #7285 · MnM #6958 · SIBS #6842 · Doubleday #1000 · Titan/Raman #6764 · Lerner #6783 · Dickinson #5305 · Ebeling #3697',meta:'go → holding replies drafted in every thread (Raman needs only the how-to-see-replies answer; Ebeling looks like a close/spam call for you). Bonus go: I spec the charge-after-cancellation process fix — one fix instead of four apologies.',who:'luma'}
     ],
     done:['Erling $1,450 paid','Rivalmind cancelled before Oct 15 charge','LEBDR cancelled (Eduardo)','Chemilab proposal sent — Tania reviewing','Sales Closer lead list delivered Sat','Mark Sblendorio mtg confirmed w/ Tania (Tue 1 PM)','Wanis/DNE with Estefanía','SDR sweep — 9 drafts answered','OOO governance 4/4 GO ratified','SagoviaQ receipt answered (Eduardo)','Cassandra $600 refund declined — FYI only','Retention deck v6 built (20 slides)']
   };
