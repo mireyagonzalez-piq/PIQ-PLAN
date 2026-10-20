@@ -1905,30 +1905,31 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
   // ── BACK TO OFFICE TAB (Oct 19 post-OOO catch-up) ───────────
   const B2O={
     decide:[
-      {id:'d1',t:'DFS / Shafer — meeting TODAY 12:30 CT (Tania pinged last night)',meta:'Zero clients since Aug 24 · card blocked · $1,250/mo. Refund position still yours (Mike, no ping sent). go → meeting brief for you + Tania.',who:'you'},
-      {id:'d2',t:'Chris Doubleday / nw-os — #1000 STILL OPEN (only fire nobody closed)',meta:'Oct 1: "you do not have permission to charge any payment method" · open 19 days · the $1,400 holding line was approved Oct 9, send-state unverified. go → verify + resolve or ping whoever owns it.',who:'you'},
-      {id:'d3',t:'Baumier non-renewal — still UNREAD, $1,575 CAD/mo',meta:'Ben Grenon\u2019s notice Oct 16 (Chowdhury fwd) · client wants receipt acknowledgment · AM of record unconfirmed. go → acknowledgment draft + retention angle; tell me the AM and I route the ping.',who:'you'}
+      {id:'d1',t:'DFS / Shafer — with Tania (meeting today 12:30 CT) ✓ waiting on her',meta:'Ping sent, meeting on her calendar, refund position routes through her plan. Greg\u2019s 2-business-day ack is the only loose thread — Greg asked Mireya to confirm receipt; ack draft ready on go.',who:'wait'},
+      {id:'d2',t:'Chris Doubleday / nw-os — #1000 open 19 days',meta:'The $1,400 holding line was approved Oct 9, send-state unverified. go → verify + resolve or escalate.',who:'you'},
+      {id:'d3',t:'Baumier non-renewal — UNREAD, $1,575 CAD/mo',meta:'Receipt acknowledgment needed + AM name from Mireya. go → ack draft + ping once she names the AM.',who:'you'}
     ],
     week:[
-      {id:'w1',t:'Waiting on AM replies from last night\u2019s pings (13 clients, 5 DMs)',meta:'Sent ~6 PM PT Oct 19 as Mireya. Tania ×4 · Eduardo ×2 · Maria ×4 · Roberto ×2 · Estefanía ×1. No replies yet as of this rebuild.',who:'fyi'},
-      {id:'w2',t:'MainWall / Charles — waiting on Estefanía\u2019s read',meta:'Ping sent with findings (2 free months never applied) + Cyberpond-pivot-instead-of-refund idea. Her view = next move.',who:'fyi'},
-      {id:'w3',t:'Oct 13 backlog — Adrian DPA nudge (pending)',meta:'go → draft the nudge on Paulo\u2019s Oct 6 v2 redlines (does v2 clear the commitments concern + signing order).',who:'luma'},
-      {id:'w4',t:'Oct 13 backlog — Chris nw-os $1,400 holding line',meta:'Approved Oct 9, committed to send Oct 14, send-state UNVERIFIED, thread #1000 still open. go → verify first, redraft only if it never went.',who:'luma'},
-      {id:'w5',t:'Oct 13 backlog — VendGuys package + Kathleen sheet',meta:'VendGuys: gated on the conversion-review outcome (invoices NOT authorized). Kathleen: row comments ready, verify-then-paste. go → both.',who:'luma'},
-      {id:'w6',t:'FICA deck — built, needs your one-tap: meeting Oct 9 or 16?',meta:'Your calendar says Oct 16, your note says Oct 9. Pick the date and the deck goes to Mike.',who:'you'},
-      {id:'w7',t:'Retention deck v7 + Cyberpond slide',meta:'LinkedIn cost resolved ($50/account/mo team rate). go → rebuild Sep-close slide, save-play-owner table, ≤14% one-liner for Mike, Cyberpond slide (needs Michael\u2019s demo invite first).',who:'luma'},
-      {id:'w8',t:'Bravo Building — Power Hour proposal draft (cancel Oct 27)',meta:'Maria pinged. go → client-ready proposal draft for your review.',who:'luma'},
-      {id:'w9',t:'Dexstand kickoff — Wed Oct 21, 3 PM PT, AM unassigned',meta:'go → AM recommendation + one-page prep (who they are, what was sold, first 30 days).',who:'luma'},
-      {id:'w10',t:'TLP plan MRR refund (Matthew) + pause-don\u2019t-cancel execution',meta:'Both decided in yesterday\u2019s ops meeting, neither executed. go → TLP status note + the pause list for the remaining Oct at-risk accounts.',who:'luma'},
-      {id:'w11',t:'Andres: active-client list + Chatwoot tools (his lane, your go)',meta:'go → pull and filter the list for Panda Planner; set up the Chatwoot instances for his Intercom replacement.',who:'luma'}
+      {id:'w1',t:'Waiting on AM replies (pings sent Oct 19 ~6 PM PT)',meta:'Tania ×4 · Eduardo ×2 · Maria ×4 · Roberto ×2 · Estefanía ×1 (Charles). No replies yet.',who:'wait'},
+      {id:'w2',t:'VorTech / Tim Faris — #8026 self-assigned by Mireya',meta:'"Stop charging me, send proof of cancellation, refund my money." go → draft the reply for her review.',who:'luma'},
+      {id:'w3',t:'Adrian DPA nudge — pending',meta:'go → draft on Paulo\u2019s Oct 6 v2 redlines (does v2 clear the commitments concern + signing order).',who:'luma'},
+      {id:'w4',t:'Chris nw-os $1,400 holding line — send-state unverified',meta:'go → verify, redraft only if it never went.',who:'luma'},
+      {id:'w5',t:'VendGuys package + Kathleen AR sheet',meta:'VendGuys gated on conversion review (invoices NOT authorized). Kathleen: comments ready, verify-then-paste. go → both.',who:'luma'},
+      {id:'w6',t:'FICA deck — pick the date (Oct 9 or 16)',meta:'One tap from Mireya and the deck goes to Mike.',who:'you'},
+      {id:'w7',t:'Retention deck v7 + Cyberpond slide',meta:'go → Sep-close rebuild, save-play owners, ≤14% line for Mike, Cyberpond slide (needs Michael\u2019s demo invite).',who:'luma'},
+      {id:'w8',t:'Bravo Building — Power Hour proposal draft',meta:'Maria pinged; cancel call Oct 27. go → client-ready draft.',who:'luma'},
+      {id:'w9',t:'Dexstand kickoff — TODAY 3 PM PT, AM unassigned',meta:'go → AM recommendation + one-page prep.',who:'luma'},
+      {id:'w10',t:'TLP / Talent Formula — status note to Mireya tomorrow',meta:'Verified: Stripe sub cancelled (Oct 26 renewal dead), Matthew\u2019s $3.5K/mo TF+Sales Crusader proposal delivered Oct 11 and still with Mireya for review, evidence annex unrouted. go → full status brief + what Matthew needs from her.',who:'luma'},
+      {id:'w11',t:'Pause-don\u2019t-cancel — build the Oct at-risk list',meta:'Decided in ops meeting (pause still counts as MRR in ChartMogul). go → the concrete account list with pause terms per account.',who:'luma'},
+      {id:'w12',t:'Andres: active-client list + Chatwoot tools',meta:'go → filtered list for Panda Planner + Chatwoot instances for his Intercom replacement.',who:'luma'}
     ],
     luma:[],
     quick:[
-      {id:'q1',t:'Open Chatwoot threads on your queue (pinged, waiting on AMs)',meta:'Satpac #6458 · QSI #4175 · Crescent #7285 — all client-last, all pinged last night. Plus #1000 Doubleday (decide row).',who:'fyi'},
+      {id:'q1',t:'Open on queue (pinged, with AMs)',meta:'Satpac #6458 · QSI #4175 · Crescent #7285 — client-last, waiting on AM replies.',who:'wait'},
       {id:'q2',t:'CTL Graphics rescheduling (Tania has it)',meta:'FYI, no action',who:'fyi'}
     ],
     fires:[],
-    done:['Richardson — replied Oct 19 4:40 PM PT (Roberto cc\u2019d)','R.J. Cui — replied + Eduardo cc\u2019d','SRED/Aman — counter-offer sent (Options 1/2, awaiting his pick)','Apollo security — closed per you','8 threads resolved by you in Chatwoot (Sadiwa, Ebeling, Raman, Lerner, Dickinson, SIBS, MnM, ESC)','5 AM pings sent (13 clients) as you','Mindy pause confirmation — sent Oct 6','Rory per-seat LinkedIn cost — $50/account/mo (resolved)','Retention deck v6 — built','FICA deck — built (date pending)','Erling $1,450 paid · Rivalmind cancelled · LEBDR cancelled','Chemilab proposal sent · Sales Closer list delivered · OOO governance 4/4 GO']
+    done:['Richardson — replied Oct 19 4:40 PM PT (Roberto cc\u2019d)','R.J. Cui — replied + Eduardo cc\u2019d','SRED/Aman — counter-offer sent (awaiting his pick)','Apollo security — closed','DFS — handed to Tania (ping + 12:30 meeting today)','8 threads resolved by Mireya (Sadiwa, Ebeling, Raman, Lerner, Dickinson, SIBS, MnM, ESC)','5 AM pings sent (13 clients)','Mindy pause confirmation — sent Oct 6','Rory LinkedIn cost — $50/account/mo (resolved)','Retention deck v6 + FICA deck — built','Erling paid · Rivalmind cancelled · LEBDR cancelled','Chemilab proposal sent · Sales Closer list delivered · OOO governance 4/4 GO']
   };
   function renderBackToOffice(){
     const k=document.getElementById('b2oKpis');if(!k)return;
@@ -1938,7 +1939,7 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
       '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--teal)">'+B2O.week.filter(w=>w.who==='luma').length+'</div><div class="proj-stat-label">Luma does on "go"</div></div>'+
       '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--amber)">'+B2O.week.length+'</div><div class="proj-stat-label">This week</div></div>'+
       '<div class="proj-stat"><div class="proj-stat-num">'+B2O.done.length+'</div><div class="proj-stat-label">Already done ✓</div></div>';
-    const pill=(w)=>w==='you'?'<span class="pill" style="background:var(--fire-dim);color:var(--fire);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">YOU DECIDE</span>'
+    const pill=(w)=>w==='wait'?'<span class="pill" style="background:var(--panel-3);color:var(--slate);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">WAITING ON THEM</span>':w==='you'?'<span class="pill" style="background:var(--fire-dim);color:var(--fire);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">YOU DECIDE</span>'
       :w==='luma'?'<span class="pill" style="background:var(--teal-dim);color:var(--teal);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">LUMA ON "GO"</span>'
       :'<span class="pill" style="background:var(--violet-dim);color:var(--violet);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">FYI</span>';
     const row=(r)=>'<tr data-b2o="'+r.id+'"><td style="font-size:13px"><b>'+r.t+'</b>'+(r.meta?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+r.meta+'</div>':'')+
