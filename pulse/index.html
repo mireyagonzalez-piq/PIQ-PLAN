@@ -80,6 +80,7 @@ const SESSION_TTL = 10080 * 60 * 1000;      // 7 days
 const REFRESH_COOLDOWN_MS = 600 * 1000;     // 10 min between manual refreshes
 const LAST_REFRESH_KEY = 'piq_last_refresh';
 const AI_KEY_STORAGE = 'piq_openai_key';
+const CAMPAIGNS_JSON_URL = 'https://mireyagonzalez-piq.github.io/PIQ-PLAN/pulse/campaigns.json';
 
 /* ─── Domain maps (recovered verbatim) ─────────────────────── */
 const AM_COLORS = { Maria:'#7F77DD', Eduardo:'#2D9E2D', Estefania:'#E8621A', Roberto:'#378ADD', Tania:'#D4A017' };
@@ -2358,6 +2359,98 @@ function MonthlyRollup({filteredFacts}){
   );
 }
 
+
+/* ─── Campaign Diagnostics (manager) ───────────────────────── */
+async function fetchCampaignDiagnostics(){
+  const res = await fetch(CAMPAIGNS_JSON_URL, {cache:'no-store'});
+  if(!res.ok) throw new Error(`Could not load campaign diagnostics (HTTP ${res.status})`);
+  return await res.json();
+}
+function rrPct(n){ return `${(n||0).toFixed(2)}%`; }
+function SectionTable({title, hint, rows, columns, empty}){
+  if(!rows || !rows.length) return null;
+  return (
+    <div className="border border-border rounded-xl overflow-hidden">
+      <div className="px-4 py-3 border-b border-border bg-secondary/20 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-foreground">{title} <span className="text-[10px] font-normal text-muted-foreground">({rows.length})</span></p>
+        {hint && <p className="text-[10px] text-muted-foreground">{hint}</p>}
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[11px]">
+          <thead><tr className="text-muted-foreground border-b border-border">
+            {columns.map(c=><th key={c.k} className={`py-1.5 px-3 font-medium ${c.right?'text-right':'text-left'}`}>{c.label}</th>)}
+          </tr></thead>
+          <tbody>
+            {rows.map((x,i)=>(
+              <tr key={i} className="border-b border-border/40 last:border-0 hover:bg-secondary/30">
+                {columns.map(c=>(
+                  <td key={c.k} className={`py-1.5 px-3 ${c.right?'text-right':'text-left'} ${c.cls||''}`}>
+                    {c.render ? c.render(x) : (x[c.k] ?? '—')}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+function CampaignDiagnostics(){
+  const {data, isLoading, error, refetch, isRefetching} = useFetch('campaign-diag', fetchCampaignDiagnostics, 0);
+  const [open, setOpen] = useState(true);
+  const colsShared = [
+    {k:'client', label:'Client', render:x=><span className="font-medium text-foreground">{x.client}</span>},
+    {k:'am', label:'AM', cls:'text-muted-foreground'},
+    {k:'name', label:'Campaign', cls:'max-w-[260px] truncate', render:x=><span title={x.name}>{x.name}</span>},
+    {k:'total', label:'Sends', right:true, render:x=>x.total.toLocaleString()},
+    {k:'replyRate', label:'Reply %', right:true, cls:'font-semibold', render:x=>rrPct(x.replyRate)},
+  ];
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5 space-y-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Icon name="AlertTriangle" className="w-4 h-4 text-amber-600"/>
+          <h3 className="text-sm font-semibold text-foreground">Campaign Diagnostics</h3>
+          {data && <span className="text-[10px] text-muted-foreground font-medium bg-secondary px-2 py-0.5 rounded-md">{data.clientsCovered} clients · {data.campaignsAnalyzed} campaigns · pulled {data.generatedAt?data.generatedAt.slice(0,10):''}</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={()=>refetch()} disabled={isRefetching}>{isRefetching? <Icon name="Loader" className="w-3.5 h-3.5 animate-spin"/>:'Refresh'}</Button>
+          <button onClick={()=>setOpen(o=>!o)} className="text-muted-foreground hover:text-foreground">
+            {open? <Icon name="ChevronUp" className="w-4 h-4"/> : <Icon name="ChevronDown" className="w-4 h-4"/>}
+          </button>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground -mt-2">Live PIQ campaign audit across active clients: suspect lead lanes, dead new campaigns, paused star campaigns worth reviving, and stalled sends. Refresh pulls the latest Zeus scan.</p>
+      {isLoading && <div className="flex items-center justify-center py-8 gap-2 text-sm text-muted-foreground"><Icon name="Loader" className="w-4 h-4 animate-spin"/>Loading campaign diagnostics…</div>}
+      {error && <div className="flex items-start gap-2 bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-sm text-destructive"><Icon name="AlertTriangle" className="w-4 h-4 mt-0.5 shrink-0"/><span>{error.message}</span></div>}
+      {data && open && (
+        <div className="space-y-4">
+          <SectionTable title="🔴 Suspect lead lane (ZoomInfo-style, <0.3% replies)" hint="Same-pattern cold pools that replaced exhausted lists"
+            rows={data.suspectZoomInfo}
+            columns={[...colsShared,
+              {k:'createdAt', label:'Created', right:true, render:x=>x.createdDaysAgo!=null?`${Math.round(x.createdDaysAgo)}d ago`:'—'}]}/>
+          <SectionTable title="⚫ Dead new campaigns (launched ≤70 days, ≥1,000 sends, <0.1% replies)" hint="These need a list/copy intervention, not more volume"
+            rows={data.deadNewCampaigns}
+            columns={[...colsShared,
+              {k:'createdAt', label:'Created', right:true, render:x=>x.createdDaysAgo!=null?`${Math.round(x.createdDaysAgo)}d ago`:'—'}]}/>
+          <SectionTable title="⭐ Paused star campaigns (≥1% reply, ≥1,000 sends)" hint="Proven audiences sitting idle — candidates to revive or clone the targeting"
+            rows={data.pausedStars}
+            columns={[...colsShared,
+              {k:'lastSentAt', label:'Last sent', right:true, render:x=>x.lastSentDaysAgo!=null?`${Math.round(x.lastSentDaysAgo)}d ago`:'—'}]}/>
+          <SectionTable title="💤 Alive star campaigns (≥1% reply, still sending)" hint="What's working right now — the templates to copy"
+            rows={data.starCampaignsAlive}
+            columns={[...colsShared]}/>
+          <SectionTable title="🔶 Stalled active campaigns (no sends in 14+ days)" hint="Active but not sending — check schedule, mailbox, or lead supply"
+            rows={(data.stalledCampaigns||[]).filter(x=>x.lastSentDaysAgo!=null && x.lastSentDaysAgo<400)}
+            columns={[...colsShared,
+              {k:'lastSentDaysAgo', label:'Last sent', right:true, render:x=>`${Math.round(x.lastSentDaysAgo)}d ago`}]}/>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Manager gate & app shell (recovered) ─────────────────── */
 const ROLE_TEAM = 'team';
 const ROLE_MANAGER = 'manager';
@@ -2519,6 +2612,7 @@ function Dashboard(){
           <div className="space-y-4">
             <ManagerBanner/>
             <GlockAppsDeliverability/>
+            <CampaignDiagnostics/>
             <AskDashboard filteredFacts={filtered}/>
             <AMPerformance filteredFacts={filtered} allFacts={pool}/>
             <ClientRiskAlerts filteredFacts={filtered} allFacts={pool}/>
