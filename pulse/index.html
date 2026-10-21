@@ -2421,14 +2421,16 @@ function CampaignDiagnostics(){
           </button>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground -mt-2">Live PIQ campaign audit across active clients: suspect lead lanes, dead new campaigns, paused star campaigns worth reviving, and stalled sends. Refresh pulls the latest Zeus scan.</p>
+      <p className="text-xs text-muted-foreground -mt-2">Live PIQ campaign audit across active clients: underperforming campaigns judged against each client's own baseline, dead new campaigns, paused star campaigns worth reviving, and stalled sends. Refresh pulls the latest Zeus scan.</p>
       {isLoading && <div className="flex items-center justify-center py-8 gap-2 text-sm text-muted-foreground"><Icon name="Loader" className="w-4 h-4 animate-spin"/>Loading campaign diagnostics…</div>}
       {error && <div className="flex items-start gap-2 bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-sm text-destructive"><Icon name="AlertTriangle" className="w-4 h-4 mt-0.5 shrink-0"/><span>{error.message}</span></div>}
       {data && open && (
         <div className="space-y-4">
-          <SectionTable title="🔴 Suspect lead lane (ZoomInfo-style, <0.3% replies)" hint="Same-pattern cold pools that replaced exhausted lists"
-            rows={data.suspectZoomInfo}
+          <SectionTable title="🔴 Suspect campaigns — low replies vs their own client baseline" hint="Active, ≥1,000 sends, and either <0.3% replies or under 35% of what this same client's other campaigns get. Source-agnostic — judged against the client's own baseline, not a global label."
+            rows={data.suspectLowReply}
             columns={[...colsShared,
+              {k:'clientBaseline', label:'Client base %', right:true, render:x=>x.clientBaseline!=null?`${x.clientBaseline.toFixed(2)}%`:'—'},
+              {k:'vsBaseline', label:'vs base', right:true, cls:'font-semibold', render:x=>x.vsBaseline!=null?`${x.vsBaseline.toFixed(2)}x`:'—'},
               {k:'createdAt', label:'Created', right:true, render:x=>x.createdDaysAgo!=null?`${Math.round(x.createdDaysAgo)}d ago`:'—'}]}/>
           <SectionTable title="⚫ Dead new campaigns (launched ≤70 days, ≥1,000 sends, <0.1% replies)" hint="These need a list/copy intervention, not more volume"
             rows={data.deadNewCampaigns}
