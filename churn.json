@@ -1,43 +1,40 @@
 {
  "ok": true,
- "version": "2026-11-02-stripe-cleanup",
- "generatedAt": "2026-11-02T21:56:14Z",
+ "version": 3,
+ "generatedAt": "2026-11-03T08:01:24Z",
  "forecast": [
   {
    "client": "Clear Plan",
-   "am": "María",
+   "am": "Mar\u00eda",
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "2026-11",
+   "effectiveMonth": "next payment Nov 19",
    "risk": "Medium",
    "source": "hub retention",
-   "note": "Cancel before Nov — last-chance LinkedIn pivot attempt (already cancelled in Stripe since Sep, trying to save it).",
-   "team": "persistiq"
+   "note": "Cancel before Nov \u2014 last-chance LinkedIn pivot attempt (already cancelled in Stripe since Sep, trying to save it)."
   },
   {
    "client": "Web Rowdy",
-   "am": "María",
+   "am": "Mar\u00eda",
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "2026-10",
+   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 16)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Billing moved Sep 3 -> Sep 16; October payment due upon results",
-   "team": "persistiq"
+   "note": "Billing moved Sep 3 -> Sep 16; October payment due upon results"
   },
   {
    "client": "Bravo Building",
-   "am": "María",
+   "am": "Mar\u00eda",
    "changeType": "cancel",
    "amountMonthly": 800.0,
    "currency": "USD",
-   "effectiveMonth": "2026-10",
-   "risk": "Medium",
+   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 29)",
+   "risk": "High",
    "source": "hub retention",
-   "note": "Next payment Sep 29; forecasting he will request cancellation",
-   "team": "persistiq"
+   "note": "Next payment Sep 29; forecasting he will request cancellation"
   },
   {
    "client": "Mainwall",
@@ -45,11 +42,10 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "2026-10",
+   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 15)",
    "risk": "Medium",
    "source": "hub retention",
-   "note": "move payment from oct 15 to oct 30",
-   "team": "persistiq"
+   "note": "move payment from oct 15 to oct 30"
   },
   {
    "client": "Adams Digital",
@@ -57,11 +53,10 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 14)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Payment moves to mid-October, then cancel before Oct 12",
-   "team": "persistiq"
+   "note": "Payment moves to mid-October, then cancel before Oct 12"
   },
   {
    "client": "Vail valley",
@@ -69,23 +64,21 @@
    "changeType": "cancel",
    "amountMonthly": 1450.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 30)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Cancel before Oct 30 (12-month contract completed)",
-   "team": "persistiq"
+   "note": "Cancel before Oct 30 (12-month contract completed)"
   },
   {
    "client": "Share snaxs",
    "am": "Eduardo",
-   "changeType": "payment delay",
+   "changeType": "cancel",
    "amountMonthly": 800.0,
    "currency": "USD",
-   "effectiveMonth": "",
-   "risk": "High",
+   "effectiveMonth": "Cancel before Nov 19 (next bill Nov 21)",
+   "risk": "Medium",
    "source": "hub retention",
-   "note": "Payment delayed to Nov 9 for a negotiation window; new retailer messaging getting good replies",
-   "team": "persistiq"
+   "note": "Payment delayed to Nov 9 for a negotiation window; new retailer messaging getting good replies"
   },
   {
    "client": "Tomoe",
@@ -93,11 +86,10 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 24 (next bill Nov 26)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Contact relocated to Japan; new division chief not continuing the US campaign; cancel before Oct 26",
-   "team": "persistiq"
+   "note": "Contact relocated to Japan; new division chief not continuing the US campaign; cancel before Oct 26"
   },
   {
    "client": "Data Direct",
@@ -105,11 +97,10 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "2026-10",
+   "effectiveMonth": "Cancel before Nov 24 (next bill Nov 26)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Gave notice Sep 15; 0 booked meetings (performance, Adam Ferris); ends Oct 26",
-   "team": "persistiq"
+   "note": "Gave notice Sep 15; 0 booked meetings (performance, Adam Ferris); ends Oct 26"
   },
   {
    "client": "High Volume Oxigen",
@@ -117,11 +108,10 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "2026-11",
+   "effectiveMonth": "Cancel before Nov 18 (next bill Nov 20)",
    "risk": "Medium",
    "source": "hub retention",
-   "note": "he already gave non renewal, we are offering Linkedin to make him stay.",
-   "team": "persistiq"
+   "note": "he already gave non renewal, we are offering Linkedin to make him stay."
   },
   {
    "client": "Close Design",
@@ -129,11 +119,10 @@
    "changeType": "cancel",
    "amountMonthly": 1200.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 29)",
    "risk": "High",
    "source": "hub retention",
-   "note": "gave non renwal - he had a 1 M agreement - cancel before oct 29",
-   "team": "persistiq"
+   "note": "gave non renwal - he had a 1 M agreement - cancel before oct 29"
   },
   {
    "client": "Chorus Consulting",
@@ -141,11 +130,10 @@
    "changeType": "cancel",
    "amountMonthly": 800.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 5 (next bill Nov 9)",
    "risk": "High",
    "source": "hub retention",
-   "note": "we need to cancel before oct 30",
-   "team": "persistiq"
+   "note": "we need to cancel before oct 30"
   },
   {
    "client": "MnM Labs",
@@ -153,11 +141,10 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 30)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Requested cancellation — retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)",
-   "team": "persistiq"
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
   },
   {
    "client": "RAS AP Consulting",
@@ -165,11 +152,10 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 5 (next bill Nov 9)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Requested cancellation — retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)",
-   "team": "persistiq"
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
   },
   {
    "client": "SIBS Consulting",
@@ -177,23 +163,18 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "",
+   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 15)",
    "risk": "High",
    "source": "hub retention",
-   "note": "Requested cancellation — retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)",
-   "team": "persistiq"
+   "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
   }
  ],
  "summary": {
   "atRiskClients": 15,
-  "mrrAtRisk": 16550.0,
-  "byMonth": {
-   "2026-11": 2500.0,
-   "2026-10": 4300.0
-  }
+  "mrrAtRisk": 16550.0
  },
  "scopes": {
-  "persistiq": true,
-  "wishpond": true
+  "persistiq": "all rows",
+  "wishpond": "team field pending"
  }
 }
