@@ -117,7 +117,7 @@
   .subadd{background:none;border:none;color:var(--faint);font-size:11px;cursor:pointer;text-align:left;padding:3px 0 0 9px;font-family:inherit}
   .subadd:hover{color:var(--text)}
   /* retention */
-  .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  .tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden;overflow-x:auto}
   .tbl{width:100%;border-collapse:collapse;font-size:13px}
   .tbl th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line)}
   .tbl th.drag-th{width:20px;padding:10px 6px 10px 14px}
@@ -523,6 +523,9 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
 .ic-gold{color:#B8860B;background:rgba(255,193,7,.16)}
 .ic-slate{color:var(--slate);background:rgba(107,118,146,.13)} .ic-violet{color:var(--violet);background:var(--violet-dim)}
 .c-fire{color:var(--fire)!important}.c-amber{color:var(--amber)!important}.c-teal{color:var(--teal)!important}.c-brand{color:var(--brand)!important}.c-slate{color:var(--slate)!important}
+  .tbl td[data-label="Reason"],.tbl td[data-label="Issue"],.tbl td[data-label="Next step"],.tbl td[data-label="Next"]{max-width:260px;min-width:150px;word-wrap:break-word}
+  .tbl td[data-label="Take action before"]{white-space:nowrap}
+  .tbl td[data-label="Take action before"] .act-chip{white-space:normal;line-height:1.3}
 </style>
 </head>
 <body>
@@ -1560,7 +1563,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const [y,m,dd]=iso.split('-').map(Number);
     const dt=new Date(y,m-1,dd);
     const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const act=row.actionLabel||'cancel before';
+    let act=row.actionLabel||'cancel before';
+    if(act.toLowerCase().endsWith(lbl.toLowerCase())) act=act.slice(0,-lbl.length).trim();
     return '<span class="act-chip" title="Click to edit the action text" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px;cursor:pointer">📅 '+act+' '+lbl+'</span>';
   }
   function renderRetention(){
