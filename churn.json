@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T18:28:33Z",
+ "generatedAt": "2026-11-03T19:46:48Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -288,11 +288,22 @@
    "risk": "High",
    "source": "hub retention",
    "note": ""
+  },
+  {
+   "client": "Segovia (SagoviaQ Cleaning Co.)",
+   "am": "Eduardo",
+   "changeType": "cancel",
+   "amountMonthly": 650.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
   }
  ],
  "summary": {
-  "atRiskClients": 26,
-  "mrrAtRisk": 23550.0
+  "atRiskClients": 27,
+  "mrrAtRisk": 24200.0
  },
  "scopes": {
   "persistiq": "all rows",
