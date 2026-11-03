@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T21:59:53Z",
+ "generatedAt": "2026-11-03T22:05:19Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -178,11 +178,22 @@
    "risk": "Medium",
    "source": "hub retention",
    "note": ""
+  },
+  {
+   "client": "Check Plus (Asher)",
+   "am": "Tania",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "retry charge Nov 4 \u2014 if collected, offer LinkedIn",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
   }
  ],
  "summary": {
-  "atRiskClients": 16,
-  "mrrAtRisk": 16995.0
+  "atRiskClients": 17,
+  "mrrAtRisk": 17995.0
  },
  "scopes": {
   "persistiq": "all rows",
