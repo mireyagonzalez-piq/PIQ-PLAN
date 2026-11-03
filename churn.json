@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T19:46:48Z",
+ "generatedAt": "2026-11-03T19:57:02Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -180,50 +180,6 @@
    "note": ""
   },
   {
-   "client": "CinnBar (Theo Olison)",
-   "am": "Estefania",
-   "changeType": "cancel",
-   "amountMonthly": 1000.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "Medium",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "Enterprise Tech (Neil)",
-   "am": "Estefania",
-   "changeType": "cancel",
-   "amountMonthly": 0.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "Low",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "Living Medicine",
-   "am": "Tania",
-   "changeType": "cancel",
-   "amountMonthly": 800.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "High",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "ECS",
-   "am": "Tania",
-   "changeType": "cancel",
-   "amountMonthly": 0.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "Low",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
    "client": "TH Financial (J M Taylor)",
    "am": "Roberto",
    "changeType": "cancel",
@@ -277,33 +233,11 @@
    "risk": "Medium",
    "source": "hub retention",
    "note": ""
-  },
-  {
-   "client": "Sacred Travel Paths (Sami Khoury)",
-   "am": "Mar\u00eda",
-   "changeType": "cancel",
-   "amountMonthly": 1000.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "High",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "Segovia (SagoviaQ Cleaning Co.)",
-   "am": "Eduardo",
-   "changeType": "cancel",
-   "amountMonthly": 650.0,
-   "currency": "USD",
-   "effectiveMonth": "payment moves to Dec",
-   "risk": "High",
-   "source": "hub retention",
-   "note": ""
   }
  ],
  "summary": {
-  "atRiskClients": 27,
-  "mrrAtRisk": 24200.0
+  "atRiskClients": 21,
+  "mrrAtRisk": 20750.0
  },
  "scopes": {
   "persistiq": "all rows",
