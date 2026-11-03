@@ -1601,6 +1601,12 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
             inp2.addEventListener('change',save);inp2.addEventListener('blur',save);
             inp2.addEventListener('keydown',ev=>{if(ev.key==='Enter'){save();}if(ev.key==='Escape'){inp2.value=row.actionLabel||'';save();}});
           });}
+          else{const inp2=document.createElement('input');inp2.type='text';inp2.className='due-input';inp2.style.fontSize='11px';inp2.style.width='140px';inp2.placeholder='e.g. cancel before Nov 30';inp2.value=row.actionLabel||'';
+            inp2.addEventListener('mousedown',e=>e.stopPropagation());
+            const save=()=>{row.actionLabel=inp2.value.trim();persist();};
+            inp2.addEventListener('change',save);inp2.addEventListener('blur',save);
+            inp2.addEventListener('keydown',ev=>{if(ev.key==='Enter'){inp2.blur();}});
+            wrap.appendChild(inp2);}
 const inp=document.createElement('input');inp.type='date';inp.className='due-input';inp.style.fontSize='11px';inp.value=row.cancelBefore||'';
           inp.addEventListener('change',()=>{row.cancelBefore=inp.value||'';persist();});
           inp.addEventListener('mousedown',e=>e.stopPropagation());
