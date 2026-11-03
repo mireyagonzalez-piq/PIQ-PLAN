@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T18:02:42Z",
+ "generatedAt": "2026-11-03T18:19:17Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -20,7 +20,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 16)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Billing moved Sep 3 -> Sep 16; October payment due upon results"
@@ -42,7 +42,7 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 15)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "Medium",
    "source": "hub retention",
    "note": "move payment from oct 15 to oct 30"
@@ -53,7 +53,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 14)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Payment moves to mid-October, then cancel before Oct 12"
@@ -64,7 +64,7 @@
    "changeType": "cancel",
    "amountMonthly": 1450.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 30)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Cancel before Oct 30 (12-month contract completed)"
@@ -75,7 +75,7 @@
    "changeType": "cancel",
    "amountMonthly": 800.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 19 (next bill Nov 21)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "Medium",
    "source": "hub retention",
    "note": "Payment delayed to Nov 9 for a negotiation window; new retailer messaging getting good replies"
@@ -86,7 +86,7 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 24 (next bill Nov 26)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Contact relocated to Japan; new division chief not continuing the US campaign; cancel before Oct 26"
@@ -97,7 +97,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 24 (next bill Nov 26)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Gave notice Sep 15; 0 booked meetings (performance, Adam Ferris); ends Oct 26"
@@ -108,7 +108,7 @@
    "changeType": "cancel",
    "amountMonthly": 1500.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 18 (next bill Nov 20)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "Medium",
    "source": "hub retention",
    "note": "he already gave non renewal, we are offering Linkedin to make him stay."
@@ -119,7 +119,7 @@
    "changeType": "cancel",
    "amountMonthly": 1200.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 29)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "gave non renwal - he had a 1 M agreement - cancel before oct 29"
@@ -130,7 +130,7 @@
    "changeType": "cancel",
    "amountMonthly": 800.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 5 (next bill Nov 9)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "we need to cancel before oct 30"
@@ -141,7 +141,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 26 (next bill Nov 30)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
@@ -152,7 +152,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 5 (next bill Nov 9)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
@@ -163,10 +163,65 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "Cancel before Nov 12 (next bill Nov 15)",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
+  },
+  {
+   "client": "Wisteria Trading",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 1200.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "CinnBar (Theo Olison)",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "Medium",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Enterprise Tech (Neil)",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "Low",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Living Medicine",
+   "am": "Tania",
+   "changeType": "cancel",
+   "amountMonthly": 800.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "ECS",
+   "am": "Tania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "payment moves to Dec",
+   "risk": "Low",
+   "source": "hub retention",
+   "note": ""
   },
   {
    "client": "TH Financial (J M Taylor)",
@@ -174,7 +229,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "cancel before 2026-11-26",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": ""
@@ -207,7 +262,7 @@
    "changeType": "cancel",
    "amountMonthly": 0.0,
    "currency": "USD",
-   "effectiveMonth": "cancel before 2026-11-30",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": ""
@@ -229,15 +284,15 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "cancel before 2026-11-04",
+   "effectiveMonth": "payment moves to Dec",
    "risk": "High",
    "source": "hub retention",
    "note": ""
   }
  ],
  "summary": {
-  "atRiskClients": 21,
-  "mrrAtRisk": 20550.0
+  "atRiskClients": 26,
+  "mrrAtRisk": 23550.0
  },
  "scopes": {
   "persistiq": "all rows",
