@@ -535,7 +535,6 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     <button data-tab="retention" class="active">Retention</button>
     <button data-tab="projects">Projects</button>
     <button data-tab="revenue">Revenue</button>
-    <button data-tab="back2office">Back to Office</button>
   </nav>
   <div class="tools">
     <span id="savetag"></span>
@@ -649,52 +648,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     </div>
   </section>
 
-  <section id="tab-back2office" hidden>
-    <div class="head">
-      <div class="eyebrow">Back to Office · post-OOO catch-up</div>
-      <h1>Everything waiting from your week away — checked live Oct 19.</h1>
-      <p class="head-sub">Verified against Chatwoot, Gmail, calendars, Google Tasks, Slack, Fireflies and Granola — 4:50 PM UTC, re-swept 8:15 PM UTC after Mireya\u2019s meetings. Mark things off as you handle them — checkboxes remember. 🔴 = you decide (Luma preps everything), 🟢 = Luma does on "go", ⚪ = quick items.</p>
-      <div class="legend">
-        <span><i class="dot" style="background:var(--fire)"></i>Decision — you</span>
-        <span><i class="dot" style="background:var(--teal)"></i>Say "go" in chat → Luma does exactly what the row says</span>
-        <span><i class="dot" style="background:var(--amber)"></i>AM PING = draft nudge to the account manager ("saw this, any updates?") — Mireya reviews before anything sends</span>
-        <span><i class="dot" style="background:var(--slate)"></i>Quick / FYI</span>
-      </div>
-    </div>
-
-    <div class="proj-summary" id="b2oKpis"></div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">🔴 Decide today — the three real calls</h2></div>
-      <div id="b2oDecide"></div>
-    </div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">🟠 This week — deadlines attached</h2></div>
-      <div id="b2oWeek"></div>
-    </div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">🟢 Luma does on "go" — nothing for you but the word</h2></div>
-      <div id="b2oLuma"></div>
-    </div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">⚪ Quick items — from Jules's brief</h2></div>
-      <div id="b2oQuick"></div>
-    </div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">🔥 New fires the brief missed — escalation queue (109 open, 18 yours)</h2></div>
-      <div id="b2oFires"></div>
-    </div>
-
-    <div class="card-panel" style="display:block">
-      <div class="card-panel-head"><h2 class="subsection-title">✅ Already done while you were out</h2></div>
-      <div id="b2oDone"></div>
-      <div class="head-sub" style="font-size:11px;margin-top:8px;padding:0 14px 12px;color:var(--faint)">Full detail on every item: <b>Welcome Back Status Board</b> (delivered in chat Oct 19).</div>
-    </div>
-  </section>
+  
 
 </main>
 
@@ -1838,12 +1792,20 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
     const sc=document.createElement('script');sc.id=cb;sc.src=url+'?action=slack&callback='+cb+'&t='+Date.now();document.head.appendChild(sc);
   }
 
-  function renderAll(){renderBoard();renderRetention();renderSelfservice();renderFinance();renderFailed();}
+  function renderAll(){renderVisible();}
+  const RENDERERS={retention:()=>{renderRetention()},projects:()=>{renderBoard()},revenue:()=>{renderRevenue()}};
+  let renderedTabs={};
+  function renderVisible(){
+    const cur=(document.querySelector('#tabs button.active')||{}).dataset?.tab||'retention';
+    if(cur==='retention'){renderRetention();renderSelfservice();renderFinance();renderFailed();renderedTabs.retention=true;}
+    else if(RENDERERS[cur]&&!renderedTabs[cur]){RENDERERS[cur]();renderedTabs[cur]=true;}
+    else if(RENDERERS[cur]){RENDERERS[cur]();}
+  }
 
   document.getElementById('tabs').addEventListener('click',e=>{
     const b=e.target.closest('button');if(!b)return;
     document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
-    Object.entries({retention:'tab-retention',projects:'tab-projects',revenue:'tab-revenue',back2office:'tab-back2office'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));
+    Object.entries({retention:'tab-retention',projects:'tab-projects',revenue:'tab-revenue'}).forEach(([k,id])=>document.getElementById(id).hidden=(k!==b.dataset.tab));renderVisible();
     window.scrollTo({top:0});
   });
   document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='piq-hub-backup.json';a.click();URL.revokeObjectURL(a.href);});
@@ -1923,63 +1885,6 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
   renderRevenue();
   bootFromSheet();
 
-  // ── BACK TO OFFICE TAB (Oct 19 post-OOO catch-up) ───────────
-  const B2O={
-    decide:[
-      {id:'d1',t:'DFS / Shafer — with Tania (meeting today 12:30 CT) ✓ waiting on her',meta:'Ping sent, meeting on her calendar, refund position routes through her plan. Greg\u2019s 2-business-day ack is the only loose thread — Greg asked Mireya to confirm receipt; ack draft ready on go.',who:'wait'},
-      {id:'d2',t:'Chris Doubleday / nw-os — #1000 open 19 days',meta:'The $1,400 holding line was approved Oct 9, send-state unverified. go → verify + resolve or escalate.',who:'you'},
-      {id:'d3',t:'Baumier non-renewal — UNREAD, $1,575 CAD/mo',meta:'Receipt acknowledgment needed + AM name from Mireya. go → ack draft + ping once she names the AM.',who:'you'}
-    ],
-    week:[
-      {id:'w1',t:'Waiting on AM replies (pings sent Oct 19 ~6 PM PT)',meta:'Tania ×4 · Eduardo ×2 · Maria ×4 · Roberto ×2 · Estefanía ×1 (Charles). No replies yet.',who:'wait'},
-      {id:'w2',t:'VorTech / Tim Faris — #8026 self-assigned by Mireya',meta:'"Stop charging me, send proof of cancellation, refund my money." go → draft the reply for her review.',who:'luma'},
-      {id:'w3',t:'Adrian DPA nudge — pending',meta:'go → draft on Paulo\u2019s Oct 6 v2 redlines (does v2 clear the commitments concern + signing order).',who:'luma'},
-      {id:'w4',t:'Chris nw-os $1,400 holding line — send-state unverified',meta:'go → verify, redraft only if it never went.',who:'luma'},
-      {id:'w5',t:'VendGuys package + Kathleen AR sheet',meta:'VendGuys gated on conversion review (invoices NOT authorized). Kathleen: comments ready, verify-then-paste. go → both.',who:'luma'},
-      {id:'w6',t:'FICA deck — pick the date (Oct 9 or 16)',meta:'One tap from Mireya and the deck goes to Mike.',who:'you'},
-      {id:'w7',t:'Retention deck v7 + Cyberpond slide',meta:'go → Sep-close rebuild, save-play owners, ≤14% line for Mike, Cyberpond slide (needs Michael\u2019s demo invite).',who:'luma'},
-      {id:'w8',t:'Bravo Building — Power Hour proposal draft',meta:'Maria pinged; cancel call Oct 27. go → client-ready draft.',who:'luma'},
-      {id:'w9',t:'Dexstand kickoff — TODAY 3 PM PT, AM unassigned',meta:'go → AM recommendation + one-page prep.',who:'luma'},
-      {id:'w10',t:'TLP / Talent Formula — status note to Mireya tomorrow',meta:'Verified: Stripe sub cancelled (Oct 26 renewal dead), Matthew\u2019s $3.5K/mo TF+Sales Crusader proposal delivered Oct 11 and still with Mireya for review, evidence annex unrouted. go → full status brief + what Matthew needs from her.',who:'luma'},
-      {id:'w11',t:'Pause-don\u2019t-cancel — build the Oct at-risk list',meta:'Decided in ops meeting (pause still counts as MRR in ChartMogul). go → the concrete account list with pause terms per account.',who:'luma'},
-      {id:'w12',t:'Andres: active-client list + Chatwoot tools',meta:'go → filtered list for Panda Planner + Chatwoot instances for his Intercom replacement.',who:'luma'}
-    ],
-    luma:[],
-    quick:[
-      {id:'q1',t:'Open on queue (pinged, with AMs)',meta:'Satpac #6458 · QSI #4175 · Crescent #7285 — client-last, waiting on AM replies.',who:'wait'},
-      {id:'q2',t:'CTL Graphics rescheduling (Tania has it)',meta:'FYI, no action',who:'fyi'}
-    ],
-    fires:[],
-    done:['Richardson — replied Oct 19 4:40 PM PT (Roberto cc\u2019d)','R.J. Cui — replied + Eduardo cc\u2019d','SRED/Aman — counter-offer sent (awaiting his pick)','Apollo security — closed','DFS — handed to Tania (ping + 12:30 meeting today)','8 threads resolved by Mireya (Sadiwa, Ebeling, Raman, Lerner, Dickinson, SIBS, MnM, ESC)','5 AM pings sent (13 clients)','Mindy pause confirmation — sent Oct 6','Rory LinkedIn cost — $50/account/mo (resolved)','Retention deck v6 + FICA deck — built','Erling paid · Rivalmind cancelled · LEBDR cancelled','Chemilab proposal sent · Sales Closer list delivered · OOO governance 4/4 GO']
-  };
-  function renderBackToOffice(){
-    const k=document.getElementById('b2oKpis');if(!k)return;
-    const save=(function(){try{return JSON.parse(localStorage.getItem('piq_b2o')||'{}')}catch(e){return{}}}());
-    k.innerHTML=
-      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--fire)">'+B2O.decide.length+'</div><div class="proj-stat-label">Decisions — you</div></div>'+
-      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--teal)">'+B2O.week.filter(w=>w.who==='luma').length+'</div><div class="proj-stat-label">Luma does on "go"</div></div>'+
-      '<div class="proj-stat"><div class="proj-stat-num" style="color:var(--amber)">'+B2O.week.length+'</div><div class="proj-stat-label">This week</div></div>'+
-      '<div class="proj-stat"><div class="proj-stat-num">'+B2O.done.length+'</div><div class="proj-stat-label">Already done ✓</div></div>';
-    const pill=(w)=>w==='wait'?'<span class="pill" style="background:var(--panel-3);color:var(--slate);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">WAITING ON THEM</span>':w==='you'?'<span class="pill" style="background:var(--fire-dim);color:var(--fire);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">YOU DECIDE</span>'
-      :w==='luma'?'<span class="pill" style="background:var(--teal-dim);color:var(--teal);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">LUMA ON "GO"</span>'
-      :'<span class="pill" style="background:var(--violet-dim);color:var(--violet);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap">FYI</span>';
-    const row=(r)=>'<tr data-b2o="'+r.id+'"><td style="font-size:13px"><b>'+r.t+'</b>'+(r.meta?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+r.meta+'</div>':'')+
-      (r.next?'<ul style="margin:5px 0 0 16px;font-size:12px;color:var(--muted)">'+r.next.map(n=>'<li>'+n+'</li>').join('')+'</ul>':'')+'</td>'+
-      '<td style="width:110px">'+pill(r.who)+'</td>'+
-      '<td style="width:40px"><input type="checkbox" class="b2ochk" data-b2ochk="'+r.id+'"></td></tr>';
-    const table=(rows)=>'<table style="width:100%;border-collapse:collapse"><tr style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)"><th style="text-align:left;padding:6px 10px">Item</th><th>Owner</th><th>Done</th></tr>'+rows.map(row).join('')+'</table>';
-    document.getElementById('b2oDecide').innerHTML=table(B2O.decide);
-    document.getElementById('b2oWeek').innerHTML=table(B2O.week);
-    document.getElementById('b2oLuma').innerHTML=table(B2O.luma);
-    document.getElementById('b2oQuick').innerHTML=table(B2O.quick);
-    document.getElementById('b2oFires').innerHTML=table(B2O.fires);
-    document.getElementById('b2oDone').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 10px 8px">'+B2O.done.map(d=>'<span style="font-size:12px;background:var(--teal-dim);color:var(--teal);border-radius:8px;padding:4px 11px">✓ '+d+'</span>').join('')+'</div>';
-    document.querySelectorAll('.b2ochk').forEach(c=>{
-      if(save[c.dataset.b2ochk])c.checked=true;
-      c.addEventListener('change',()=>{try{const s=JSON.parse(localStorage.getItem('piq_b2o')||'{}');s[c.dataset.b2ochk]=c.checked;localStorage.setItem('piq_b2o',JSON.stringify(s));}catch(e){}});
-    });
-  }
-  renderBackToOffice();
-</script>
+  </script>
 </body>
 </html>
