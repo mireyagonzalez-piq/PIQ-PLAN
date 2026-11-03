@@ -1513,22 +1513,22 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     return parseCancelDate((row.next||'')+' '+(row.issue||''));
   }
   function cancelChip(row){
-    const iso=cancelBeforeDate(row);if(!iso)return '';
-    const [y,m,dd]=iso.split('-').map(Number);
-    const dt=new Date(y,m-1,dd);
-    const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const iso=cancelBeforeDate(row);
+    if(!iso && !row.actionLabel) return '';
+    let lbl='';
+    if(iso){const [y,m,dd]=iso.split('-').map(Number);const dt=new Date(y,m-1,dd);lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
     let act=(row.actionLabel||'').trim();
     const MON_RE=/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*\d{1,2}\b/i;
     if(MON_RE.test(act)){ /* already has a full date */ }
-    else if(!act){ act='cancel before '+lbl; }
-    else { act=act+' '+lbl; }
+    else if(!act && lbl){ act='cancel before '+lbl; }
+    else if(lbl){ act=act+' '+lbl; }
     return '<span class="act-chip" title="Click to edit the action text" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px;cursor:pointer">📅 '+act+' '+lbl+'</span>';
   }
   function renderRetention(){
     renderRetentionSummary();
     renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'payments',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'lre',label:'★'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'payments',label:'# Payments'},{key:'issue',label:'Reason',combined:'next'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'lre',label:'★'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
@@ -1575,8 +1575,10 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
           b.addEventListener('click',()=>{row.lre=!row.lre;persist();renderAll();});
           td.appendChild(b);}
         else if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
-        else if(col.key==='payments'){const wrap=document.createElement('span');
-          const t=document.createElement('span');t.textContent=row.payments||'—';wrap.appendChild(t);
+        else if(col.combined){const val=[row[col.key],row[col.combined]].filter(Boolean).join(' — ');
+          td.appendChild(editable(val,v=>{row[col.key]=v;persist();},'cell wide'));}
+        else if(col.key==='payments'){const wrap=document.createElement('span');wrap.style.display='inline-flex';wrap.style.alignItems='center';wrap.style.gap='4px';
+          wrap.appendChild(editable(row.payments||'',v=>{row.payments=v;persist();},'cell paycell'));
           if(row.stripeLink){const a=document.createElement('a');a.href=row.stripeLink;a.target='_blank';a.rel='noopener';a.textContent=' ↗';a.title='Open Stripe customer';a.style.textDecoration='none';wrap.appendChild(a);}
           td.appendChild(wrap);}
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});td.appendChild(inp);}
@@ -1648,8 +1650,10 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
       cols.forEach(col=>{
         const td=document.createElement('td');td.setAttribute('data-label',col.label);
         if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();summaryFn();}));
-        else if(col.key==='payments'){const wrap=document.createElement('span');
-          const t=document.createElement('span');t.textContent=row.payments||'—';wrap.appendChild(t);
+        else if(col.combined){const val=[row[col.key],row[col.combined]].filter(Boolean).join(' — ');
+          td.appendChild(editable(val,v=>{row[col.key]=v;persist();},'cell wide'));}
+        else if(col.key==='payments'){const wrap=document.createElement('span');wrap.style.display='inline-flex';wrap.style.alignItems='center';wrap.style.gap='4px';
+          wrap.appendChild(editable(row.payments||'',v=>{row.payments=v;persist();},'cell paycell'));
           if(row.stripeLink){const a=document.createElement('a');a.href=row.stripeLink;a.target='_blank';a.rel='noopener';a.textContent=' ↗';a.title='Open Stripe customer';a.style.textDecoration='none';wrap.appendChild(a);}
           td.appendChild(wrap);}
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();summaryFn();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();summaryFn();});td.appendChild(inp);}
