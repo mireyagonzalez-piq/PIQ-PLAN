@@ -1519,7 +1519,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     const lbl=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     let act=(row.actionLabel||'').trim();
     const MON_RE=/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*\d{1,2}\b/i;
-    if(MONTHS.test(act)){ /* already has a full date */ }
+    if(MON_RE.test(act)){ /* already has a full date */ }
     else if(!act){ act='cancel before '+lbl; }
     else { act=act+' '+lbl; }
     return '<span class="act-chip" title="Click to edit the action text" style="font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-dim);border-radius:20px;padding:2px 8px;white-space:nowrap;margin-left:6px;cursor:pointer">📅 '+act+' '+lbl+'</span>';
