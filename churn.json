@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T19:57:02Z",
+ "generatedAt": "2026-11-03T21:06:57Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -57,28 +57,6 @@
    "risk": "High",
    "source": "hub retention",
    "note": "Payment moves to mid-October, then cancel before Oct 12"
-  },
-  {
-   "client": "Vail valley",
-   "am": "Estefania",
-   "changeType": "cancel",
-   "amountMonthly": 1450.0,
-   "currency": "USD",
-   "effectiveMonth": "cancel before Nov 30",
-   "risk": "High",
-   "source": "hub retention",
-   "note": "Cancel before Oct 30 (12-month contract completed)"
-  },
-  {
-   "client": "Share snaxs",
-   "am": "Eduardo",
-   "changeType": "cancel",
-   "amountMonthly": 800.0,
-   "currency": "USD",
-   "effectiveMonth": "cancel before Nov 30",
-   "risk": "Medium",
-   "source": "hub retention",
-   "note": "Payment delayed to Nov 9 for a negotiation window; new retailer messaging getting good replies"
   },
   {
    "client": "Tomoe",
@@ -141,7 +119,7 @@
    "changeType": "cancel",
    "amountMonthly": 1000.0,
    "currency": "USD",
-   "effectiveMonth": "cancel before Nov 30",
+   "effectiveMonth": "move payment to Dec 30",
    "risk": "High",
    "source": "hub retention",
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
@@ -169,17 +147,6 @@
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
   },
   {
-   "client": "Wisteria Trading",
-   "am": "Estefania",
-   "changeType": "cancel",
-   "amountMonthly": 1200.0,
-   "currency": "USD",
-   "effectiveMonth": "cancel before Nov 30",
-   "risk": "High",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
    "client": "TH Financial (J M Taylor)",
    "am": "Roberto",
    "changeType": "cancel",
@@ -187,28 +154,6 @@
    "currency": "USD",
    "effectiveMonth": "cancel before Nov 30",
    "risk": "High",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "Satpac (Stephen Sacks)",
-   "am": "Roberto",
-   "changeType": "cancel",
-   "amountMonthly": 1000.0,
-   "currency": "USD",
-   "effectiveMonth": "cancel before 2026-11-23",
-   "risk": "High",
-   "source": "hub retention",
-   "note": ""
-  },
-  {
-   "client": "Devis (Gavin Nathan)",
-   "am": "Mar\u00eda",
-   "changeType": "cancel",
-   "amountMonthly": 1000.0,
-   "currency": "USD",
-   "effectiveMonth": "cancel before 2026-10-29",
-   "risk": "Low",
    "source": "hub retention",
    "note": ""
   },
@@ -227,7 +172,7 @@
    "client": "NexPac (Sawyer)",
    "am": "Estefania",
    "changeType": "cancel",
-   "amountMonthly": 0.0,
+   "amountMonthly": 1695.0,
    "currency": "USD",
    "effectiveMonth": "cancel before 2026-11-30",
    "risk": "Medium",
@@ -236,8 +181,8 @@
   }
  ],
  "summary": {
-  "atRiskClients": 21,
-  "mrrAtRisk": 20750.0
+  "atRiskClients": 16,
+  "mrrAtRisk": 16995.0
  },
  "scopes": {
   "persistiq": "all rows",
