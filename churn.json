@@ -1,7 +1,7 @@
 {
  "ok": true,
  "version": 3,
- "generatedAt": "2026-11-03T08:01:24Z",
+ "generatedAt": "2026-11-03T17:48:29Z",
  "forecast": [
   {
    "client": "Clear Plan",
@@ -167,11 +167,132 @@
    "risk": "High",
    "source": "hub retention",
    "note": "Requested cancellation \u2014 retention attempt in flight (Power Hour/LinkedIn + leads, scope adjust)"
+  },
+  {
+   "client": "Wisteria Trading",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 1200.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-04",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "CinnBar (Theo Olison)",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-12-15",
+   "risk": "Medium",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Enterprise Tech (Neil)",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-12-01",
+   "risk": "Low",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Living Medicine",
+   "am": "Tania",
+   "changeType": "cancel",
+   "amountMonthly": 800.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-04",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "ECS",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-30",
+   "risk": "Low",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "TH Financial (J M Taylor)",
+   "am": "Roberto",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-26",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Satpac (Stephen Sacks)",
+   "am": "Roberto",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-23",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Devis (Gavin Nathan)",
+   "am": "Mar\u00eda",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-10-29",
+   "risk": "Low",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Block Muster",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-30",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "NexPac (Sawyer)",
+   "am": "Estefania",
+   "changeType": "cancel",
+   "amountMonthly": 0.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-30",
+   "risk": "Medium",
+   "source": "hub retention",
+   "note": ""
+  },
+  {
+   "client": "Sacred Travel Paths (Sami Khoury)",
+   "am": "Mar\u00eda",
+   "changeType": "cancel",
+   "amountMonthly": 1000.0,
+   "currency": "USD",
+   "effectiveMonth": "cancel before 2026-11-04",
+   "risk": "High",
+   "source": "hub retention",
+   "note": ""
   }
  ],
  "summary": {
-  "atRiskClients": 15,
-  "mrrAtRisk": 16550.0
+  "atRiskClients": 26,
+  "mrrAtRisk": 23550.0
  },
  "scopes": {
   "persistiq": "all rows",
