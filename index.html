@@ -1571,7 +1571,7 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
     renderRetentionSummary();
     renderChurnByAM();
     const c=document.getElementById('retentionTable');c.innerHTML='';
-    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'issue',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'lre',label:'★'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
+    const cols=[{key:'client',label:'Client'},{key:'owners',label:'Owners',type:'owners'},{key:'mrr',label:'MRR $',cls:'mrr-cell'},{key:'risk',label:'Risk',type:'select',opts:RISK},{key:'payments',label:'# Payments'},{key:'next',label:'Reason'},{key:'cancelBefore',label:'Take action before',type:'cancelDate'},{key:'lre',label:'★'},{key:'status',label:'Status',type:'statuspill',opts:RSTATUS}];
     if(!state.retention.length){c.innerHTML='<div class="empty">No at-risk clients tracked.</div>';return;}
     const wrap=document.createElement('div');wrap.className='tbl-wrap';
     const table=document.createElement('table');table.className='tbl';
@@ -1612,6 +1612,10 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
           b.addEventListener('click',()=>{row.lre=!row.lre;persist();renderAll();});
           td.appendChild(b);}
         else if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();}));
+        else if(col.key==='payments'){const wrap=document.createElement('span');
+          const t=document.createElement('span');t.textContent=row.payments||'—';wrap.appendChild(t);
+          if(row.stripeLink){const a=document.createElement('a');a.href=row.stripeLink;a.target='_blank';a.rel='noopener';a.textContent=' ↗';a.title='Open Stripe customer';a.style.textDecoration='none';wrap.appendChild(a);}
+          td.appendChild(wrap);}
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.placeholder='e.g. 1200';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();renderRetentionSummary();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();renderRetentionSummary();});td.appendChild(inp);}
         else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},col.cls||'cell'));
         tr.appendChild(td);
@@ -1681,6 +1685,10 @@ const inp=document.createElement('input');inp.type='date';inp.className='due-inp
       cols.forEach(col=>{
         const td=document.createElement('td');td.setAttribute('data-label',col.label);
         if(col.type==='select')td.appendChild(mkSelect(row[col.key],col.opts,v=>{row[col.key]=v;persist();summaryFn();}));
+        else if(col.key==='payments'){const wrap=document.createElement('span');
+          const t=document.createElement('span');t.textContent=row.payments||'—';wrap.appendChild(t);
+          if(row.stripeLink){const a=document.createElement('a');a.href=row.stripeLink;a.target='_blank';a.rel='noopener';a.textContent=' ↗';a.title='Open Stripe customer';a.style.textDecoration='none';wrap.appendChild(a);}
+          td.appendChild(wrap);}
         else if(col.cls==='mrr-cell'){const inp=document.createElement('input');inp.type='text';inp.className='mrr-input';inp.value=row[col.key]||'';inp.addEventListener('mousedown',e=>e.stopPropagation());inp.addEventListener('change',()=>{row[col.key]=inp.value.trim();persist();summaryFn();});inp.addEventListener('input',()=>{row[col.key]=inp.value.trim();summaryFn();});td.appendChild(inp);}
         else td.appendChild(editable(row[col.key]||'',v=>{row[col.key]=v;persist();},'cell'));
         tr.appendChild(td);

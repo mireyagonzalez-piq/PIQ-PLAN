@@ -822,8 +822,8 @@ header::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;back
         <td data-label="Owner">${(row.owners||[]).map(o=>`<span style="font-size:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-right:3px;color:var(--muted)">${o}</span>`).join('')}</td>
         <td data-label="MRR"><span class="mrr-val">${row.mrr?'$'+Number(row.mrr).toLocaleString():'—'}</span></td>
         <td data-label="Risk"><span class="risk-badge r-${row.risk}">${row.risk||'—'}</span></td>
-        <td data-label="Issue" style="max-width:200px;color:var(--muted)">${row.issue||'—'}</td>
-        <td data-label="Next step" style="max-width:200px;color:var(--muted)">${row.next||'—'}</td>
+        <td data-label="# Payments">${row.payments||'—'}${row.stripeLink?` <a href="${row.stripeLink}" target="_blank" rel="noopener" title="Open Stripe customer" style="text-decoration:none">↗</a>`:''}</td>
+        <td data-label="Reason" style="max-width:380px;color:var(--muted)">${[row.issue,row.next].filter(Boolean).join(' — ')||'—'}</td>
         <td data-label="Cancel before"><span style="font-size:11px;color:var(--muted);white-space:nowrap">${row.cancelBefore?new Date(row.cancelBefore+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—'}</span></td>
         <td data-label="★"><span style="color:#F59E0B;font-size:14px">${row.lre?'★':''}</span></td>
         <td data-label="Status"><span class="status-badge ${statusClass}">${row.status||'—'}</span></td>`;
